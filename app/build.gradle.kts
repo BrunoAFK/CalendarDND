@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -59,10 +61,10 @@ android {
     }
 
     signingConfigs {
-        val localProps = java.util.Properties().apply {
+        val localProps = Properties().apply {
             val propsFile = rootProject.file("local.properties")
             if (propsFile.exists()) {
-                propsFile.inputStream().use { load(it) }
+                propsFile.inputStream().use { this.load(it) }
             }
         }
 

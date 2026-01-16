@@ -29,7 +29,6 @@
     <string name="notification_permission_rationale">DND funziona comunque, ma senza avviso.</string>
     <string name="exact_alarm_rationale">Senza questa opzione, l\'orario puo slittare di minuti.</string>
     <string name="battery_rationale">Senza eccezione, gli allarmi possono ritardare o saltare.</string>
-    <string name="permissions_helper_text">Concedi Calendario + DND per continuare.</string>
 
     <!-- Status Screen -->
     <string name="automation">DND automatico</string>

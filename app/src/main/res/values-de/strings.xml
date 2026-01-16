@@ -29,7 +29,6 @@
     <string name="notification_permission_rationale">DND funktioniert weiterhin, aber ohne Warnung.</string>
     <string name="exact_alarm_rationale">Ohne diese Option kann das Timing um Minuten abweichen.</string>
     <string name="battery_rationale">Ohne Ausnahme können Alarme verspätet oder übersprungen werden.</string>
-    <string name="permissions_helper_text">Kalender + DND gewähren, um fortzufahren.</string>
 
     <!-- Status Screen -->
     <string name="automation">Automatisches DND</string>

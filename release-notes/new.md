@@ -1,0 +1,2 @@
+- Improve onboarding spacing and flow polish.
+- Update notification behavior for better reliability.

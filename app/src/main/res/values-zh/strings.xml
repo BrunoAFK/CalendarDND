@@ -29,7 +29,6 @@
     <string name="notification_permission_rationale">免打扰仍会生效，但不会提示。</string>
     <string name="exact_alarm_rationale">没有该权限时开始与结束可能延迟几分钟。</string>
     <string name="battery_rationale">没有该权限时闹钟可能延迟或错过。</string>
-    <string name="permissions_helper_text">继续前请授予日历 + 免打扰。</string>
     <string name="open_app_settings">打开应用设置</string>
     <string name="ok">确定</string>
 

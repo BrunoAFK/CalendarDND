@@ -29,7 +29,6 @@
     <string name="notification_permission_rationale">DND는 계속 작동하지만 알림은 사라집니다.</string>
     <string name="exact_alarm_rationale">없으면 시작과 종료가 몇 분씩 어긋날 수 있습니다.</string>
     <string name="battery_rationale">없으면 알람이 지연되거나 누락될 수 있습니다.</string>
-    <string name="permissions_helper_text">계속하려면 캘린더 + DND를 허용하세요.</string>
 
     <!-- Status Screen -->
     <string name="automation">자동 DND</string>

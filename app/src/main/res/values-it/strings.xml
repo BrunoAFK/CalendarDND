@@ -163,6 +163,10 @@
     <string name="help_item_privacy_summary">Controlla analisi e segnalazioni di crash.</string>
     <string name="help_item_privacy_details">Puoi abilitare o disabilitare separatamente l\'analisi di utilizzo e le segnalazioni di crash. I crash aiutano a correggere i bug, l\'analisi mostra le funzionalità più usate.</string>
 
+    <string name="help_item_updates_title">Aggiornamenti</string>
+    <string name="help_item_updates_summary">Gli aggiornamenti manuali arrivano dai rilasci GitHub.</string>
+    <string name="help_item_updates_details">Nella build manuale l\'app controlla il feed dei rilasci GitHub. Quando c\'è una nuova versione, vedrai un avviso e potrai scaricare e installare l\'APK.</string>
+
     <string name="help_item_exact_alarms_title">Allarmi esatti</string>
     <string name="help_item_exact_alarms_summary">Migliora l\'affidabilità temporale nelle versioni recenti di Android.</string>
     <string name="help_item_exact_alarms_details">Se gli allarmi esatti sono consentiti, l\'app pianifica orari precisi di inizio e fine. In caso contrario, usa guardie e controlli periodici.</string>

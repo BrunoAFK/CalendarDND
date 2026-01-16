@@ -172,6 +172,10 @@
     <string name="help_item_privacy_summary">Control analytics and crash reports.</string>
     <string name="help_item_privacy_details">You can enable or disable usage analytics and crash reports separately. Crash reports help fix bugs; analytics show which features are used most.</string>
 
+    <string name="help_item_updates_title">Updates</string>
+    <string name="help_item_updates_summary">Manual updates are delivered from GitHub releases.</string>
+    <string name="help_item_updates_details">On the manual build, the app checks the GitHub release feed. When a new version is available, you will see a prompt and can download and install the APK.</string>
+
     <string name="help_item_exact_alarms_title">Exact Alarms</string>
     <string name="help_item_exact_alarms_summary">Improves timing reliability on newer Android versions.</string>
     <string name="help_item_exact_alarms_details">If exact alarms are allowed, the app schedules precise start and end times. If not, it falls back to guards and periodic checks.</string>

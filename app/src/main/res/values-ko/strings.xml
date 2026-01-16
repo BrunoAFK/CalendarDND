@@ -163,6 +163,10 @@
     <string name="help_item_privacy_summary">분석 및 크래시 보고서를 관리합니다.</string>
     <string name="help_item_privacy_details">사용 분석과 크래시 보고서를 각각 켜거나 끌 수 있습니다. 크래시 보고서는 버그 수정에 도움이 되고, 분석은 가장 많이 쓰는 기능을 보여줍니다.</string>
 
+    <string name="help_item_updates_title">업데이트</string>
+    <string name="help_item_updates_summary">수동 업데이트는 GitHub 릴리스로 제공됩니다.</string>
+    <string name="help_item_updates_details">수동 빌드에서는 앱이 GitHub 릴리스 피드를 확인합니다. 새 버전이 있으면 알림이 표시되고 APK를 다운로드해 설치할 수 있습니다.</string>
+
     <string name="help_item_exact_alarms_title">정확한 알람</string>
     <string name="help_item_exact_alarms_summary">최신 Android에서 정확한 타이밍을 보장합니다.</string>
     <string name="help_item_exact_alarms_details">정확한 알람이 허용되면 시작/종료 시간을 정밀하게 예약합니다. 허용되지 않으면 가드 작업과 주기적 점검을 사용합니다.</string>

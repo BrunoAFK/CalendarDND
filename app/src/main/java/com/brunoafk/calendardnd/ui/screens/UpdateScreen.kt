@@ -30,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.R
+import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
+import com.brunoafk.calendardnd.data.prefs.DebugLogStore
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
@@ -42,6 +44,7 @@ fun UpdateScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val debugLogStore = remember { DebugLogStore(context) }
     var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -143,7 +146,15 @@ fun UpdateScreen(
                             Button(
                                 onClick = {
                                     scope.launch {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.INFO,
+                                            "UPDATE_UI: Start download for ${latest.versionName}"
+                                        )
                                         val apkFile = if (latest.sha256.isNullOrBlank()) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.WARNING,
+                                                "UPDATE_UI: Missing SHA-256 for ${latest.versionName}"
+                                            )
                                             Toast.makeText(
                                                 context,
                                                 R.string.update_download_missing_hash,
@@ -154,6 +165,10 @@ fun UpdateScreen(
                                             ManualUpdateManager.downloadAndVerifyApk(context, latest)
                                         }
                                         if (apkFile == null) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.ERROR,
+                                                "UPDATE_UI: Download or verification failed for ${latest.versionName}"
+                                            )
                                             if (!latest.sha256.isNullOrBlank()) {
                                                 Toast.makeText(
                                                     context,
@@ -164,10 +179,46 @@ fun UpdateScreen(
                                             return@launch
                                         }
                                         try {
-                                            context.startActivity(
+                                            if (!ManualUpdateManager.canRequestPackageInstalls(context)) {
+                                                debugLogStore.appendLog(
+                                                    DebugLogLevel.WARNING,
+                                                    "UPDATE_UI: Install permission missing."
+                                                )
+                                                ManualUpdateManager.createInstallPermissionIntent(context)?.let {
+                                                    context.startActivity(it)
+                                                } ?: Toast.makeText(
+                                                    context,
+                                                    R.string.update_install_permission_required,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                return@launch
+                                            }
+                                            val installIntent =
                                                 ManualUpdateManager.createInstallIntent(context, apkFile)
+                                            if (installIntent.resolveActivity(context.packageManager) == null) {
+                                                debugLogStore.appendLog(
+                                                    DebugLogLevel.ERROR,
+                                                    "UPDATE_UI: Installer activity not found"
+                                                )
+                                                Toast.makeText(
+                                                    context,
+                                                    R.string.update_open_failed,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                return@launch
+                                            }
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.INFO,
+                                                "UPDATE_UI: Launch installer ${apkFile.absolutePath}"
+                                            )
+                                            context.startActivity(
+                                                installIntent
                                             )
                                         } catch (_: ActivityNotFoundException) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.ERROR,
+                                                "UPDATE_UI: Installer activity not found"
+                                            )
                                             Toast.makeText(
                                                 context,
                                                 R.string.update_open_failed,

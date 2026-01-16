@@ -1,8 +1,11 @@
 package com.brunoafk.calendardnd.system.update
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
@@ -373,6 +376,21 @@ object ManualUpdateManager {
         }
     }
 
+    fun canRequestPackageInstalls(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            context.packageManager.canRequestPackageInstalls()
+    }
+
+    fun createInstallPermissionIntent(context: Context): Intent? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return null
+        }
+        return Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+            data = Uri.parse("package:${context.packageName}")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
     fun createInstallIntent(
         context: android.content.Context,
         apkFile: java.io.File
@@ -382,8 +400,8 @@ object ManualUpdateManager {
             "${context.packageName}.fileprovider",
             apkFile
         )
-        return android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/vnd.android.package-archive")
+        return android.content.Intent(android.content.Intent.ACTION_INSTALL_PACKAGE).apply {
+            data = uri
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }

@@ -1,5 +1,7 @@
 package com.brunoafk.calendardnd.ui.screens
 
+import android.app.NotificationManager
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,29 +15,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import android.app.NotificationManager
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.dnd.DndController
+import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
+import com.brunoafk.calendardnd.data.prefs.DebugLogStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
+import com.brunoafk.calendardnd.domain.model.Trigger
+import com.brunoafk.calendardnd.system.alarms.EngineRunner
 import com.brunoafk.calendardnd.system.notifications.DndNotificationHelper
+import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.components.SettingsDivider
 import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import android.widget.Toast
-import com.brunoafk.calendardnd.domain.model.Trigger
-import com.brunoafk.calendardnd.system.alarms.EngineRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -203,6 +207,127 @@ fun DebugToolsScreen(
                             onClick = {
                                 scope.launch {
                                     settingsStore.setTotalSilenceConfirmed(false)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                SettingsSection(title = stringResource(R.string.debug_tools_updates_title)) {
+                    Column {
+                        SettingsNavigationRow(
+                            title = stringResource(R.string.debug_tools_force_update_title),
+                            subtitle = stringResource(R.string.debug_tools_force_update_subtitle),
+                            onClick = {
+                                scope.launch {
+                                    val debugLogStore = DebugLogStore(context)
+                                    if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.WARNING,
+                                            "UPDATE_DEBUG: Manual updates disabled for this build."
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            R.string.update_screen_unavailable,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return@launch
+                                    }
+                                    debugLogStore.appendLog(
+                                        DebugLogLevel.INFO,
+                                        "UPDATE_DEBUG: Force update requested."
+                                    )
+                                    val metadata = ManualUpdateManager.fetchUpdateMetadata(context)
+                                    val latest = metadata?.releases?.firstOrNull()
+                                    if (latest == null) {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.WARNING,
+                                            "UPDATE_DEBUG: No update metadata available."
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            R.string.update_screen_no_data,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return@launch
+                                    }
+                                    val apkFile = if (latest.sha256.isNullOrBlank()) {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.WARNING,
+                                            "UPDATE_DEBUG: Missing SHA-256 for ${latest.versionName}"
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            R.string.update_download_missing_hash,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        null
+                                    } else {
+                                        ManualUpdateManager.downloadAndVerifyApk(context, latest)
+                                    }
+                                    if (apkFile == null) {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.ERROR,
+                                            "UPDATE_DEBUG: Download or verification failed for ${latest.versionName}"
+                                        )
+                                        if (!latest.sha256.isNullOrBlank()) {
+                                            Toast.makeText(
+                                                context,
+                                                R.string.update_download_failed,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                        return@launch
+                                    }
+                                    try {
+                                        if (!ManualUpdateManager.canRequestPackageInstalls(context)) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.WARNING,
+                                                "UPDATE_DEBUG: Install permission missing."
+                                            )
+                                            ManualUpdateManager.createInstallPermissionIntent(context)?.let {
+                                                context.startActivity(it)
+                                            } ?: Toast.makeText(
+                                                context,
+                                                R.string.update_install_permission_required,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            return@launch
+                                        }
+                                        val installIntent =
+                                            ManualUpdateManager.createInstallIntent(context, apkFile)
+                                        if (installIntent.resolveActivity(context.packageManager) == null) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.ERROR,
+                                                "UPDATE_DEBUG: Installer activity not found"
+                                            )
+                                            Toast.makeText(
+                                                context,
+                                                R.string.update_open_failed,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            return@launch
+                                        }
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.INFO,
+                                            "UPDATE_DEBUG: Launch installer ${apkFile.absolutePath}"
+                                        )
+                                        context.startActivity(
+                                            installIntent
+                                        )
+                                    } catch (_: android.content.ActivityNotFoundException) {
+                                        debugLogStore.appendLog(
+                                            DebugLogLevel.ERROR,
+                                            "UPDATE_DEBUG: Installer activity not found"
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            R.string.update_open_failed,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                 }
                             }
                         )

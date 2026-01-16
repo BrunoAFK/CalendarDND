@@ -305,6 +305,7 @@
     <string name="update_screen_loading">Ucitavanje informacija o azuriranju...</string>
     <string name="update_screen_no_data">Nema dostupnih informacija o azuriranju.</string>
     <string name="update_screen_unavailable">Azuriranja nisu dostupna za ovu verziju.</string>
+    <string name="update_install_permission_required">Dopustite instalacije iz ovog izvora za nastavak.</string>
     <string name="update_dialog_title">Azuriranje dostupno</string>
     <string name="update_dialog_body">Verzija %1$s je dostupna.</string>
     <string name="update_action_download">Preuzmi</string>
@@ -433,6 +434,9 @@
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_updates_title">Ažuriranja</string>
+    <string name="debug_tools_force_update_title">Prisili ažuriranje</string>
+    <string name="debug_tools_force_update_subtitle">Preuzmi i pokreni instalacijski program za najnovije izdanje</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
     <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>

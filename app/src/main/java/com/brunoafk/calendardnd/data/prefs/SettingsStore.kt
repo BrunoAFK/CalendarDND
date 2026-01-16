@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.domain.model.DndMode
+import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -33,6 +34,7 @@ class SettingsStore(private val context: Context) {
         private val CRASHLYTICS_OPT_IN = booleanPreferencesKey("crashlytics_opt_in")
         private val REQUIRE_TITLE_KEYWORD = booleanPreferencesKey("require_title_keyword")
         private val TITLE_KEYWORD = stringPreferencesKey("title_keyword")
+        private val TITLE_KEYWORD_MATCH_MODE = stringPreferencesKey("title_keyword_match_mode")
         private val LAST_IN_APP_UPDATE_VERSION = stringPreferencesKey("last_in_app_update_version")
         private val LAST_NOTIFICATION_UPDATE_VERSION = stringPreferencesKey("last_notification_update_version")
         private val LAST_SEEN_UPDATE_VERSION = stringPreferencesKey("last_seen_update_version")
@@ -55,7 +57,10 @@ class SettingsStore(private val context: Context) {
         val minEventMinutes: Int,
         val dndMode: DndMode,
         val dndStartOffsetMinutes: Int,
-        val preDndNotificationEnabled: Boolean
+        val preDndNotificationEnabled: Boolean,
+        val requireTitleKeyword: Boolean,
+        val titleKeyword: String,
+        val titleKeywordMatchMode: KeywordMatchMode
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -118,6 +123,10 @@ class SettingsStore(private val context: Context) {
         prefs[TITLE_KEYWORD] ?: ""
     }
 
+    val titleKeywordMatchMode: Flow<KeywordMatchMode> = dataStore.data.map { prefs ->
+        KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE])
+    }
+
     val debugOverlayEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_OVERLAY_ENABLED] ?: false
     }
@@ -164,7 +173,10 @@ class SettingsStore(private val context: Context) {
             minEventMinutes = prefs[MIN_EVENT_MINUTES] ?: 10,
             dndMode = DndMode.fromString(prefs[DND_MODE] ?: "PRIORITY"),
             dndStartOffsetMinutes = prefs[DND_START_OFFSET_MINUTES] ?: 0,
-            preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false
+            preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false,
+            requireTitleKeyword = prefs[REQUIRE_TITLE_KEYWORD] ?: false,
+            titleKeyword = prefs[TITLE_KEYWORD] ?: "",
+            titleKeywordMatchMode = KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE])
         )
     }
 
@@ -210,6 +222,27 @@ class SettingsStore(private val context: Context) {
             prefs[MIN_EVENT_MINUTES] = minutes
         }
         logSettingChange("Min event minutes", minutes.toString())
+    }
+
+    suspend fun setRequireTitleKeyword(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[REQUIRE_TITLE_KEYWORD] = enabled
+        }
+        logSettingChange("Title keyword filter", enabled.toString())
+    }
+
+    suspend fun setTitleKeyword(keyword: String) {
+        dataStore.edit { prefs ->
+            prefs[TITLE_KEYWORD] = keyword
+        }
+        logSettingChange("Title keyword", keyword)
+    }
+
+    suspend fun setTitleKeywordMatchMode(mode: KeywordMatchMode) {
+        dataStore.edit { prefs ->
+            prefs[TITLE_KEYWORD_MATCH_MODE] = mode.name
+        }
+        logSettingChange("Title keyword match", mode.name)
     }
 
     suspend fun setDndMode(mode: DndMode) {
@@ -260,18 +293,6 @@ class SettingsStore(private val context: Context) {
     suspend fun setCrashlyticsOptIn(enabled: Boolean) {
         dataStore.edit { prefs ->
             prefs[CRASHLYTICS_OPT_IN] = enabled
-        }
-    }
-
-    suspend fun setRequireTitleKeyword(enabled: Boolean) {
-        dataStore.edit { prefs ->
-            prefs[REQUIRE_TITLE_KEYWORD] = enabled
-        }
-    }
-
-    suspend fun setTitleKeyword(keyword: String) {
-        dataStore.edit { prefs ->
-            prefs[TITLE_KEYWORD] = keyword
         }
     }
 

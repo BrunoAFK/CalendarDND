@@ -79,6 +79,7 @@ object AppRoutes {
     const val DEBUG_LOG_SETTINGS = "debug_log_settings"
     const val UPDATES = "updates"
     const val UPDATE_HISTORY = "update_history"
+    const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
 }
 
 @Composable
@@ -411,8 +412,33 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.PERMISSIONS)
                         },
+                        onNavigateToEventKeywordFilter = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.EVENT_KEYWORD_FILTER)
+                        },
                         highlightAutomation = highlight,
                         showUpdatesMenu = updateStatus != null
+                    )
+                }
+            }
+            composable(AppRoutes.EVENT_KEYWORD_FILTER) {
+                val route = AppRoutes.EVENT_KEYWORD_FILTER
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    com.brunoafk.calendardnd.ui.screens.EventKeywordFilterScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
                     )
                 }
             }

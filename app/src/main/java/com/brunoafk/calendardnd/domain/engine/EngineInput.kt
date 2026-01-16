@@ -1,6 +1,7 @@
 package com.brunoafk.calendardnd.domain.engine
 
 import com.brunoafk.calendardnd.domain.model.DndMode
+import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.Trigger
 
 /**
@@ -19,6 +20,9 @@ data class EngineInput(
     val dndMode: DndMode,
     val dndStartOffsetMinutes: Int,
     val preDndNotificationEnabled: Boolean,
+    val requireTitleKeyword: Boolean,
+    val titleKeyword: String,
+    val titleKeywordMatchMode: KeywordMatchMode,
 
     // Runtime state
     val dndSetByApp: Boolean,

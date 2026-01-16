@@ -3,6 +3,7 @@ package com.brunoafk.calendardnd.data.calendar
 import android.content.Context
 import android.provider.CalendarContract
 import com.brunoafk.calendardnd.domain.model.EventInstance
+import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.util.EngineConstants.ACTIVE_INSTANCES_WINDOW_MS
 import com.brunoafk.calendardnd.util.EngineConstants.NEXT_INSTANCE_LOOKAHEAD_MS
 
@@ -17,7 +18,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
-        minEventMinutes: Int
+        minEventMinutes: Int,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        titleKeywordMatchMode: KeywordMatchMode
     ): List<EventInstance> {
         val windowStart = now - ACTIVE_INSTANCES_WINDOW_MS
         val windowEnd = now + ACTIVE_INSTANCES_WINDOW_MS
@@ -32,7 +36,16 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             // Must be active right now
             instance.begin <= now && now < instance.end &&
                     // Apply filters
-                    isRelevantInstance(instance, selectedCalendarIds, busyOnly, ignoreAllDay, minEventMinutes)
+                    isRelevantInstance(
+                        instance,
+                        selectedCalendarIds,
+                        busyOnly,
+                        ignoreAllDay,
+                        minEventMinutes,
+                        requireTitleKeyword,
+                        titleKeyword,
+                        titleKeywordMatchMode
+                    )
         }
     }
 
@@ -45,7 +58,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
-        minEventMinutes: Int
+        minEventMinutes: Int,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        titleKeywordMatchMode: KeywordMatchMode
     ): EventInstance? {
         val windowEnd = now + NEXT_INSTANCE_LOOKAHEAD_MS
 
@@ -60,7 +76,16 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                 // Must start in the future
                 instance.begin > now &&
                         // Apply filters
-                        isRelevantInstance(instance, selectedCalendarIds, busyOnly, ignoreAllDay, minEventMinutes)
+                        isRelevantInstance(
+                            instance,
+                            selectedCalendarIds,
+                            busyOnly,
+                            ignoreAllDay,
+                            minEventMinutes,
+                            requireTitleKeyword,
+                            titleKeyword,
+                            titleKeywordMatchMode
+                        )
             }
             .minByOrNull { it.begin }
     }
@@ -75,7 +100,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
-        minEventMinutes: Int
+        minEventMinutes: Int,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        titleKeywordMatchMode: KeywordMatchMode
     ): List<EventInstance> {
         val allInstances = CalendarQueries.queryInstances(
             context,
@@ -84,7 +112,16 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         )
 
         return allInstances.filter { instance ->
-            isRelevantInstance(instance, selectedCalendarIds, busyOnly, ignoreAllDay, minEventMinutes)
+            isRelevantInstance(
+                instance,
+                selectedCalendarIds,
+                busyOnly,
+                ignoreAllDay,
+                minEventMinutes,
+                requireTitleKeyword,
+                titleKeyword,
+                titleKeywordMatchMode
+            )
         }
     }
 
@@ -103,7 +140,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
-        minEventMinutes: Int
+        minEventMinutes: Int,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        titleKeywordMatchMode: KeywordMatchMode
     ): Boolean {
         // Calendar filter (empty selection means "all calendars")
         if (selectedCalendarIds.isNotEmpty() &&
@@ -126,6 +166,45 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             return false
         }
 
+        if (!matchesTitleKeyword(instance.title, requireTitleKeyword, titleKeyword, titleKeywordMatchMode)) {
+            return false
+        }
+
         return true
+    }
+
+    private fun matchesTitleKeyword(
+        title: String,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        matchMode: KeywordMatchMode
+    ): Boolean {
+        if (!requireTitleKeyword) {
+            return true
+        }
+        val pattern = titleKeyword.trim()
+        if (pattern.isBlank()) {
+            return false
+        }
+
+        return when (matchMode) {
+            KeywordMatchMode.KEYWORDS -> {
+                val keywords = pattern
+                    .split(",", "\n")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                if (keywords.isEmpty()) {
+                    false
+                } else {
+                    keywords.any { keyword ->
+                        title.contains(keyword, ignoreCase = true)
+                    }
+                }
+            }
+            KeywordMatchMode.REGEX -> {
+                val regex = runCatching { Regex(pattern) }.getOrNull() ?: return false
+                regex.containsMatchIn(title)
+            }
+        }
     }
 }

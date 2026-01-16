@@ -112,6 +112,11 @@ class DebugLogStore(private val context: Context) {
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
+            appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
+            if (settingsSnapshot.requireTitleKeyword) {
+                appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
+                appendLine("Title filter pattern: ${settingsSnapshot.titleKeyword}")
+            }
             appendLine("Analytics opt-in: $analyticsOptIn")
             appendLine("Crashlytics opt-in: $crashlyticsOptIn")
             appendLine("Log level: ${logLevelFilter.displayName}")
@@ -153,6 +158,11 @@ class DebugLogStore(private val context: Context) {
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
+            appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
+            if (settingsSnapshot.requireTitleKeyword) {
+                appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
+                appendLine("Title filter pattern: ${settingsSnapshot.titleKeyword}")
+            }
             appendLine("Analytics opt-in: $analyticsOptIn")
             appendLine("Crashlytics opt-in: $crashlyticsOptIn")
             appendLine("Log level: ${logLevelFilter.displayName}")

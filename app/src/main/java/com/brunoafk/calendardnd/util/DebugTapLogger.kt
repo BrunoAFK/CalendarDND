@@ -7,10 +7,12 @@ import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
-import com.brunoafk.calendardnd.BuildConfig
-
-fun Modifier.debugTapLog(route: String, isInteractive: Boolean? = null): Modifier {
-    if (!BuildConfig.DEBUG && !BuildConfig.DEBUG_TOOLS_ENABLED) {
+fun Modifier.debugTapLog(
+    route: String,
+    isInteractive: Boolean? = null,
+    enabled: Boolean = false
+): Modifier {
+    if (!enabled) {
         return this
     }
 
@@ -27,7 +29,7 @@ fun Modifier.debugTapLog(route: String, isInteractive: Boolean? = null): Modifie
     }
 }
 
-fun Modifier.navInteractionGate(isInteractive: Boolean): Modifier {
+fun Modifier.navInteractionGate(isInteractive: Boolean, debugLoggingEnabled: Boolean = false): Modifier {
     return this
         .semantics {
             if (!isInteractive) {
@@ -39,10 +41,8 @@ fun Modifier.navInteractionGate(isInteractive: Boolean): Modifier {
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent(PointerEventPass.Initial)
-                        if (BuildConfig.DEBUG || BuildConfig.DEBUG_TOOLS_ENABLED) {
-                            if (event.changes.any { it.changedToDownIgnoreConsumed() }) {
-                                Log.d("NavTapDebug", "  → CONSUMING (gate blocked)")
-                            }
+                        if (debugLoggingEnabled && event.changes.any { it.changedToDownIgnoreConsumed() }) {
+                            Log.d("NavTapDebug", "  → CONSUMING (gate blocked)")
                         }
                         // Consume to block
                         event.changes.forEach { it.consume() }

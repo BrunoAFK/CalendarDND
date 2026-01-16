@@ -144,7 +144,7 @@ fun DndModeBanner(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ),
-            shape = MaterialTheme.shapes.large,
+            shape = MaterialTheme.shapes.small,
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             onClick = { dismiss(navigateAfter = true) }
         ) {

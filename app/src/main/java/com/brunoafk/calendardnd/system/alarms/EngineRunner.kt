@@ -238,7 +238,7 @@ object EngineRunner {
 
             // Log
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Engine run failed", e)
             debugLogStore.appendLog(DebugLogLevel.ERROR, "ERROR: ${e.message}")
         }
     }

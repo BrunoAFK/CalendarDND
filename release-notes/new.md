@@ -1,0 +1,3 @@
+- Improve debug logs: clearer layout with immediate details, share fixes, and safer redaction.
+- Harden manual updates: GitHub-only URLs, APK signature verification, and SHA-256 checks.
+- Whats New and History now pull from GitHub release notes across all builds.

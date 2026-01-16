@@ -419,6 +419,7 @@ fun StatusScreen(
                 OneUiHeader(
                     title = stringResource(R.string.app_name),
                     showTopSpacer = false,
+                    compact = true,
                     modifier = Modifier.padding(top = 0.dp)
                 )
                 if (tileHintVisible) {

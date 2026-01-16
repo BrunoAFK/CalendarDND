@@ -1,8 +1,6 @@
 package com.brunoafk.calendardnd.ui.screens
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +33,7 @@ import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +41,7 @@ fun UpdateScreen(
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -140,7 +141,41 @@ fun UpdateScreen(
                         }
                         if (isNewer) {
                             Button(
-                                onClick = { openUpdateUrl(context, latest.apkUrl) }
+                                onClick = {
+                                    scope.launch {
+                                        val apkFile = if (latest.sha256.isNullOrBlank()) {
+                                            Toast.makeText(
+                                                context,
+                                                R.string.update_download_missing_hash,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            null
+                                        } else {
+                                            ManualUpdateManager.downloadAndVerifyApk(context, latest)
+                                        }
+                                        if (apkFile == null) {
+                                            if (!latest.sha256.isNullOrBlank()) {
+                                                Toast.makeText(
+                                                    context,
+                                                    R.string.update_download_failed,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                            return@launch
+                                        }
+                                        try {
+                                            context.startActivity(
+                                                ManualUpdateManager.createInstallIntent(context, apkFile)
+                                            )
+                                        } catch (_: ActivityNotFoundException) {
+                                            Toast.makeText(
+                                                context,
+                                                R.string.update_open_failed,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                }
                             ) {
                                 Text(stringResource(R.string.update_action_download))
                             }
@@ -190,17 +225,5 @@ fun UpdateScreen(
                 }
             }
         }
-    }
-}
-
-private fun openUpdateUrl(context: android.content.Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-    val chooser = Intent.createChooser(intent, context.getString(R.string.update_action_download))
-    try {
-        context.startActivity(chooser)
-    } catch (_: ActivityNotFoundException) {
-        Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
     }
 }

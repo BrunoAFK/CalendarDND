@@ -53,6 +53,7 @@ fun AboutScreen(
     val githubUrl = stringResource(R.string.github_repo_url)
     val issuesUrl = stringResource(R.string.github_issues_url)
     val releasesUrl = stringResource(R.string.github_releases_url)
+    val versionReleaseUrl = "$releasesUrl/tag/v$versionName"
 
     fun openUrl(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
@@ -100,7 +101,7 @@ fun AboutScreen(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(),
-                                onClick = { openUrl(releasesUrl) }
+                                onClick = { openUrl(versionReleaseUrl) }
                             )
                             .padding(16.dp)
                     ) {

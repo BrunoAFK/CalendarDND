@@ -14,13 +14,15 @@ Host a JSON file (GitHub Releases, your website, etc.) with this shape:
       "versionName": "1.2.3",
       "versionCode": 123,
       "apkUrl": "https://example.com/CalendarDND-1.2.3.apk",
-      "releaseNotes": "Optional multiline notes."
+      "releaseNotes": "Optional multiline notes.",
+      "sha256": "Optional SHA-256 hash for APK verification."
     }
   ]
 }
 ```
 
 Only `versionName` and `apkUrl` are required per release.
+If present, `sha256` is used to verify the downloaded APK before install.
 
 ## Notification rules
 

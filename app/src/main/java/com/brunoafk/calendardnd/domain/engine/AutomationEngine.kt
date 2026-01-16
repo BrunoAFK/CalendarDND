@@ -2,6 +2,7 @@ package com.brunoafk.calendardnd.domain.engine
 
 import com.brunoafk.calendardnd.data.calendar.ICalendarRepository
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
+import java.security.MessageDigest
 import com.brunoafk.calendardnd.domain.planning.MeetingWindowResolver
 import com.brunoafk.calendardnd.domain.planning.SchedulePlanner
 import com.brunoafk.calendardnd.domain.planning.SchedulePlanner.SchedulePlan
@@ -260,7 +261,7 @@ class AutomationEngine(
         }
 
         if (nextInstance != null) {
-            parts.add("Next: ${nextInstance.title} at ${formatTimestamp(nextInstance.begin)}")
+            parts.add("Next: ${redactTitle(nextInstance.title)} at ${formatTimestamp(nextInstance.begin)}")
         }
 
         if (dndWindow.startMs != null && dndWindow.endMs != null) {
@@ -283,6 +284,15 @@ class AutomationEngine(
 
     private fun formatTimestamp(ms: Long): String {
         return timeFormatter.formatTime(ms)
+    }
+
+    private fun redactTitle(title: String): String {
+        if (title.isBlank()) {
+            return "(no title)"
+        }
+        val digest = MessageDigest.getInstance("SHA-256").digest(title.toByteArray(Charsets.UTF_8))
+        val hash = digest.joinToString("") { "%02x".format(it) }.take(8)
+        return "event#$hash"
     }
 
     private fun resolveDndWindow(

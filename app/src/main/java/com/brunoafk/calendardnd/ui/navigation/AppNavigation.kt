@@ -28,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import android.os.SystemClock
-import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.ui.screens.CalendarScopeScreen
@@ -50,6 +49,7 @@ import com.brunoafk.calendardnd.ui.screens.SettingsScreen
 import com.brunoafk.calendardnd.ui.screens.StartupScreen
 import com.brunoafk.calendardnd.ui.screens.StatusScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateScreen
+import com.brunoafk.calendardnd.ui.screens.UpdateHistoryScreen
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.util.debugTapLog
 import com.brunoafk.calendardnd.util.navInteractionGate
@@ -78,6 +78,7 @@ object AppRoutes {
     const val DEBUG_SPLASH = "debug_splash"
     const val DEBUG_LOG_SETTINGS = "debug_log_settings"
     const val UPDATES = "updates"
+    const val UPDATE_HISTORY = "update_history"
 }
 
 @Composable
@@ -94,6 +95,7 @@ fun AppNavigation(
     val settingsStore = remember { SettingsStore(context) }
     val scope = rememberCoroutineScope()
     var lastNavEventMs by remember { mutableStateOf(0L) }
+    val debugToolsUnlocked by settingsStore.debugToolsUnlocked.collectAsState(initial = false)
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
     )
@@ -129,6 +131,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes
                 ) {
                     StartupScreen(
@@ -159,6 +162,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -179,6 +183,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -205,6 +210,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -231,6 +237,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -251,6 +258,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -279,6 +287,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -309,6 +318,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes
                 ) {
                     StatusScreen(
@@ -356,6 +366,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -388,6 +399,11 @@ fun AppNavigation(
                             navController.navigate(AppRoutes.DEBUG_TOOLS)
                         },
                         onNavigateToUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.UPDATES)
                         },
@@ -399,7 +415,8 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.PERMISSIONS)
                         },
-                        highlightAutomation = highlight
+                        highlightAutomation = highlight,
+                        showUpdatesMenu = updateStatus != null
                     )
                 }
             }
@@ -409,6 +426,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -429,6 +447,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -453,6 +472,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -460,6 +480,36 @@ fun AppNavigation(
                     }
                 ) {
                     WhatsNewScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        onNavigateToUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATE_HISTORY)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.UPDATE_HISTORY) {
+                val route = AppRoutes.UPDATE_HISTORY
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    UpdateHistoryScreen(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
@@ -473,6 +523,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -493,6 +544,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -514,6 +566,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -539,6 +592,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -559,6 +613,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -579,6 +634,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -612,6 +668,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -637,6 +694,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -658,6 +716,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -678,6 +737,7 @@ fun AppNavigation(
                     route = route,
                     currentRoute = currentRoute,
                     debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes,
                     onSystemBack = {
                         lockedRoutes.value = lockedRoutes.value + route
@@ -694,11 +754,12 @@ fun AppNavigation(
             }
         }
 
-        if (debugOverlayEnabled && (BuildConfig.DEBUG || BuildConfig.DEBUG_TOOLS_ENABLED)) {
+        if (debugOverlayEnabled && debugToolsUnlocked) {
             DebugNavOverlay(
                 modifier = Modifier.align(Alignment.TopStart),
                 currentRoute = navBackStackEntry?.destination?.route.orEmpty(),
-                lastNavEventMs = lastNavEventMs
+                lastNavEventMs = lastNavEventMs,
+                enabled = debugToolsUnlocked
             )
         }
     }
@@ -709,6 +770,7 @@ private fun DestinationWrapper(
     route: String,
     currentRoute: String,
     debugOverlayEnabled: Boolean,
+    debugLoggingEnabled: Boolean = false,
     lockedRoutes: androidx.compose.runtime.MutableState<Set<String>>,
     onSystemBack: (() -> Unit)? = null,
     content: @Composable () -> Unit
@@ -738,11 +800,11 @@ private fun DestinationWrapper(
             onSystemBack()
         }
     }
-    val useDebug = debugOverlayEnabled && (BuildConfig.DEBUG || BuildConfig.DEBUG_TOOLS_ENABLED)
+    val useDebug = debugOverlayEnabled && debugLoggingEnabled
     val modifier = if (useDebug) {
         Modifier
-            .debugTapLog(route, isInteractive)  // Log with interactive state
-            .navInteractionGate(isInteractive)   // Then gate
+            .debugTapLog(route, isInteractive, enabled = debugLoggingEnabled)  // Log with interactive state
+            .navInteractionGate(isInteractive, debugLoggingEnabled = debugLoggingEnabled)   // Then gate
     } else {
         Modifier.navInteractionGate(isInteractive)
     }
@@ -756,9 +818,10 @@ private fun DestinationWrapper(
 private fun DebugNavOverlay(
     modifier: Modifier,
     currentRoute: String,
-    lastNavEventMs: Long
+    lastNavEventMs: Long,
+    enabled: Boolean
 ) {
-    if (!BuildConfig.DEBUG && !BuildConfig.DEBUG_TOOLS_ENABLED) {
+    if (!enabled) {
         return
     }
 

@@ -91,6 +91,20 @@ ensure_python() {
 
 ensure_python
 
+compute_sha256() {
+  local file="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "${file}" | awk '{print $1}'
+    return
+  fi
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "${file}" | awk '{print $1}'
+    return
+  fi
+  echo "No sha256 tool found. Install sha256sum or shasum."
+  exit 1
+}
+
 require_signing_props() {
   local props_file="${repo_root}/local.properties"
   local store_file=""
@@ -316,7 +330,7 @@ fi
 
 apk_name="CalendarDND-${version}-manual.apk"
 
-./gradlew assembleDebug test lint assembleManualRelease -PdebugToolsEnabled=false
+./gradlew assembleDebug test lint assembleManualRelease
 
 apk_path="$(ls "${repo_root}"/app/build/outputs/apk/manual/release/app-manual-release*.apk 2>/dev/null | head -n 1 || true)"
 
@@ -328,6 +342,7 @@ fi
 final_apk_path="${generated_dir}/${apk_name}"
 cp "${apk_path}" "${final_apk_path}"
 apk_path="${final_apk_path}"
+current_sha="$(compute_sha256 "${apk_path}")"
 
 mapfile -t release_files < <(ls "${repo_root}/release-notes/"*.md 2>/dev/null | grep -E '/[0-9]+\.[0-9]+(\.[0-9]+)?\.md$' | sort -V -r)
 if [[ ${#release_files[@]} -eq 0 ]]; then
@@ -342,7 +357,15 @@ for file in "${release_files[@]}"; do
   file_apk_name="CalendarDND-${file_version}-manual.apk"
   file_apk_url="https://github.com/${owner_repo}/releases/download/v${file_version}/${file_apk_name}"
   file_version_code="$(semver_to_code "${file_version}")"
-  release_entries+=("$(jq -n --arg versionName "${file_version}" --arg apkUrl "${file_apk_url}" --arg releaseNotes "${file_notes}" --argjson versionCode "${file_version_code}" '{versionName: $versionName, versionCode: $versionCode, apkUrl: $apkUrl, releaseNotes: $releaseNotes}')")
+  sha_value=""
+  if [[ "${file_version}" == "${version}" ]]; then
+    sha_value="${current_sha}"
+  fi
+  if [[ -n "${sha_value}" ]]; then
+    release_entries+=("$(jq -n --arg versionName "${file_version}" --arg apkUrl "${file_apk_url}" --arg releaseNotes "${file_notes}" --argjson versionCode "${file_version_code}" --arg sha256 "${sha_value}" '{versionName: $versionName, versionCode: $versionCode, apkUrl: $apkUrl, releaseNotes: $releaseNotes, sha256: $sha256}')")
+  else
+    release_entries+=("$(jq -n --arg versionName "${file_version}" --arg apkUrl "${file_apk_url}" --arg releaseNotes "${file_notes}" --argjson versionCode "${file_version_code}" '{versionName: $versionName, versionCode: $versionCode, apkUrl: $apkUrl, releaseNotes: $releaseNotes}')")
+  fi
 done
 
 printf '%s\n' "${release_entries[@]}" | jq -s '{releases: .}' > "${update_json}"

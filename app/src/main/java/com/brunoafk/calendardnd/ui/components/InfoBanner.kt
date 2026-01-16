@@ -165,7 +165,7 @@ fun InfoBanner(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ),
-            shape = MaterialTheme.shapes.large,
+            shape = MaterialTheme.shapes.small,
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Row(

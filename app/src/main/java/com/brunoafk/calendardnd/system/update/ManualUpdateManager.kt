@@ -1,6 +1,9 @@
 package com.brunoafk.calendardnd.system.update
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import kotlinx.coroutines.Dispatchers
@@ -10,14 +13,21 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 
 object ManualUpdateManager {
+
+    private const val TAG = "ManualUpdateManager"
+    private const val DEFAULT_RELEASE_NOTES_URL =
+        "https://github.com/BrunoAFK/CalendarDND/releases/latest/download/update.json"
+    private val allowedUpdateHosts = setOf("github.com", "githubusercontent.com")
 
     data class ReleaseInfo(
         val versionName: String,
         val versionCode: Int?,
         val apkUrl: String,
-        val releaseNotes: String?
+        val releaseNotes: String?,
+        val sha256: String?
     )
 
     data class UpdateMetadata(
@@ -55,6 +65,10 @@ object ManualUpdateManager {
         if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
             return UpdateCheckResult(null, null)
         }
+        if (!ensureSignaturePinned(context)) {
+            Log.w(TAG, "Signature pin mismatch; skipping update checks.")
+            return UpdateCheckResult(null, null)
+        }
 
         val metadata = fetchUpdateMetadata() ?: return UpdateCheckResult(null, null)
         val latest = metadata.releases.firstOrNull() ?: return UpdateCheckResult(null, null)
@@ -89,10 +103,24 @@ object ManualUpdateManager {
             .split(",")
             .map { it.trim() }
             .filter { it.isNotEmpty() }
+            .filter { isAllowedUpdateUrl(it) }
         if (urls.isEmpty()) {
             return null
         }
         return fetchUpdateMetadata(urls)
+    }
+
+    suspend fun fetchReleaseNotesMetadata(
+        urls: List<String> = listOf(DEFAULT_RELEASE_NOTES_URL)
+    ): UpdateMetadata? {
+        val filtered = urls
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .filter { isAllowedUpdateUrl(it) }
+        if (filtered.isEmpty()) {
+            return null
+        }
+        return fetchUpdateMetadata(filtered)
     }
 
     private suspend fun fetchUpdateMetadata(urls: List<String>): UpdateMetadata? {
@@ -150,18 +178,20 @@ object ManualUpdateManager {
     private fun parseRelease(obj: JSONObject): ReleaseInfo? {
         val versionName = obj.optString("versionName").trim()
         val apkUrl = obj.optString("apkUrl").trim()
-        if (versionName.isEmpty() || apkUrl.isEmpty()) {
+        if (versionName.isEmpty() || apkUrl.isEmpty() || !isAllowedUpdateUrl(apkUrl)) {
             return null
         }
 
         val versionCode = if (obj.has("versionCode")) obj.optInt("versionCode") else null
         val releaseNotes = obj.optString("releaseNotes").trim().ifEmpty { null }
+        val sha256 = obj.optString("sha256").trim().ifEmpty { null }
 
         return ReleaseInfo(
             versionName = versionName,
             versionCode = versionCode,
             apkUrl = apkUrl,
-            releaseNotes = releaseNotes
+            releaseNotes = releaseNotes,
+            sha256 = sha256
         )
     }
 
@@ -209,11 +239,172 @@ object ManualUpdateManager {
         return UpdateEvaluation(isNewer = isNewer, updateType = updateType)
     }
 
+    fun isReleaseOlderThanCurrent(currentVersionName: String, release: ReleaseInfo): Boolean {
+        val currentVersion = parseSemver(currentVersionName) ?: return false
+        val releaseVersion = parseSemver(release.versionName) ?: return false
+        return compareSemver(releaseVersion, currentVersion) < 0
+    }
+
+    suspend fun downloadAndVerifyApk(
+        context: android.content.Context,
+        info: ReleaseInfo
+    ): java.io.File? {
+        val expectedHash = info.sha256?.lowercase()?.trim().orEmpty()
+        if (expectedHash.isBlank()) {
+            return null
+        }
+        if (!isAllowedUpdateUrl(info.apkUrl)) {
+            return null
+        }
+
+        return withContext(Dispatchers.IO) {
+            val url = URL(info.apkUrl)
+            val connection = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 10000
+                readTimeout = 20000
+                requestMethod = "GET"
+            }
+
+            val updatesDir = java.io.File(context.cacheDir, "updates").apply { mkdirs() }
+            val outFile = java.io.File(updatesDir, "CalendarDND-${info.versionName}.apk")
+            val digest = java.security.MessageDigest.getInstance("SHA-256")
+
+            try {
+                if (connection.responseCode !in 200..299) {
+                    return@withContext null
+                }
+                connection.inputStream.use { input ->
+                    outFile.outputStream().use { output ->
+                        val buffer = ByteArray(8 * 1024)
+                        var read = input.read(buffer)
+                        while (read > 0) {
+                            digest.update(buffer, 0, read)
+                            output.write(buffer, 0, read)
+                            read = input.read(buffer)
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+                outFile.delete()
+                return@withContext null
+            } finally {
+                connection.disconnect()
+            }
+
+            val actualHash = digest.digest().joinToString("") { "%02x".format(it) }
+            if (actualHash != expectedHash) {
+                outFile.delete()
+                return@withContext null
+            }
+
+            if (!verifyApkSignature(context, outFile)) {
+                outFile.delete()
+                return@withContext null
+            }
+
+            outFile
+        }
+    }
+
+    fun createInstallIntent(
+        context: android.content.Context,
+        apkFile: java.io.File
+    ): android.content.Intent {
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            apkFile
+        )
+        return android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.android.package-archive")
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+    }
+
     private fun compareSemver(left: Semver, right: Semver): Int {
         return when {
             left.major != right.major -> left.major - right.major
             left.minor != right.minor -> left.minor - right.minor
             else -> left.patch - right.patch
         }
+    }
+
+    private fun isAllowedUpdateUrl(raw: String): Boolean {
+        val url = runCatching { URL(raw) }.getOrNull() ?: return false
+        if (url.protocol.lowercase() != "https") {
+            return false
+        }
+        val host = url.host.lowercase()
+        return allowedUpdateHosts.any { host == it || host.endsWith(".$it") }
+    }
+
+    private fun verifyApkSignature(context: Context, apkFile: java.io.File): Boolean {
+        val packageManager = context.packageManager
+        val installedDigests = getSigningCertDigestsForPackage(packageManager, context.packageName)
+        if (installedDigests.isEmpty()) {
+            return false
+        }
+
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageManager.GET_SIGNING_CERTIFICATES
+        } else {
+            PackageManager.GET_SIGNATURES
+        }
+        val archiveInfo = packageManager.getPackageArchiveInfo(apkFile.absolutePath, flags) ?: return false
+        if (archiveInfo.packageName != context.packageName) {
+            return false
+        }
+        archiveInfo.applicationInfo?.sourceDir = apkFile.absolutePath
+        archiveInfo.applicationInfo?.publicSourceDir = apkFile.absolutePath
+
+        val apkDigests = getSigningCertDigests(archiveInfo)
+        return apkDigests.isNotEmpty() && apkDigests == installedDigests
+    }
+
+    private fun getSigningCertDigestsForPackage(
+        packageManager: PackageManager,
+        packageName: String
+    ): Set<String> {
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageManager.GET_SIGNING_CERTIFICATES
+        } else {
+            PackageManager.GET_SIGNATURES
+        }
+        val info = packageManager.getPackageInfo(packageName, flags)
+        return getSigningCertDigests(info)
+    }
+
+    private fun getSigningCertDigests(info: android.content.pm.PackageInfo): Set<String> {
+        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            info.signingInfo?.apkContentsSigners?.toList()
+        } else {
+            info.signatures?.toList()
+        }
+        return signatures
+            ?.map { sha256(it.toByteArray()) }
+            ?.toSet()
+            ?: emptySet()
+    }
+
+    private fun sha256(bytes: ByteArray): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    suspend fun ensureSignaturePinned(context: Context): Boolean {
+        val packageManager = context.packageManager
+        val digests = getSigningCertDigestsForPackage(packageManager, context.packageName)
+        if (digests.isEmpty()) {
+            return false
+        }
+        val fingerprint = digests.sorted().joinToString(",")
+        val settingsStore = SettingsStore(context)
+        val stored = settingsStore.getSigningCertFingerprint()
+        if (stored.isNullOrBlank()) {
+            settingsStore.setSigningCertFingerprint(fingerprint)
+            return true
+        }
+        return stored == fingerprint
     }
 }

@@ -44,6 +44,11 @@ class DebugLogStore(private val context: Context) {
     }
 
     suspend fun appendLog(level: DebugLogLevel, message: String) {
+        val settingsStore = SettingsStore(context)
+        val debugEnabled = settingsStore.debugToolsUnlocked.first()
+        if (!debugEnabled) {
+            return
+        }
         dataStore.edit { prefs ->
             val existing = prefs[LOG_ENTRIES] ?: ""
             val entries = if (existing.isEmpty()) {

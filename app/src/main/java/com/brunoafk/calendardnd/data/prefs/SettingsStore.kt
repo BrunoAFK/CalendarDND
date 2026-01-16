@@ -44,6 +44,7 @@ class SettingsStore(private val context: Context) {
         private val REFRESH_BANNER_DISMISSED = booleanPreferencesKey("refresh_banner_dismissed")
         private val LOG_LEVEL_FILTER = stringPreferencesKey("log_level_filter")
         private val DEBUG_LOG_INCLUDE_DETAILS = booleanPreferencesKey("debug_log_include_details")
+        private val SIGNING_CERT_FINGERPRINT = stringPreferencesKey("signing_cert_fingerprint")
     }
 
     data class SettingsSnapshot(
@@ -165,6 +166,16 @@ class SettingsStore(private val context: Context) {
             dndStartOffsetMinutes = prefs[DND_START_OFFSET_MINUTES] ?: 0,
             preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false
         )
+    }
+
+    suspend fun getSigningCertFingerprint(): String? {
+        return dataStore.data.first()[SIGNING_CERT_FINGERPRINT]
+    }
+
+    suspend fun setSigningCertFingerprint(value: String) {
+        dataStore.edit { prefs ->
+            prefs[SIGNING_CERT_FINGERPRINT] = value
+        }
     }
 
     suspend fun setAutomationEnabled(enabled: Boolean) {

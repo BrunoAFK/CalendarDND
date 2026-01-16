@@ -1,17 +1,17 @@
 package com.brunoafk.calendardnd.ui.components
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun ManualUpdatePrompt(
@@ -19,6 +19,7 @@ fun ManualUpdatePrompt(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val info = prompt.info
     val title = stringResource(R.string.update_dialog_title)
     val message = stringResource(R.string.update_dialog_body, info.versionName)
@@ -37,8 +38,40 @@ fun ManualUpdatePrompt(
         confirmButton = {
             TextButton(
                 onClick = {
-                    openUpdateUrl(context, info.apkUrl)
-                    onDismiss()
+                    scope.launch {
+                        val apkFile = if (info.sha256.isNullOrBlank()) {
+                            Toast.makeText(
+                                context,
+                                R.string.update_download_missing_hash,
+                                Toast.LENGTH_LONG
+                            ).show()
+                            null
+                        } else {
+                            ManualUpdateManager.downloadAndVerifyApk(context, info)
+                        }
+                        if (apkFile == null) {
+                            if (!info.sha256.isNullOrBlank()) {
+                                Toast.makeText(
+                                    context,
+                                    R.string.update_download_failed,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            return@launch
+                        }
+                        try {
+                            context.startActivity(
+                                ManualUpdateManager.createInstallIntent(context, apkFile)
+                            )
+                        } catch (_: ActivityNotFoundException) {
+                            Toast.makeText(
+                                context,
+                                R.string.update_open_failed,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        onDismiss()
+                    }
                 }
             ) {
                 Text(stringResource(R.string.update_action_download))
@@ -50,16 +83,4 @@ fun ManualUpdatePrompt(
             }
         }
     )
-}
-
-private fun openUpdateUrl(context: android.content.Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-    val chooser = Intent.createChooser(intent, context.getString(R.string.update_action_download))
-    try {
-        context.startActivity(chooser)
-    } catch (_: ActivityNotFoundException) {
-        Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
-    }
 }

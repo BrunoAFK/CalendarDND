@@ -470,4 +470,10 @@
     <string name="update_banner_title">Update available</string>
     <string name="update_open_failed">No app found to open the download link.</string>
     <string name="update_screen_up_to_date">You are on the latest version.</string>
+
+    <string name="update_history_empty">No earlier releases found.</string>
+    <string name="update_history_title">Version history</string>
+
+    <string name="update_download_failed">Failed to download or verify the update.</string>
+    <string name="update_download_missing_hash">Update verification is unavailable for this release.</string>
 </resources>

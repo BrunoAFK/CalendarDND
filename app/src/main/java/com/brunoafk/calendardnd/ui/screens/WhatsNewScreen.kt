@@ -12,11 +12,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
+import com.brunoafk.calendardnd.BuildConfig
+import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
@@ -24,11 +31,21 @@ import com.brunoafk.calendardnd.ui.components.SettingsSection
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsNewScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToUpdates: () -> Unit
 ) {
     val context = LocalContext.current
     val latestReleaseUrl = stringResource(R.string.github_latest_release_url)
-    val releasesUrl = stringResource(R.string.github_releases_url)
+    var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
+
+    LaunchedEffect(Unit) {
+        metadata = ManualUpdateManager.fetchReleaseNotesMetadata()
+    }
+
+    val releases = metadata?.releases.orEmpty()
+    val latestRelease = releases.firstOrNull()
+    val currentRelease = releases.firstOrNull { it.versionName == BuildConfig.VERSION_NAME }
+    val highlightsText = currentRelease?.releaseNotes
 
     fun openUrl(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
@@ -64,7 +81,9 @@ fun WhatsNewScreen(
             item {
                 SettingsSection(title = stringResource(R.string.whats_new_latest_title)) {
                     Text(
-                        text = stringResource(R.string.whats_new_latest_body),
+                        text = latestRelease?.let {
+                            context.getString(R.string.update_dialog_body, it.versionName)
+                        } ?: stringResource(R.string.whats_new_latest_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp)
@@ -79,7 +98,7 @@ fun WhatsNewScreen(
             item {
                 SettingsSection(title = stringResource(R.string.whats_new_features_title)) {
                     Text(
-                        text = stringResource(R.string.whats_new_features_body),
+                        text = highlightsText ?: stringResource(R.string.whats_new_features_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp)
@@ -91,7 +110,7 @@ fun WhatsNewScreen(
                     SettingsNavigationRow(
                         title = stringResource(R.string.whats_new_history_action),
                         subtitle = stringResource(R.string.whats_new_history_subtitle),
-                        onClick = { openUrl(releasesUrl) }
+                        onClick = onNavigateToUpdates
                     )
                 }
             }

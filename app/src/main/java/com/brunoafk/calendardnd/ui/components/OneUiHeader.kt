@@ -14,16 +14,21 @@ import androidx.compose.ui.unit.dp
 fun OneUiHeader(
     title: String,
     modifier: Modifier = Modifier,
-    showTopSpacer: Boolean = true
+    showTopSpacer: Boolean = true,
+    compact: Boolean = false
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         if (showTopSpacer) {
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(if (compact) 24.dp else 56.dp))
         }
         Text(
             text = title,
-            style = MaterialTheme.typography.displaySmall
+            style = if (compact) {
+                MaterialTheme.typography.titleLarge
+            } else {
+                MaterialTheme.typography.displaySmall
+            }
         )
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(if (compact) 12.dp else 28.dp))
     }
 }

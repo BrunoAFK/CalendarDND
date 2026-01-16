@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -41,6 +40,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.delay
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import androidx.lifecycle.Lifecycle
@@ -50,7 +50,6 @@ import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.AppConfig
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.dnd.DndController
 import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.system.alarms.EngineRunner
@@ -78,7 +77,8 @@ fun SettingsScreen(
     onNavigateToUpdates: () -> Unit,
     onNavigateToDndMode: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    highlightAutomation: Boolean
+    highlightAutomation: Boolean,
+    showUpdatesMenu: Boolean
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -145,7 +145,7 @@ fun SettingsScreen(
         AnalyticsTracker.logScreenView(context, "settings")
     }
 
-    val showDebugTools = debugToolsUnlocked && BuildConfig.DEBUG_TOOLS_ENABLED
+    val showDebugTools = debugToolsUnlocked
     var permissionErrorDismissed by remember { mutableStateOf(false) }
     val highlightAlpha = remember { Animatable(0f) }
     var highlightPlayed by rememberSaveable { mutableStateOf(false) }
@@ -235,7 +235,7 @@ fun SettingsScreen(
                                 MaterialTheme.colorScheme.primary.copy(
                                     alpha = 0.14f * highlightAlpha.value
                                 ),
-                                RoundedCornerShape(12.dp)
+                                MaterialTheme.shapes.small
                             ),
                         title = stringResource(com.brunoafk.calendardnd.R.string.automation),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.automation_description),
@@ -531,7 +531,7 @@ fun SettingsScreen(
 
             item {
                 SettingsSection(title = stringResource(com.brunoafk.calendardnd.R.string.help_title)) {
-                    if (BuildConfig.MANUAL_UPDATE_ENABLED) {
+                    if (BuildConfig.MANUAL_UPDATE_ENABLED && showUpdatesMenu) {
                         SettingsNavigationRow(
                             title = stringResource(com.brunoafk.calendardnd.R.string.update_menu_title),
                             subtitle = stringResource(com.brunoafk.calendardnd.R.string.update_menu_subtitle),

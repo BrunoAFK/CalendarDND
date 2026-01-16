@@ -2,12 +2,15 @@ package com.brunoafk.calendardnd.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlin.math.ln
 
 private val LightColors = lightColorScheme()
@@ -41,6 +44,17 @@ private val DarkColors = darkColorScheme(
     inversePrimary = Color(0xFF0061A4)
 )
 
+// Previous corner sizes (for rollback/reference):
+// - 8.dp: SettingsSection.kt
+// - 12.dp: SettingsScreen.kt (highlight background)
+// - 24.dp: StatusBanner.kt
+// - shapes.medium/large: WarningBanner.kt, InfoBanner.kt, DndModeBanner.kt
+private val AppShapes = Shapes(
+    small = RoundedCornerShape(8.dp),
+    medium = RoundedCornerShape(8.dp),
+    large = RoundedCornerShape(8.dp)
+)
+
 @Composable
 fun surfaceColorAtElevation(elevation: Dp): Color {
     return if (isSystemInDarkTheme()) {
@@ -67,6 +81,7 @@ fun CalendarDndTheme(content: @Composable () -> Unit) {
 
     MaterialTheme(
         colorScheme = colors,
+        shapes = AppShapes,
         content = content
     )
 }

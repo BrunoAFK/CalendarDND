@@ -34,7 +34,7 @@ fun WarningBanner(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.tertiaryContainer,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.small
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

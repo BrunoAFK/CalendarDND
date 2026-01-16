@@ -281,7 +281,7 @@ if [[ ! -s "${notes_file}" ]]; then
   exit 1
 fi
 
-assert_clean_worktree "release-notes/${version}.md"
+assert_clean_worktree "release-notes/(new|${version})\\.md"
 
 update_gradle_versions "${version}"
 require_signing_props
@@ -347,11 +347,16 @@ done
 
 printf '%s\n' "${release_entries[@]}" | jq -s '{releases: .}' > "${update_json}"
 
-git add "app/build.gradle.kts" "${notes_file}"
+git add -A
 if git diff --cached --quiet; then
   echo "No changes to commit for version bump or release notes."
 else
-  git commit -m "Release ${version}"
+  commit_message=""
+  read -r -p "Commit message [Release ${version}]: " commit_message
+  if [[ -z "${commit_message}" ]]; then
+    commit_message="Release ${version}"
+  fi
+  git commit -m "${commit_message}"
 fi
 git tag -a "${tag}" -m "Release ${version}"
 git push origin HEAD

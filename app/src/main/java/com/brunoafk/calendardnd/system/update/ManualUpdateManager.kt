@@ -382,7 +382,6 @@ object ManualUpdateManager {
             "${context.packageName}.fileprovider",
             apkFile
         )
-        logUpdate(context, DebugLogLevel.INFO, "Launching installer for ${apkFile.name}")
         return android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -476,7 +475,7 @@ object ManualUpdateManager {
         return stored == fingerprint
     }
 
-    private fun logUpdate(
+    private suspend fun logUpdate(
         context: Context?,
         level: DebugLogLevel,
         message: String

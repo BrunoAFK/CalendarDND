@@ -1,0 +1,36 @@
+package com.brunoafk.calendardnd.domain.engine
+
+import com.brunoafk.calendardnd.domain.model.DndMode
+import com.brunoafk.calendardnd.domain.model.Trigger
+
+/**
+ * Input to the automation engine
+ */
+data class EngineInput(
+    val trigger: Trigger,
+    val now: Long,
+
+    // Settings
+    val automationEnabled: Boolean,
+    val selectedCalendarIds: Set<String>,
+    val busyOnly: Boolean,
+    val ignoreAllDay: Boolean,
+    val minEventMinutes: Int,
+    val dndMode: DndMode,
+    val dndStartOffsetMinutes: Int,
+    val preDndNotificationEnabled: Boolean,
+
+    // Runtime state
+    val dndSetByApp: Boolean,
+    val activeWindowEndMs: Long,
+    val userSuppressedUntilMs: Long,
+    val manualDndUntilMs: Long,
+    val lastKnownDndFilter: Int,
+
+    // System state
+    val hasCalendarPermission: Boolean,
+    val hasPolicyAccess: Boolean,
+    val hasExactAlarms: Boolean,
+    val systemDndIsOn: Boolean,
+    val currentSystemFilter: Int
+)

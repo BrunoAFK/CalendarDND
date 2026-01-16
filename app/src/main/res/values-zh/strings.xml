@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">日历免打扰</string>
+    <string name="tile_label">日历免打扰</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">需要设置</string>
+    <string name="onboarding_description">Calendar DND 需要以下权限：</string>
+    <string name="onboarding_description_short">需要以下权限：</string>
+    <string name="calendar_permission_title">日历访问</string>
+    <string name="calendar_permission_description">用于识别会议和忙碌时间。</string>
+    <string name="calendar_permission_description_short">读取日历以检测会议</string>
+    <string name="dnd_permission_title">免打扰访问</string>
+    <string name="dnd_permission_description">用于在会议开始时开启免打扰。</string>
+    <string name="dnd_permission_description_short">会议期间控制免打扰</string>
+    <string name="notification_permission_title">通知</string>
+    <string name="notification_permission_description">在免打扰开启前提醒。</string>
+    <string name="notification_permission_description_short">免打扰前提示</string>
+    <string name="exact_alarm_title">精确闹钟（推荐）</string>
+    <string name="exact_alarm_description">即使系统延迟也能保持准确时间。</string>
+    <string name="exact_alarm_description_short">保持时间准确</string>
+    <string name="battery_title">电池优化（推荐）</string>
+    <string name="battery_description">提高严格电池限制下的可靠性。</string>
+    <string name="battery_description_short">减少电池限制</string>
+    <string name="permission_required_label">必需</string>
+    <string name="why_we_need_this">为何需要</string>
+    <string name="calendar_permission_rationale">只读取标题与时间，不会修改事件。</string>
+    <string name="dnd_permission_rationale">没有该权限只能提醒，无法自动切换免打扰。</string>
+    <string name="notification_permission_rationale">免打扰仍会生效，但不会提示。</string>
+    <string name="exact_alarm_rationale">没有该权限时开始与结束可能延迟几分钟。</string>
+    <string name="battery_rationale">没有该权限时闹钟可能延迟或错过。</string>
+    <string name="permissions_helper_text">继续前请授予日历 + 免打扰。</string>
+    <string name="open_app_settings">打开应用设置</string>
+    <string name="ok">确定</string>
+
+    <!-- Status Screen -->
+    <string name="automation">自动免打扰</string>
+    <string name="automation_description">根据日历自动开启/关闭免打扰</string>
+    <string name="active">已启用</string>
+    <string name="inactive">未启用</string>
+    <string name="setup_required">⚠️ 需要设置 - 权限缺失</string>
+    <string name="complete_setup">完成设置</string>
+    <string name="current_meeting">当前会议</string>
+    <string name="next_meeting">下一个会议</string>
+    <string name="none">无</string>
+    <string name="none_scheduled">无安排</string>
+    <string name="dnd_status">免打扰状态</string>
+    <string name="system_dnd">系统免打扰：</string>
+    <string name="app_controls_dnd">应用控制免打扰：</string>
+    <string name="run_engine_now">立即检查免打扰</string>
+    <string name="manual_check_subtitle">在设置中手动检查免打扰</string>
+    <string name="check_dnd_complete">免打扰检查完成</string>
+
+    <!-- Settings -->
+    <string name="settings">设置</string>
+    <string name="selected_calendars">已选日历</string>
+    <string name="all_calendars">所有日历</string>
+    <string name="calendars_selected">已选择 %d 个日历</string>
+    <string name="event_filters">事件过滤</string>
+    <string name="busy_only_title">仅忙碌事件</string>
+    <string name="busy_only_description">忽略空闲/暂定事件</string>
+    <string name="ignore_allday_title">忽略全天事件</string>
+    <string name="ignore_allday_description">全天事件不触发免打扰</string>
+    <string name="min_duration_title">最短事件时长</string>
+    <string name="min_duration_description">忽略过短会议</string>
+    <string name="min_duration_value">%d 分钟</string>
+    <string name="dnd_mode">免打扰模式</string>
+    <string name="dnd_mode_summary">选择优先模式或完全静音</string>
+    <string name="dnd_mode_description">控制会议期间的免打扰行为</string>
+    <string name="dnd_mode_screen_subtitle">选择会议期间免打扰的严格程度。</string>
+    <string name="privacy_title">隐私</string>
+    <string name="permissions_title">权限</string>
+    <string name="permissions_subtitle">在此管理系统权限</string>
+    <string name="settings_general">通用</string>
+    <string name="settings_privacy">隐私与权限</string>
+    <string name="settings_help">帮助</string>
+    <string name="open_settings">打开设置</string>
+    <string name="notifications_title">通知</string>
+
+    <!-- Status banner -->
+    <string name="status_setup_required">需要设置</string>
+    <string name="status_missing_permissions">需要 %1$d 项权限</string>
+    <string name="status_complete_setup_hint">请在下方完成设置</string>
+    <string name="status_missing_permissions_summary">完成设置以启用自动免打扰。</string>
+    <string name="status_automation_paused">自动静音已暂停</string>
+    <string name="status_automation_paused_summary">自动化已关闭，免打扰不会自动变化。</string>
+    <string name="status_dnd_active">免打扰已开启</string>
+    <string name="status_dnd_active_summary">免打扰已开启，将在 %1$s 后结束。</string>
+    <string name="status_automation_ready">自动静音就绪</string>
+    <string name="status_automation_ready_summary">免打扰将以 %1$s 模式自动开启。</string>
+    <string name="status_automation_hint">免打扰将自动开启</string>
+    <string name="status_dnd_mode_format">免打扰模式：%1$s</string>
+    <string name="status_in_meeting">正在：%1$s</string>
+    <string name="status_dnd_ends_in">%1$s 后结束</string>
+    <string name="status_next_meeting_in">下次会议在 %1$s 后</string>
+
+    <string name="dnd_mode_banner_title">免打扰模式</string>
+    <string name="dnd_mode_banner_message">免打扰将以 %1$s 模式自动开启。点击更改。</string>
+
+    <string name="refresh_banner_title">刷新状态</string>
+    <string name="refresh_banner_message">下拉刷新。你也可以在设置中进行手动检查。</string>
+
+    <!-- DND modes -->
+    <string name="priority_mode_title">仅优先级</string>
+    <string name="priority_mode_description">允许优先通知</string>
+    <string name="priority_mode_details">允许星标联系人和优先通知。</string>
+    <string name="total_silence_title">完全静音</string>
+    <string name="total_silence_description">阻止所有声音（含闹钟）</string>
+    <string name="total_silence_details">阻止所有声音（含闹钟）。</string>
+
+    <!-- DND Priority settings -->
+    <string name="dnd_priority_summary_title">优先中断</string>
+    <string name="dnd_priority_description">选择"仅优先级"模式下仍可打扰你的联系人和应用。</string>
+    <string name="dnd_priority_summary_format">允许：%1$s</string>
+    <string name="dnd_priority_summary_none">允许：无</string>
+    <string name="dnd_priority_summary_fallback">允许：在系统设置中配置</string>
+    <string name="dnd_priority_manage_button">管理优先例外</string>
+    <string name="dnd_priority_category_calls_with">来电 (%1$s)</string>
+    <string name="dnd_priority_category_messages_with">短信 (%1$s)</string>
+    <string name="dnd_priority_category_reminders">提醒</string>
+    <string name="dnd_priority_category_events">活动</string>
+    <string name="dnd_priority_category_alarms">闹钟</string>
+    <string name="dnd_priority_category_repeat_callers">重复来电</string>
+    <string name="dnd_priority_senders_anyone">任何人</string>
+    <string name="dnd_priority_senders_contacts">联系人</string>
+    <string name="dnd_priority_senders_starred">星标联系人</string>
+
+    <!-- DND Total Silence -->
+    <string name="dnd_total_silence_warning_title">完全静音警告</string>
+    <string name="dnd_total_silence_warning_body">完全静音会阻止所有声音，包括闹钟。</string>
+    <string name="dnd_total_silence_description">在系统设置中控制免打扰行为。</string>
+    <string name="dnd_mode_manage_hint">使用系统免打扰设置来选择谁可以打扰你。</string>
+    <string name="dnd_total_silence_manage_button">打开免打扰设置</string>
+    <string name="dnd_total_silence_confirm_title">启用完全静音？</string>
+    <string name="dnd_total_silence_confirm_body">这将阻止所有声音，包括闹钟，直到会议结束。</string>
+    <string name="dnd_total_silence_confirm_button">启用完全静音</string>
+    <string name="dnd_total_silence_cancel_button">取消</string>
+
+    <!-- DND Timing -->
+    <string name="dnd_timing_title">免打扰时间</string>
+    <string name="dnd_timing_start_title">开始免打扰</string>
+    <string name="dnd_timing_before_label">之前</string>
+    <string name="dnd_timing_after_label">之后</string>
+    <string name="dnd_timing_on_time">会议开始时立即启动</string>
+    <string name="dnd_timing_before_meeting">会议开始前 %1$d 分钟启动</string>
+    <string name="dnd_timing_after_meeting">会议开始后 %1$d 分钟启动</string>
+    <string name="dnd_timing_value_zero">0 分钟</string>
+    <string name="dnd_timing_value_before">提前 %1$d 分钟</string>
+    <string name="dnd_timing_value_after">延后 %1$d 分钟</string>
+    <string name="dnd_timing_help_on_time">免打扰将在会议开始时立即启动。</string>
+    <string name="dnd_timing_help_before">免打扰将在会议开始前 %1$d 分钟启动。</string>
+    <string name="dnd_timing_help_after">免打扰将在会议开始后 %1$d 分钟启动。</string>
+
+    <!-- About / What's new -->
+    <string name="about_title">关于应用程序</string>
+    <string name="about_intro">Calendar DND 会在会议时保持安静，并显示下一次安排。</string>
+    <string name="about_application_section_title">应用</string>
+    <string name="about_author_label">作者</string>
+    <string name="about_author_section_title">作者</string>
+    <string name="about_author_value">Bruno Pavelja</string>
+    <string name="about_github_label">GitHub</string>
+    <string name="about_report_title">报告问题</string>
+    <string name="about_report_body">若出现问题，请在 GitHub 提交 issue，并说明设备型号、Android 版本和复现步骤。</string>
+    <string name="about_version_title">版本</string>
+    <string name="about_version_subtitle">在 GitHub 上查看发布版本</string>
+    <string name="about_whats_new_title">最新变化</string>
+    <string name="about_whats_new_action">查看最新变化</string>
+    <string name="about_whats_new_subtitle">最新改动与发布说明</string>
+    <string name="about_features_title">功能</string>
+    <string name="about_features_debug_title">调试工具</string>
+    <string name="about_features_debug_subtitle">启用高级调试功能以进行故障排查</string>
+    <string name="whats_new_title">最新变化</string>
+    <string name="whats_new_latest_title">最新版本</string>
+    <string name="whats_new_latest_body">打开 GitHub 发布说明查看完整变更。</string>
+    <string name="whats_new_latest_action">查看发布说明</string>
+    <string name="whats_new_latest_subtitle">在浏览器打开 GitHub</string>
+    <string name="whats_new_features_title">亮点</string>
+    <string name="whats_new_features_body">- 新增关于应用与最新变化页面（含发布链接）\n- 更紧凑的免打扰提示与清晰状态\n- 事件卡片全区域点击并支持打开日历\n- 设置与权限页面顶部显示标题\n- 手动检查与自动化提示优化</string>
+    <string name="whats_new_history_title">历史版本</string>
+    <string name="whats_new_history_action">查看所有版本</string>
+    <string name="whats_new_history_subtitle">在 GitHub 浏览旧版本</string>
+
+    <!-- Language -->
+    <string name="language_title">选择语言</string>
+    <string name="language_description">你可以稍后在设置中更改。</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_chinese" translatable="false">中文</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_croatian" translatable="false">Hrvatski</string>
+    <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_korean" translatable="false">한국어</string>
+
+    <!-- Calendar Picker -->
+    <string name="select_calendars">选择日历</string>
+
+    <!-- Calendar Scope -->
+    <string name="calendar_scope_title">监控日历</string>
+    <string name="calendar_scope_description">选择使用所有日历还是特定日历。</string>
+    <string name="calendar_scope_privacy_hint">所有日历数据仅保存在设备本地。</string>
+    <string name="calendar_scope_all_title">所有日历</string>
+    <string name="calendar_scope_all_summary">使用设备上的所有日历。</string>
+    <string name="calendar_scope_specific_title">选择日历</string>
+    <string name="calendar_scope_specific_summary">精确选择要使用的日历。</string>
+
+    <!-- Debug Logs -->
+    <string name="debug_logs">调试日志</string>
+    <string name="debug_logs_show_details">显示详细信息</string>
+    <string name="debug_logs_hide_details">隐藏详细信息</string>
+    <string name="search_logs">搜索日志</string>
+    <string name="close_search">关闭搜索</string>
+    <string name="no_logs_yet">暂无日志</string>
+    <string name="clear_logs">清除日志</string>
+    <string name="copy_logs">复制日志</string>
+    <string name="logs_copied">日志已复制</string>
+    <string name="debug_tools_enabled">调试工具已启用</string>
+
+    <!-- Notifications -->
+    <string name="pre_dnd_notification_title">免打扰即将开启</string>
+    <string name="pre_dnd_notification_body">免打扰即将开启：%1$s</string>
+    <string name="pre_dnd_notification_body_generic">免打扰将在 5 分钟后开启</string>
+    <string name="pre_dnd_notification_action">立即启用</string>
+    <string name="pre_dnd_notification_setting_title">免打扰预提醒</string>
+    <string name="pre_dnd_notification_setting">免打扰开启前 5 分钟提醒</string>
+
+    <!-- Help -->
+    <string name="help_title">帮助</string>
+    <string name="help_about_title">关于应用程序</string>
+    <string name="help_about_subtitle">版本、作者与支持</string>
+    <string name="help_feature_guide_title">功能指南</string>
+    <string name="help_feature_guide_subtitle">了解每个功能的作用</string>
+    <string name="help_show_more">展开</string>
+    <string name="help_show_less">收起</string>
+    <string name="help_search_placeholder">搜索帮助主题</string>
+    <string name="help_search_clear">清除搜索</string>
+    <string name="help_search_no_results">没有找到匹配的帮助主题</string>
+
+    <string name="help_item_automation_title">自动免打扰</string>
+    <string name="help_item_automation_summary">根据日历自动开启和关闭免打扰。</string>
+    <string name="help_item_automation_details">启用后，应用会读取你的日历，检测活动会议，并在这些时间段内应用免打扰。它只会关闭自己之前开启的免打扰。</string>
+
+    <string name="help_item_permissions_title">权限</string>
+    <string name="help_item_permissions_summary">需要日历和免打扰权限才能自动化。</string>
+    <string name="help_item_permissions_details">日历权限允许应用读取事件。免打扰权限允许应用设置免打扰。通知权限启用提醒功能。</string>
+
+    <string name="help_item_language_title">语言</string>
+    <string name="help_item_language_summary">在设置中选择应用语言。</string>
+    <string name="help_item_language_details">你可以在设置中更改语言。它会立即更新应用界面，不会更改设备语言。</string>
+
+    <string name="help_item_privacy_title">隐私</string>
+    <string name="help_item_privacy_summary">控制分析和崩溃报告。</string>
+    <string name="help_item_privacy_details">你可以分别启用或禁用使用分析和崩溃报告。崩溃报告帮助修复错误；分析显示最常用的功能。</string>
+
+    <string name="help_item_exact_alarms_title">精确闹钟</string>
+    <string name="help_item_exact_alarms_summary">提高新版 Android 上的时间可靠性。</string>
+    <string name="help_item_exact_alarms_details">如果允许精确闹钟，应用会安排精确的开始和结束时间。否则，它会退回到守卫和定期检查。</string>
+
+    <string name="help_item_battery_title">电池优化</string>
+    <string name="help_item_battery_summary">禁用它可帮助闹钟和工作准时运行。</string>
+    <string name="help_item_battery_details">某些设备会延迟后台工作。如果你发现免打扰更改延迟，请为 Calendar DND 禁用电池优化。</string>
+
+    <string name="help_item_busy_only_title">仅忙碌事件</string>
+    <string name="help_item_busy_only_summary">忽略标记为空闲或暂定的事件。</string>
+    <string name="help_item_busy_only_details">启用后，只有忙碌事件才能触发免打扰。这可以避免在可选或信息性事件期间静音。</string>
+
+    <string name="help_item_ignore_all_day_title">忽略全天事件</string>
+    <string name="help_item_ignore_all_day_summary">防止全天事件触发免打扰。</string>
+    <string name="help_item_ignore_all_day_details">全天事件通常代表提醒或假期。这可以防止免打扰整天保持开启。</string>
+
+    <string name="help_item_min_duration_title">最短事件时长</string>
+    <string name="help_item_min_duration_summary">过滤短事件。</string>
+    <string name="help_item_min_duration_details">短于此值的事件将被忽略。这减少了快速日历条目引起的不必要切换。</string>
+
+    <string name="help_item_dnd_mode_title">免打扰模式</string>
+    <string name="help_item_dnd_mode_summary">选择仅优先级或完全静音。</string>
+    <string name="help_item_dnd_mode_details">仅优先级允许星标联系人和优先通知。完全静音阻止所有声音，包括闹钟。</string>
+
+    <string name="help_item_dnd_timing_title">免打扰时间</string>
+    <string name="help_item_dnd_timing_summary">在会议开始前或之后启动免打扰。</string>
+    <string name="help_item_dnd_timing_details">使用滑块来调整免打扰的启动时间。负值提前启动，正值延迟启动，0 则在会议时间准时启动。</string>
+
+    <string name="help_item_pre_dnd_notification_title">免打扰预提醒</string>
+    <string name="help_item_pre_dnd_notification_summary">免打扰开启前 5 分钟的可选提醒。</string>
+    <string name="help_item_pre_dnd_notification_details">启用后，应用会在免打扰启动前显示提醒，并允许你立即启用免打扰。</string>
+
+    <string name="help_item_tile_title">快速设置图块</string>
+    <string name="help_item_tile_summary">从通知栏切换自动免打扰。</string>
+    <string name="help_item_tile_details">将图块添加到快速设置以一键启用/禁用。如果缺少设置，图块会打开应用。</string>
+
+    <string name="help_item_debug_logs_title">调试日志</string>
+    <string name="help_item_debug_logs_summary">显示引擎决策和调度。</string>
+    <string name="help_item_debug_logs_details">使用日志确认时间并排查问题。你可以在报告问题时复制日志分享；标题包含关键设置。</string>
+
+    <string name="help_item_pull_refresh_title">下拉刷新</string>
+    <string name="help_item_pull_refresh_summary">在主屏幕下拉刷新状态。</string>
+    <string name="help_item_pull_refresh_details">在主屏幕下拉以手动刷新会议状态并重新检查免打扰状态。如果你的日历最近有变化，想立即查看更新状态时很有用。</string>
+
+    <!-- Common -->
+    <string name="back">返回</string>
+    <string name="continue_button">继续</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="done">完成</string>
+    <string name="dismiss">关闭</string>
+    <string name="fix">修复</string>
+    <string name="fix_now">立即修复</string>
+
+    <!-- Onboarding Flow -->
+    <string name="intro_title">欢迎使用 Calendar DND</string>
+    <string name="intro_body">在会议期间自动静音你的手机。我们将通过几个快速步骤引导你完成设置。</string>
+    <string name="intro_notice">此应用是基于氛围编码的，所以很基础但它能用。:)</string>
+    <string name="get_started">开始使用</string>
+    <string name="step_indicator">第 %1$d 步，共 %2$d 步</string>
+
+    <!-- Privacy Settings -->
+    <string name="privacy_intro">通过共享数据帮助改进应用。你可以稍后更改。</string>
+    <string name="privacy_change_later">你可以稍后更改。</string>
+    <string name="privacy_defaults_hint">默认：分析关闭，崩溃报告开启。</string>
+    <string name="analytics_opt_in_title">使用分析</string>
+    <string name="analytics_opt_in_description">分享匿名使用数据以改进功能</string>
+    <string name="crashlytics_opt_in_title">崩溃报告</string>
+    <string name="crashlytics_opt_in_description">发送崩溃报告以帮助修复错误</string>
+
+    <!-- Version -->
+    <string name="app_version_format">版本 %1$s (%2$d)</string>
+    <string name="app_version_name_only">版本 %1$s</string>
+
+    <!-- GitHub -->
+    <string name="github_repo_title">报告问题</string>
+    <string name="github_repo_subtitle">在 GitHub 提交问题</string>
+    <string name="github_repo_url">https://github.com/BrunoAFK/CalendarDND</string>
+    <string name="github_issues_url">https://github.com/BrunoAFK/CalendarDND/issues</string>
+    <string name="github_releases_url">https://github.com/BrunoAFK/CalendarDND/releases</string>
+    <string name="github_latest_release_url">https://github.com/BrunoAFK/CalendarDND/releases/latest</string>
+    <string name="unable_to_open_link">无法打开链接。</string>
+
+    <!-- Debug Tools -->
+    <string name="debug_tools_title">调试</string>
+    <string name="debug_tools_description">检查自动化决策、预览通知并控制调试工具。</string>
+    <string name="debug_tools_app_info_title">应用信息</string>
+    <string name="debug_tools_open_title">调试工具</string>
+    <string name="debug_tools_open_subtitle">检查本地化字符串和构建信息</string>
+    <string name="debug_tools_languages_title">语言</string>
+    <string name="debug_language_title">字符串：%1$s</string>
+    <string name="debug_tools_preview_title">预览</string>
+    <string name="debug_tools_splash_title">启动画面预览</string>
+    <string name="debug_tools_splash_subtitle">使用当前图标预览启动画面布局</string>
+    <string name="debug_tools_notifications_title">通知</string>
+    <string name="debug_tools_test_notification_title">测试通知</string>
+    <string name="debug_tools_test_notification_subtitle">发送免打扰预提醒通知</string>
+    <string name="debug_tools_logs_section_title">日志</string>
+    <string name="debug_tools_logs_subtitle">查看自动化引擎日志，了解发生了什么</string>
+    <string name="debug_log_settings_title">日志设置</string>
+    <string name="debug_log_settings_subtitle">选择调试条目的详细程度</string>
+    <string name="debug_log_settings_level_label">日志级别</string>
+    <string name="debug_log_settings_include_details_title">包含详细日志</string>
+    <string name="debug_log_settings_include_details_subtitle">为每条日志添加引擎运行详情</string>
+    <string name="debug_tools_maintenance_title">维护</string>
+    <string name="debug_tools_total_silence_dialog_title">完全静音确认</string>
+    <string name="debug_tools_total_silence_dialog_subtitle">启用完全静音前显示确认对话框</string>
+    <string name="debug_tools_app_control_title">应用程序控制</string>
+    <string name="debug_tools_dnd_preview_title">免打扰预览</string>
+    <string name="debug_tools_dnd_preview_priority_title">预览仅优先级</string>
+    <string name="debug_tools_dnd_preview_total_title">预览完全静音</string>
+    <string name="debug_tools_dnd_preview_subtitle">临时应用免打扰 %1$d 秒</string>
+    <string name="debug_tools_nav_title">导航</string>
+    <string name="debug_tools_nav_overlay_title">显示导航调试悬浮窗</string>
+    <string name="debug_tools_nav_overlay_subtitle">显示当前路由和点击日志</string>
+    <string name="debug_tools_restore_dnd_banner_title">恢复免打扰模式横幅</string>
+    <string name="debug_tools_restore_dnd_banner_subtitle">在主屏幕再次显示免打扰模式提示</string>
+    <string name="debug_tools_restore_banners_title">恢复所有横幅</string>
+    <string name="debug_tools_restore_banners_subtitle">在主屏幕再次显示免打扰模式和刷新横幅</string>
+    <string name="debug_tools_reset_total_silence_title">重置完全静音确认</string>
+    <string name="debug_tools_reset_total_silence_subtitle">选择完全静音时再次显示警告对话框</string>
+    <string name="debug_section_title">调试</string>
+    <string name="debug_tools_disabled">调试工具已隐藏</string>
+    <string name="debug_tools_hint">点击 5 次切换调试工具。</string>
+
+    <!-- Tile -->
+    <string name="tile_disabled">已禁用</string>
+    <string name="tile_disabled_desc">Calendar DND 自动化已禁用</string>
+    <string name="tile_enabled">已启用</string>
+    <string name="tile_enabled_desc">Calendar DND 自动化已启用</string>
+    <string name="tile_next_prefix">下一个：%1$s</string>
+    <string name="tile_next_desc">免打扰将在 %1$s 后为 %2$s 开启</string>
+    <string name="tile_dnd_prefix">免打扰：%1$s</string>
+    <string name="tile_dnd_desc">免打扰已为 %1$s 开启</string>
+    <string name="tile_dnd_desc_with_title">免打扰已为 %1$s 的 %2$s 开启</string>
+    <string name="tile_less_than_minute">&lt; 1 分钟</string>
+    <string name="tile_minutes">%1$d 分钟</string>
+    <string name="tile_hours">%1$d 小时</string>
+    <string name="tile_hours_minutes">%1$d 小时 %2$d 分钟</string>
+    <string name="tile_days">%1$d 天</string>
+    <string name="tile_meeting_fallback">会议</string>
+
+    <!-- Manual updates -->
+    <string name="update_dialog_title">有可用更新</string>
+    <string name="update_dialog_body">版本 %1$s 已可用。</string>
+    <string name="update_action_download">下载</string>
+    <string name="update_action_later">稍后</string>
+    <string name="update_notification_title">有可用更新</string>
+    <string name="update_notification_body">版本 %1$s 已准备好下载。</string>
+    <string name="update_menu_title">更新</string>
+    <string name="update_menu_subtitle">发布说明和版本历史</string>
+    <string name="update_screen_title">更新</string>
+    <string name="update_screen_current_version">当前版本：%1$s</string>
+    <string name="update_screen_latest_title">最新版本</string>
+    <string name="update_screen_history_title">版本历史</string>
+    <string name="update_screen_loading">正在加载更新信息...</string>
+    <string name="update_screen_no_data">无可用更新信息。</string>
+    <string name="update_screen_unavailable">此版本不支持更新。</string>
+
+    <!-- Meeting overrun notifications -->
+    <string name="meeting_overrun_title">会议超时了？</string>
+    <string name="meeting_overrun_message">延长免打扰以保持专注</string>
+    <string name="meeting_overrun_extend_format">+%1$d分钟</string>
+    <string name="meeting_overrun_channel_name">会议超时</string>
+    <string name="meeting_overrun_channel_description">会议超时时的通知</string>
+
+    <!-- Settings help text -->
+    <string name="settings_busy_only_help">标记为"空闲"或"暂定"的事件也会触发免打扰。</string>
+    <string name="settings_min_duration_help">较短的会议不会触发免打扰。适用于快速签到。</string>
+
+    <!-- Permission status -->
+    <string name="permission_status_calendar">日历访问</string>
+    <string name="permission_status_calendar_message">需要读取事件。</string>
+    <string name="permission_status_dnd">免打扰控制</string>
+    <string name="permission_status_dnd_message">需要更改免打扰。</string>
+    <string name="permission_status_exact_alarms">精确时间</string>
+    <string name="permission_status_exact_alarms_message">时间可能有最多 15 分钟的误差。</string>
+    <string name="permission_status_notifications">通知</string>
+    <string name="permission_status_notifications_message">需要免打扰预提醒。</string>
+
+    <!-- Error states -->
+    <string name="error_calendar_permission_title">无法读取日历</string>
+    <string name="error_calendar_permission_message">授予日历权限以查看你的会议。</string>
+    <string name="error_dnd_permission_title">无法控制免打扰</string>
+    <string name="error_dnd_permission_message">授予免打扰权限以启用自动静音。</string>
+    <string name="error_calendar_query_title">无法加载日历</string>
+    <string name="error_calendar_query_message">读取事件时出现问题。请重试。</string>
+    <string name="error_dnd_change_title">无法更改免打扰</string>
+    <string name="error_dnd_change_message">某些因素阻止了免打扰更改。这有时会在三星设备上发生。</string>
+    <string name="error_no_calendars_title">未找到日历</string>
+    <string name="error_no_calendars_message">确保你的设备上至少同步了一个日历。</string>
+    <string name="error_network_title">连接问题</string>
+    <string name="error_network_message">无法检查更新。请检查你的网络连接。</string>
+    <string name="error_action_open_settings">打开设置</string>
+    <string name="error_action_retry">重试</string>
+    <string name="error_action_try_again">再试一次</string>
+    <string name="error_action_open_calendar">打开日历</string>
+
+    <!-- Warning banner -->
+    <string name="warning_degraded_mode">免打扰时间可能不太精确。允许精确闹钟以获得准确时间。</string>
+
+    <!-- Next meeting -->
+    <string name="dnd_will_activate">免打扰将在 %1$s 开启</string>
+    <string name="time_until_format">%1$s 后</string>
+    <string name="time_until_now">现在</string>
+    <string name="untitled_meeting">无标题会议</string>
+    <string name="event_overview_now_label">当前</string>
+    <string name="event_overview_next_label">下一个</string>
+    <string name="event_overview_ends_in_format">%1$s 后结束</string>
+    <string name="event_overview_starts_in_format">%1$s 后开始</string>
+
+    <!-- Empty states -->
+    <string name="no_upcoming_meetings">一切清闲！</string>
+    <string name="no_meetings_hint">未来 7 天内没有会议</string>
+    <string name="empty_no_meetings_title">一切清闲！</string>
+    <string name="empty_no_meetings_message">未来 7 天内没有安排会议。添加事件后，免打扰将自动开启。</string>
+    <string name="open_calendar">打开日历</string>
+    <string name="empty_no_calendars_title">未找到日历</string>
+    <string name="empty_no_calendars_message">添加 Google、Outlook 或其他日历账户以开始使用。</string>
+    <string name="add_account">添加账户</string>
+    <string name="empty_no_logs_title">暂无活动</string>
+    <string name="empty_no_logs_message">免打扰开启和关闭时，日志将显示在这里。</string>
+    <string name="empty_disabled_title">自动静音已暂停</string>
+    <string name="empty_disabled_message">启用自动静音以在日历事件期间自动开启免打扰。</string>
+    <string name="enable_now">立即启用</string>
+
+
+    <string name="about_section_title">About</string>
+    <string name="about_version_label">Version</string>
+    <string name="about_version_section_title">Version</string>
+    <string name="debug_logs_share">Share debug summary</string>
+    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
+    <string name="debug_tools_dry_run_title">Test run (dry)</string>
+    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
+    <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
+    <string name="tile_hint_title">Quick Settings tile</string>
+</resources>

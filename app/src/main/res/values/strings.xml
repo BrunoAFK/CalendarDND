@@ -339,6 +339,9 @@
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_updates_title">Updates</string>
+    <string name="debug_tools_force_update_title">Force update</string>
+    <string name="debug_tools_force_update_subtitle">Download and launch the installer for the latest release</string>
     <string name="debug_log_settings_title">Log settings</string>
     <string name="debug_log_settings_subtitle">Pick how verbose the debug entries should be</string>
     <string name="debug_log_settings_level_label">Log level</string>
@@ -408,6 +411,7 @@
     <string name="update_screen_loading">Loading update info...</string>
     <string name="update_screen_no_data">No update info available.</string>
     <string name="update_screen_unavailable">Updates are not available for this build.</string>
+    <string name="update_install_permission_required">Allow installs from this source to continue.</string>
 
     <!-- Meeting overrun notifications -->
     <string name="meeting_overrun_title">Meeting running over?</string>

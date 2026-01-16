@@ -412,6 +412,7 @@
     <string name="update_screen_loading">正在加载更新信息...</string>
     <string name="update_screen_no_data">无可用更新信息。</string>
     <string name="update_screen_unavailable">此版本不支持更新。</string>
+    <string name="update_install_permission_required">允许从此来源安装以继续。</string>
 
     <!-- Meeting overrun notifications -->
     <string name="meeting_overrun_title">会议超时了？</string>
@@ -488,6 +489,9 @@
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_updates_title">更新</string>
+    <string name="debug_tools_force_update_title">强制更新</string>
+    <string name="debug_tools_force_update_subtitle">下载并启动最新版本的安装程序</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
     <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>

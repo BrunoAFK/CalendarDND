@@ -305,6 +305,7 @@
     <string name="update_screen_loading">Update-Infos werden geladen...</string>
     <string name="update_screen_no_data">Keine Update-Infos verfügbar.</string>
     <string name="update_screen_unavailable">Updates sind für diesen Build nicht verfügbar.</string>
+    <string name="update_install_permission_required">Installationen aus dieser Quelle zulassen, um fortzufahren.</string>
     <string name="update_dialog_title">Update verfügbar</string>
     <string name="update_dialog_body">Version %1$s ist verfügbar.</string>
     <string name="update_action_download">Herunterladen</string>
@@ -433,6 +434,9 @@
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_updates_title">Updates</string>
+    <string name="debug_tools_force_update_title">Update erzwingen</string>
+    <string name="debug_tools_force_update_subtitle">Installer der neuesten Version herunterladen und starten</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
     <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>

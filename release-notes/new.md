@@ -1,0 +1,3 @@
+- Add a Debug Tools "Force update" action to test the installer flow.
+- Prompt for install-from-unknown-sources permission and surface installer errors during updates.
+- Switch update installs to the package installer intent and log update steps in the UI.

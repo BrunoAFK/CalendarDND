@@ -305,6 +305,7 @@
     <string name="update_screen_loading">Caricamento info aggiornamenti...</string>
     <string name="update_screen_no_data">Nessuna info aggiornamenti disponibile.</string>
     <string name="update_screen_unavailable">Aggiornamenti non disponibili per questa build.</string>
+    <string name="update_install_permission_required">Consenti installazioni da questa fonte per continuare.</string>
     <string name="update_dialog_title">Aggiornamento disponibile</string>
     <string name="update_dialog_body">Versione %1$s disponibile.</string>
     <string name="update_action_download">Scarica</string>
@@ -433,6 +434,9 @@
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_updates_title">Aggiornamenti</string>
+    <string name="debug_tools_force_update_title">Forza aggiornamento</string>
+    <string name="debug_tools_force_update_subtitle">Scarica e avvia l'installer per l'ultima release</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
     <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>

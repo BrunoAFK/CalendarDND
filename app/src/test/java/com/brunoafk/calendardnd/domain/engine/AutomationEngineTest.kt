@@ -4,6 +4,7 @@ import com.brunoafk.calendardnd.data.calendar.CalendarInfo
 import com.brunoafk.calendardnd.data.calendar.ICalendarRepository
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.EventInstance
+import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.Trigger
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -494,6 +495,9 @@ class AutomationEngineTest {
         dndMode: DndMode = DndMode.PRIORITY,
         dndStartOffsetMinutes: Int = 0,
         preDndNotificationEnabled: Boolean = false,
+        requireTitleKeyword: Boolean = false,
+        titleKeyword: String = "",
+        titleKeywordMatchMode: KeywordMatchMode = KeywordMatchMode.KEYWORDS,
         dndSetByApp: Boolean = false,
         activeWindowEndMs: Long = 0,
         userSuppressedUntilMs: Long = 0,
@@ -516,6 +520,9 @@ class AutomationEngineTest {
             dndMode = dndMode,
             dndStartOffsetMinutes = dndStartOffsetMinutes,
             preDndNotificationEnabled = preDndNotificationEnabled,
+            requireTitleKeyword = requireTitleKeyword,
+            titleKeyword = titleKeyword,
+            titleKeywordMatchMode = titleKeywordMatchMode,
             dndSetByApp = dndSetByApp,
             activeWindowEndMs = activeWindowEndMs,
             userSuppressedUntilMs = userSuppressedUntilMs,
@@ -542,7 +549,10 @@ class AutomationEngineTest {
             selectedCalendarIds: Set<String>,
             busyOnly: Boolean,
             ignoreAllDay: Boolean,
-            minEventMinutes: Int
+            minEventMinutes: Int,
+            requireTitleKeyword: Boolean,
+            titleKeyword: String,
+            titleKeywordMatchMode: KeywordMatchMode
         ): List<EventInstance> {
             return activeInstances
         }
@@ -552,7 +562,10 @@ class AutomationEngineTest {
             selectedCalendarIds: Set<String>,
             busyOnly: Boolean,
             ignoreAllDay: Boolean,
-            minEventMinutes: Int
+            minEventMinutes: Int,
+            requireTitleKeyword: Boolean,
+            titleKeyword: String,
+            titleKeywordMatchMode: KeywordMatchMode
         ): EventInstance? {
             return nextInstance
         }

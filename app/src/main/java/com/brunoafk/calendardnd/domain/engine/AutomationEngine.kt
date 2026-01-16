@@ -40,7 +40,10 @@ class AutomationEngine(
             input.selectedCalendarIds,
             input.busyOnly,
             input.ignoreAllDay,
-            input.minEventMinutes
+            input.minEventMinutes,
+            input.requireTitleKeyword,
+            input.titleKeyword,
+            input.titleKeywordMatchMode
         )
 
         val activeWindow = MeetingWindowResolver.findActiveWindow(activeInstances, now)
@@ -50,7 +53,10 @@ class AutomationEngine(
             input.selectedCalendarIds,
             input.busyOnly,
             input.ignoreAllDay,
-            input.minEventMinutes
+            input.minEventMinutes,
+            input.requireTitleKeyword,
+            input.titleKeyword,
+            input.titleKeywordMatchMode
         )
 
         val dndWindow = resolveDndWindow(

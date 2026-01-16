@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
@@ -141,6 +142,7 @@ fun SettingsHelpText(text: String, modifier: Modifier = Modifier) {
 fun SettingsNavigationRow(
     title: String,
     subtitle: String? = null,
+    subtitleAnnotated: AnnotatedString? = null,
     value: String? = null,
     onClick: () -> Unit,
     interactionSource: MutableInteractionSource? = null,
@@ -163,7 +165,13 @@ fun SettingsNavigationRow(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge
             )
-            subtitle?.let {
+            subtitleAnnotated?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } ?: subtitle?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall,

@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +45,7 @@ import kotlinx.coroutines.delay
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
+import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -64,6 +67,7 @@ import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import com.brunoafk.calendardnd.util.PermissionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.withStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +81,7 @@ fun SettingsScreen(
     onNavigateToUpdates: () -> Unit,
     onNavigateToDndMode: () -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToEventKeywordFilter: () -> Unit,
     highlightAutomation: Boolean,
     showUpdatesMenu: Boolean
 ) {
@@ -92,6 +97,10 @@ fun SettingsScreen(
     val dndMode by settingsStore.dndMode.collectAsState(initial = DndMode.PRIORITY)
     val dndStartOffsetMinutes by settingsStore.dndStartOffsetMinutes.collectAsState(initial = 0)
     val preDndNotificationEnabled by settingsStore.preDndNotificationEnabled.collectAsState(initial = false)
+    val requireTitleKeyword by settingsStore.requireTitleKeyword.collectAsState(initial = false)
+    val titleKeywordMatchMode by settingsStore.titleKeywordMatchMode.collectAsState(
+        initial = KeywordMatchMode.KEYWORDS
+    )
     val selectedCalendarIds by settingsStore.selectedCalendarIds.collectAsState(initial = emptySet())
     val analyticsOptIn by settingsStore.analyticsOptIn.collectAsState(initial = false)
     val crashlyticsOptIn by settingsStore.crashlyticsOptIn.collectAsState(initial = true)
@@ -126,6 +135,16 @@ fun SettingsScreen(
             com.brunoafk.calendardnd.R.string.dnd_timing_value_after,
             dndStartOffsetMinutes
         )
+    }
+    val eventKeywordSubtitle = stringResource(
+        com.brunoafk.calendardnd.R.string.event_keyword_filter_menu_subtitle
+    )
+    val eventKeywordSubtitleAnnotated = buildAnnotatedString {
+        withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
+            append(stringResource(com.brunoafk.calendardnd.R.string.experimental_label))
+        }
+        append(" ")
+        append(eventKeywordSubtitle)
     }
     val dndOffsetHelpText = when {
         dndStartOffsetMinutes == 0 -> stringResource(
@@ -403,6 +422,24 @@ fun SettingsScreen(
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.event_keyword_filter_menu_title),
+                        subtitleAnnotated = eventKeywordSubtitleAnnotated,
+                        value = if (!requireTitleKeyword) {
+                            stringResource(com.brunoafk.calendardnd.R.string.event_keyword_filter_value_off)
+                        } else {
+                            when (titleKeywordMatchMode) {
+                                KeywordMatchMode.KEYWORDS -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_keywords
+                                )
+                                KeywordMatchMode.REGEX -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_regex
+                                )
+                            }
+                        },
+                        onClick = onNavigateToEventKeywordFilter
+                    )
                 }
             }
 

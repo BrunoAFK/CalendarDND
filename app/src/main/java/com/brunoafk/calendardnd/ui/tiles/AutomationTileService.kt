@@ -174,7 +174,10 @@ class AutomationTileService : TileService() {
                 selectedCalendarIds = settings.selectedCalendarIds,
                 busyOnly = settings.busyOnly,
                 ignoreAllDay = settings.ignoreAllDay,
-                minEventMinutes = settings.minEventMinutes
+                minEventMinutes = settings.minEventMinutes,
+                requireTitleKeyword = settings.requireTitleKeyword,
+                titleKeyword = settings.titleKeyword,
+                titleKeywordMatchMode = settings.titleKeywordMatchMode
             )
 
             nextInstance?.let {
@@ -206,7 +209,10 @@ class AutomationTileService : TileService() {
                 selectedCalendarIds = settings.selectedCalendarIds,
                 busyOnly = settings.busyOnly,
                 ignoreAllDay = settings.ignoreAllDay,
-                minEventMinutes = settings.minEventMinutes
+                minEventMinutes = settings.minEventMinutes,
+                requireTitleKeyword = settings.requireTitleKeyword,
+                titleKeyword = settings.titleKeyword,
+                titleKeywordMatchMode = settings.titleKeywordMatchMode
             )
 
             activeInstances.firstOrNull()?.title?.ifBlank { null }

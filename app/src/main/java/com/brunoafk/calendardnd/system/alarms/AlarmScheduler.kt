@@ -110,11 +110,21 @@ class AlarmScheduler(private val context: Context) {
         )
 
         return try {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                triggerAtMs,
-                pendingIntent
-            )
+            if (canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMs,
+                    pendingIntent
+                )
+            } else {
+                val windowMs = 60_000L
+                alarmManager.setWindow(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMs,
+                    windowMs,
+                    pendingIntent
+                )
+            }
             true
         } catch (e: Exception) {
             ExceptionHandler.handleAlarmException(e, "schedulePreDndNotificationAlarm")

@@ -58,6 +58,8 @@ import com.brunoafk.calendardnd.ui.components.PrimaryActionButton
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.PermissionUtils
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.core.app.ActivityCompat
 
 /**
@@ -90,14 +92,6 @@ fun OnboardingScreen(
     val isCompactHeight = configuration.screenHeightDp < 700
     val contentSpacing = if (isCompactHeight) 12.dp else 16.dp
     val cardPadding = if (isCompactHeight) PaddingValues(12.dp) else PaddingValues(16.dp)
-    val bottomBarHeight = if (isCompactHeight) 104.dp else 120.dp
-    val bottomBarBrush = Brush.verticalGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-            MaterialTheme.colorScheme.surface
-        )
-    )
 
     // System controllers - consider injecting these via DI
     val dndController = remember { DndController(context) }
@@ -108,6 +102,23 @@ fun OnboardingScreen(
     var permissionsState by remember {
         mutableStateOf(createPermissionsState(context, dndController, alarmScheduler))
     }
+    var bottomBarHeightPx by remember { mutableStateOf(0) }
+    val bottomBarHeight = with(LocalDensity.current) {
+        val minHeight = if (permissionsState.hasRequiredPermissions) {
+            if (isCompactHeight) 76.dp else 88.dp
+        } else {
+            if (isCompactHeight) 96.dp else 112.dp
+        }
+        val measured = bottomBarHeightPx.toDp()
+        if (measured.value > 0f) measured else minHeight
+    }
+    val bottomBarBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+            MaterialTheme.colorScheme.surface
+        )
+    )
 
     val preDndNotificationUserSet by settingsStore.preDndNotificationUserSet
         .collectAsState(initial = false)
@@ -360,17 +371,10 @@ fun OnboardingScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .background(bottomBarBrush)
+                    .onSizeChanged { bottomBarHeightPx = it.height }
                     .padding(horizontal = 16.dp)
-                    .padding(top = 8.dp, bottom = 16.dp)
+                    .padding(top = 18.dp, bottom = 14.dp)
             ) {
-                if (!permissionsState.hasRequiredPermissions) {
-                    Text(
-                        text = stringResource(R.string.permissions_helper_text),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
                 PrimaryActionButton(
                     label = stringResource(R.string.continue_button),
                     onClick = onContinue,

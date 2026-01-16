@@ -29,7 +29,6 @@
     <string name="notification_permission_rationale">DND će i dalje raditi, ali bez upozorenja.</string>
     <string name="exact_alarm_rationale">Bez toga se vrijeme može pomaknuti za nekoliko minuta.</string>
     <string name="battery_rationale">Bez iznimke alarmi mogu kasniti ili biti preskočeni.</string>
-    <string name="permissions_helper_text">Odobri Kalendar + DND za nastavak.</string>
 
     <!-- Status Screen -->
     <string name="automation">Automatski DND</string>

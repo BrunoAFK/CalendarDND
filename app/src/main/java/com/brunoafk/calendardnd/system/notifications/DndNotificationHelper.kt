@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.brunoafk.calendardnd.R
+import com.brunoafk.calendardnd.ui.MainActivity
 import com.brunoafk.calendardnd.system.receivers.EnableDndNowReceiver
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.LocaleUtils
@@ -47,6 +48,17 @@ object DndNotificationHelper {
             .setContentText(text)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        val openIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openPendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        builder.setContentIntent(openPendingIntent)
         
         if (dndWindowEndMs != null) {
             val actionIntent = Intent(context, EnableDndNowReceiver::class.java).apply {

@@ -137,15 +137,11 @@ fun AppNavigation(
                     StartupScreen(
                         onGoIntro = {
                             lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.LANGUAGE_ONBOARDING) {
-                                popUpTo(AppRoutes.STARTUP) { inclusive = true }
-                            }
+                            navController.navigate(AppRoutes.LANGUAGE_ONBOARDING)
                         },
                         onGoPermissions = {
                             lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.ONBOARDING) {
-                                popUpTo(AppRoutes.STARTUP) { inclusive = true }
-                            }
+                            navController.navigate(AppRoutes.ONBOARDING)
                         },
                         onGoStatus = {
                             lockedRoutes.value = lockedRoutes.value + route

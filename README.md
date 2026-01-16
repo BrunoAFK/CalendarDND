@@ -23,12 +23,14 @@ When a meeting starts, DND turns on. When it ends, DND turns off. Simple.
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/status.png" width="200" alt="Status Screen"/>
-  <img src="docs/screenshots/settings.png" width="200" alt="Settings Screen"/>
-  <img src="docs/screenshots/onboarding.png" width="200" alt="Onboarding Screen"/>
+  <img src="assets/1.jpg" width="200" alt="Screenshot 1"/>
+  <img src="assets/2.jpg" width="200" alt="Screenshot 2"/>
+  <img src="assets/3.jpg" width="200" alt="Screenshot 3"/>
+  <img src="assets/4.jpg" width="200" alt="Screenshot 4"/>
+  <img src="assets/5.jpg" width="200" alt="Screenshot 5"/>
+  <img src="assets/6.jpg" width="200" alt="Screenshot 6"/>
+  <img src="assets/7.jpg" width="200" alt="Screenshot 7"/>
 </p>
-
-> Screenshots coming soon
 
 ## How to Use
 
@@ -96,6 +98,7 @@ The app will guide you through these steps if needed.
 
 - **Issues & Bugs**: [GitHub Issues](https://github.com/BrunoAFK/CalendarDND/issues)
 - **In-App Help**: Settings > Help
+- **Translations**: If you spot missing or incorrect translations, please [open an issue](https://github.com/BrunoAFK/CalendarDND/issues) with your language and the affected text.
 
 ## For Developers
 

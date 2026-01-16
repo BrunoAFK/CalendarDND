@@ -46,7 +46,7 @@ fun UpdateScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        metadata = ManualUpdateManager.fetchUpdateMetadata()
+        metadata = ManualUpdateManager.fetchUpdateMetadata(context)
         isLoading = false
     }
 

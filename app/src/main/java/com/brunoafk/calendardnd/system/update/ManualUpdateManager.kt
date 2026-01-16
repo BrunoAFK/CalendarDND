@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import com.brunoafk.calendardnd.BuildConfig
+import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
+import com.brunoafk.calendardnd.data.prefs.DebugLogStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,19 +65,36 @@ object ManualUpdateManager {
 
     suspend fun checkForUpdates(context: Context): UpdateCheckResult {
         if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
+            logUpdate(context, DebugLogLevel.INFO, "Manual updates disabled for this build.")
             return UpdateCheckResult(null, null)
         }
         if (!ensureSignaturePinned(context)) {
+            logUpdate(context, DebugLogLevel.WARNING, "Signature pin mismatch; skipping update checks.")
             Log.w(TAG, "Signature pin mismatch; skipping update checks.")
             return UpdateCheckResult(null, null)
         }
 
-        val metadata = fetchUpdateMetadata() ?: return UpdateCheckResult(null, null)
-        val latest = metadata.releases.firstOrNull() ?: return UpdateCheckResult(null, null)
+        logUpdate(context, DebugLogLevel.INFO, "Checking for updates…")
+        val metadata = fetchUpdateMetadata(context) ?: run {
+            logUpdate(context, DebugLogLevel.WARNING, "No update metadata available.")
+            return UpdateCheckResult(null, null)
+        }
+        val latest = metadata.releases.firstOrNull() ?: run {
+            logUpdate(context, DebugLogLevel.WARNING, "Update metadata contained no releases.")
+            return UpdateCheckResult(null, null)
+        }
         val evaluation = evaluateUpdate(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, latest)
-            ?: return UpdateCheckResult(null, null)
+            ?: run {
+                logUpdate(context, DebugLogLevel.WARNING, "Failed to evaluate version ${latest.versionName}.")
+                return UpdateCheckResult(null, null)
+            }
 
         if (!evaluation.isNewer || evaluation.updateType == UpdateType.NONE || evaluation.updateType == UpdateType.PATCH) {
+            logUpdate(
+                context,
+                DebugLogLevel.INFO,
+                "No update. Latest=${latest.versionName} type=${evaluation.updateType} newer=${evaluation.isNewer}"
+            )
             return UpdateCheckResult(null, null)
         }
 
@@ -107,7 +126,25 @@ object ManualUpdateManager {
         if (urls.isEmpty()) {
             return null
         }
-        return fetchUpdateMetadata(urls)
+        return fetchUpdateMetadata(urls, null)
+    }
+
+    suspend fun fetchUpdateMetadata(context: Context): UpdateMetadata? {
+        if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
+            logUpdate(context, DebugLogLevel.INFO, "Manual updates disabled for this build.")
+            return null
+        }
+        val urls = BuildConfig.MANUAL_UPDATE_URLS
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .filter { isAllowedUpdateUrl(it) }
+        if (urls.isEmpty()) {
+            logUpdate(context, DebugLogLevel.WARNING, "No update URLs configured.")
+            return null
+        }
+        logUpdate(context, DebugLogLevel.INFO, "Update URLs: ${urls.joinToString(", ")}")
+        return fetchUpdateMetadata(urls, context)
     }
 
     suspend fun fetchReleaseNotesMetadata(
@@ -120,16 +157,26 @@ object ManualUpdateManager {
         if (filtered.isEmpty()) {
             return null
         }
-        return fetchUpdateMetadata(filtered)
+        return fetchUpdateMetadata(filtered, null)
     }
 
-    private suspend fun fetchUpdateMetadata(urls: List<String>): UpdateMetadata? {
+    private suspend fun fetchUpdateMetadata(
+        urls: List<String>,
+        context: Context?
+    ): UpdateMetadata? {
         return withContext(Dispatchers.IO) {
             for (url in urls) {
+                logUpdate(context, DebugLogLevel.INFO, "Fetching update metadata from $url")
                 val parsed = runCatching { fetchUpdateMetadata(URL(url)) }.getOrNull()
                 if (parsed != null) {
+                    logUpdate(
+                        context,
+                        DebugLogLevel.INFO,
+                        "Loaded update metadata (${parsed.releases.size} releases)."
+                    )
                     return@withContext parsed
                 }
+                logUpdate(context, DebugLogLevel.WARNING, "Failed to load update metadata from $url")
             }
             null
         }
@@ -251,9 +298,11 @@ object ManualUpdateManager {
     ): java.io.File? {
         val expectedHash = info.sha256?.lowercase()?.trim().orEmpty()
         if (expectedHash.isBlank()) {
+            logUpdate(context, DebugLogLevel.WARNING, "Missing SHA-256 for ${info.versionName}.")
             return null
         }
         if (!isAllowedUpdateUrl(info.apkUrl)) {
+            logUpdate(context, DebugLogLevel.WARNING, "Blocked APK URL: ${info.apkUrl}")
             return null
         }
 
@@ -271,8 +320,14 @@ object ManualUpdateManager {
 
             try {
                 if (connection.responseCode !in 200..299) {
+                    logUpdate(
+                        context,
+                        DebugLogLevel.WARNING,
+                        "Download failed (${connection.responseCode}) for ${info.versionName}."
+                    )
                     return@withContext null
                 }
+                logUpdate(context, DebugLogLevel.INFO, "Downloading APK ${info.versionName}…")
                 connection.inputStream.use { input ->
                     outFile.outputStream().use { output ->
                         val buffer = ByteArray(8 * 1024)
@@ -285,6 +340,7 @@ object ManualUpdateManager {
                     }
                 }
             } catch (_: Exception) {
+                logUpdate(context, DebugLogLevel.ERROR, "Download failed for ${info.versionName}.")
                 outFile.delete()
                 return@withContext null
             } finally {
@@ -293,15 +349,26 @@ object ManualUpdateManager {
 
             val actualHash = digest.digest().joinToString("") { "%02x".format(it) }
             if (actualHash != expectedHash) {
+                logUpdate(
+                    context,
+                    DebugLogLevel.ERROR,
+                    "SHA-256 mismatch for ${info.versionName}."
+                )
                 outFile.delete()
                 return@withContext null
             }
 
             if (!verifyApkSignature(context, outFile)) {
+                logUpdate(
+                    context,
+                    DebugLogLevel.ERROR,
+                    "Signature mismatch for ${info.versionName}."
+                )
                 outFile.delete()
                 return@withContext null
             }
 
+            logUpdate(context, DebugLogLevel.INFO, "APK verified for ${info.versionName}.")
             outFile
         }
     }
@@ -315,6 +382,7 @@ object ManualUpdateManager {
             "${context.packageName}.fileprovider",
             apkFile
         )
+        logUpdate(context, DebugLogLevel.INFO, "Launching installer for ${apkFile.name}")
         return android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -406,5 +474,18 @@ object ManualUpdateManager {
             return true
         }
         return stored == fingerprint
+    }
+
+    private fun logUpdate(
+        context: Context?,
+        level: DebugLogLevel,
+        message: String
+    ) {
+        if (context == null) return
+        try {
+            DebugLogStore(context).appendLog(level, "UPDATE: $message")
+        } catch (_: Exception) {
+            // Ignore logging failures.
+        }
     }
 }

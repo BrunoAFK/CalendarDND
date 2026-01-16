@@ -92,6 +92,12 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_privacy_details)
         ),
         HelpItem(
+            id = "updates",
+            title = stringResource(R.string.help_item_updates_title),
+            summary = stringResource(R.string.help_item_updates_summary),
+            details = stringResource(R.string.help_item_updates_details)
+        ),
+        HelpItem(
             id = "exact_alarms",
             title = stringResource(R.string.help_item_exact_alarms_title),
             summary = stringResource(R.string.help_item_exact_alarms_summary),

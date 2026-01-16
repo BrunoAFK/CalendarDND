@@ -249,6 +249,10 @@
     <string name="help_item_privacy_summary">控制分析和崩溃报告。</string>
     <string name="help_item_privacy_details">你可以分别启用或禁用使用分析和崩溃报告。崩溃报告帮助修复错误；分析显示最常用的功能。</string>
 
+    <string name="help_item_updates_title">更新</string>
+    <string name="help_item_updates_summary">手动更新来自 GitHub 发布。</string>
+    <string name="help_item_updates_details">在手动版本中，应用会检查 GitHub 发布源。出现新版本时，会提示你并可下载并安装 APK。</string>
+
     <string name="help_item_exact_alarms_title">精确闹钟</string>
     <string name="help_item_exact_alarms_summary">提高新版 Android 上的时间可靠性。</string>
     <string name="help_item_exact_alarms_details">如果允许精确闹钟，应用会安排精确的开始和结束时间。否则，它会退回到守卫和定期检查。</string>

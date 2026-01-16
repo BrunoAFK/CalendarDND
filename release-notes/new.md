@@ -1,0 +1,1 @@
+- Update the in-app Help section with guidance on manual updates.

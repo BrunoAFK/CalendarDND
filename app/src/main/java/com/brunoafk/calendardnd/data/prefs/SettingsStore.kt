@@ -35,6 +35,7 @@ class SettingsStore(private val context: Context) {
         private val TITLE_KEYWORD = stringPreferencesKey("title_keyword")
         private val LAST_IN_APP_UPDATE_VERSION = stringPreferencesKey("last_in_app_update_version")
         private val LAST_NOTIFICATION_UPDATE_VERSION = stringPreferencesKey("last_notification_update_version")
+        private val LAST_SEEN_UPDATE_VERSION = stringPreferencesKey("last_seen_update_version")
         private val DEBUG_OVERLAY_ENABLED = booleanPreferencesKey("debug_overlay_enabled")
         private val TOTAL_SILENCE_CONFIRMED = booleanPreferencesKey("total_silence_confirmed")
         private val TOTAL_SILENCE_DIALOG_ENABLED = booleanPreferencesKey("total_silence_dialog_enabled")
@@ -146,6 +147,10 @@ class SettingsStore(private val context: Context) {
 
     val debugLogIncludeDetails: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_LOG_INCLUDE_DETAILS] ?: false
+    }
+
+    val lastSeenUpdateVersion: Flow<String?> = dataStore.data.map { prefs ->
+        prefs[LAST_SEEN_UPDATE_VERSION]
     }
 
     suspend fun getSnapshot(): SettingsSnapshot {
@@ -276,6 +281,12 @@ class SettingsStore(private val context: Context) {
     suspend fun setLastNotificationUpdateVersion(versionName: String) {
         dataStore.edit { prefs ->
             prefs[LAST_NOTIFICATION_UPDATE_VERSION] = versionName
+        }
+    }
+
+    suspend fun setLastSeenUpdateVersion(versionName: String) {
+        dataStore.edit { prefs ->
+            prefs[LAST_SEEN_UPDATE_VERSION] = versionName
         }
     }
 

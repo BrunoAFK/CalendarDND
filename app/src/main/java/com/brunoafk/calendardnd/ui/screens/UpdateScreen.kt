@@ -1,7 +1,9 @@
 package com.brunoafk.calendardnd.ui.screens
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,6 +51,10 @@ fun UpdateScreen(
 
     val releases = metadata?.releases.orEmpty()
     val latest = releases.firstOrNull()
+    val evaluation = latest?.let {
+        ManualUpdateManager.evaluateUpdate(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, it)
+    }
+    val isNewer = evaluation?.isNewer == true
 
     Scaffold(
         topBar = {
@@ -132,13 +138,18 @@ fun UpdateScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Button(
-                            onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(latest.apkUrl))
-                                context.startActivity(intent)
+                        if (isNewer) {
+                            Button(
+                                onClick = { openUpdateUrl(context, latest.apkUrl) }
+                            ) {
+                                Text(stringResource(R.string.update_action_download))
                             }
-                        ) {
-                            Text(stringResource(R.string.update_action_download))
+                        } else {
+                            Text(
+                                text = stringResource(R.string.update_screen_up_to_date),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }
@@ -179,5 +190,17 @@ fun UpdateScreen(
                 }
             }
         }
+    }
+}
+
+private fun openUpdateUrl(context: android.content.Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    val chooser = Intent.createChooser(intent, context.getString(R.string.update_action_download))
+    try {
+        context.startActivity(chooser)
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
     }
 }

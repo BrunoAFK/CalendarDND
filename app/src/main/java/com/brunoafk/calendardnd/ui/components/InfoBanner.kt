@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -60,6 +61,7 @@ fun InfoBanner(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Rounded.SwipeDown,
+    onClick: (() -> Unit)? = null,
     autoDismissMs: Long = 0L
 ) {
     val scope = rememberCoroutineScope()
@@ -134,6 +136,13 @@ fun InfoBanner(
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .scale(scale.value)
                 .alpha(alpha.value * swipeAlpha)
+                .let { base ->
+                    if (onClick != null) {
+                        base.clickable(onClick = onClick)
+                    } else {
+                        base
+                    }
+                }
                 .draggable(
                     state = draggableState,
                     orientation = Orientation.Horizontal,

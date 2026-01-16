@@ -1,7 +1,9 @@
 package com.brunoafk.calendardnd.ui.components
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,8 +37,7 @@ fun ManualUpdatePrompt(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.apkUrl))
-                    context.startActivity(intent)
+                    openUpdateUrl(context, info.apkUrl)
                     onDismiss()
                 }
             ) {
@@ -49,4 +50,16 @@ fun ManualUpdatePrompt(
             }
         }
     )
+}
+
+private fun openUpdateUrl(context: android.content.Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    val chooser = Intent.createChooser(intent, context.getString(R.string.update_action_download))
+    try {
+        context.startActivity(chooser)
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
+    }
 }

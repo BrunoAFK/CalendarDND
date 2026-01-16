@@ -50,6 +50,7 @@ import com.brunoafk.calendardnd.ui.screens.SettingsScreen
 import com.brunoafk.calendardnd.ui.screens.StartupScreen
 import com.brunoafk.calendardnd.ui.screens.StatusScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateScreen
+import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.util.debugTapLog
 import com.brunoafk.calendardnd.util.navInteractionGate
 import kotlinx.coroutines.launch
@@ -82,7 +83,10 @@ object AppRoutes {
 @Composable
 fun AppNavigation(
     showTileHint: Boolean = false,
-    onTileHintConsumed: () -> Unit = {}
+    onTileHintConsumed: () -> Unit = {},
+    updateStatus: ManualUpdateManager.UpdateStatus? = null,
+    openUpdates: Boolean = false,
+    onOpenUpdatesConsumed: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
@@ -100,6 +104,18 @@ fun AppNavigation(
 
     LaunchedEffect(navBackStackEntry?.destination?.route) {
         lastNavEventMs = SystemClock.elapsedRealtime()
+    }
+
+    LaunchedEffect(openUpdates, currentRoute, updateStatus) {
+        if (openUpdates && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+            navController.navigate(AppRoutes.UPDATES) {
+                launchSingleTop = true
+            }
+            updateStatus?.let { status ->
+                settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+            }
+            onOpenUpdatesConsumed()
+        }
     }
 
     Box {
@@ -298,6 +314,16 @@ fun AppNavigation(
                     StatusScreen(
                         showTileHint = showTileHint,
                         onTileHintDismissed = onTileHintConsumed,
+                        updateStatus = updateStatus,
+                        onOpenUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATES)
+                        },
                         onOpenSettings = { highlight ->
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate("settings?highlight=${if (highlight) "1" else "0"}")

@@ -190,7 +190,7 @@ assert_clean_worktree() {
   fi
 
   local unexpected
-  unexpected="$(echo "${status}" | grep -v -E "^[ ?M]{2} ${allowed_notes}$" || true)"
+  unexpected="$(echo "${status}" | grep -v -E "^[ ?MADRCU]{2} (${allowed_notes})$" || true)"
   if [[ -n "${unexpected}" ]]; then
     echo "Working tree has unrelated changes:"
     echo "${unexpected}"
@@ -295,7 +295,7 @@ if [[ ! -s "${notes_file}" ]]; then
   exit 1
 fi
 
-assert_clean_worktree "release-notes/(new|${version})\\.md"
+assert_clean_worktree "release-notes/(new|${version})\\.md|scripts/release.sh"
 
 update_gradle_versions "${version}"
 require_signing_props
@@ -374,12 +374,7 @@ git add -A
 if git diff --cached --quiet; then
   echo "No changes to commit for version bump or release notes."
 else
-  commit_message=""
-  read -r -p "Commit message [Release ${version}]: " commit_message
-  if [[ -z "${commit_message}" ]]; then
-    commit_message="Release ${version}"
-  fi
-  git commit -m "${commit_message}"
+  git commit -m "Release ${version}"
 fi
 git tag -a "${tag}" -m "Release ${version}"
 git push origin HEAD

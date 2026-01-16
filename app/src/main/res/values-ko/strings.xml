@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calendar DND</string>
+    <string name="tile_label">Calendar DND</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">설정 필요</string>
+    <string name="onboarding_description">Calendar DND가 작동하려면 몇 가지 권한이 필요합니다:</string>
+    <string name="onboarding_description_short">Calendar DND에 필요한 권한:</string>
+    <string name="calendar_permission_title">캘린더 접근</string>
+    <string name="calendar_permission_description">회의와 바쁜 시간을 감지하는 데 사용됩니다.</string>
+    <string name="calendar_permission_description_short">회의 감지를 위한 캘린더 읽기</string>
+    <string name="dnd_permission_title">방해 금지 접근</string>
+    <string name="dnd_permission_description">회의 시작 시 DND를 켜기 위해 필요합니다.</string>
+    <string name="dnd_permission_description_short">회의 중 DND 제어</string>
+    <string name="notification_permission_title">알림</string>
+    <string name="notification_permission_description">DND 시작 전에 간단히 알려줍니다.</string>
+    <string name="notification_permission_description_short">DND 시작 전 알림</string>
+    <string name="exact_alarm_title">정확한 알람 (권장)</string>
+    <string name="exact_alarm_description">시스템 지연이 있어도 정확한 타이밍을 유지합니다.</string>
+    <string name="exact_alarm_description_short">정확한 타이밍</string>
+    <string name="battery_title">배터리 최적화 (권장)</string>
+    <string name="battery_description">엄격한 배터리 제한에서 안정성을 높입니다.</string>
+    <string name="battery_description_short">배터리 제한 감소</string>
+    <string name="permission_required_label">필수</string>
+    <string name="why_we_need_this">왜 필요한가요</string>
+    <string name="calendar_permission_rationale">제목과 시간만 읽으며 변경하지 않습니다.</string>
+    <string name="dnd_permission_rationale">없으면 앱은 알림만 하고 DND를 변경할 수 없습니다.</string>
+    <string name="notification_permission_rationale">DND는 계속 작동하지만 알림은 사라집니다.</string>
+    <string name="exact_alarm_rationale">없으면 시작과 종료가 몇 분씩 어긋날 수 있습니다.</string>
+    <string name="battery_rationale">없으면 알람이 지연되거나 누락될 수 있습니다.</string>
+    <string name="permissions_helper_text">계속하려면 캘린더 + DND를 허용하세요.</string>
+
+    <!-- Status Screen -->
+    <string name="automation">자동 DND</string>
+    <string name="automation_description">캘린더에 따라 DND를 자동으로 켜고 끕니다</string>
+    <string name="active">활성</string>
+    <string name="inactive">비활성</string>
+    <string name="setup_required">⚠️ 설정 필요 - 권한 누락</string>
+    <string name="complete_setup">설정 완료</string>
+    <string name="current_meeting">현재 회의</string>
+    <string name="next_meeting">다음 회의</string>
+    <string name="none">없음</string>
+    <string name="none_scheduled">예정 없음</string>
+    <string name="dnd_status">DND 상태</string>
+    <string name="system_dnd">시스템 DND:</string>
+    <string name="app_controls_dnd">앱이 DND 제어:</string>
+    <string name="run_engine_now">지금 DND 확인</string>
+    <string name="manual_check_subtitle">설정에서 수동 DND 확인</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">설정</string>
+    <string name="selected_calendars">선택된 캘린더</string>
+    <string name="all_calendars">모든 캘린더</string>
+    <string name="calendars_selected">%d개 캘린더 선택됨</string>
+    <string name="event_filters">이벤트 필터</string>
+    <string name="busy_only_title">바쁨 이벤트만</string>
+    <string name="busy_only_description">비어 있음/임시 이벤트 무시</string>
+    <string name="ignore_allday_title">하루 종일 이벤트 무시</string>
+    <string name="ignore_allday_description">하루 종일 이벤트로는 DND를 켜지 않음</string>
+    <string name="min_duration_title">최소 이벤트 길이</string>
+    <string name="min_duration_description">%d분보다 짧은 이벤트는 무시됩니다</string>
+    <string name="min_duration_value">%d분</string>
+    <string name="dnd_mode">DND 모드</string>
+    <string name="priority_mode_title">우선순위만</string>
+    <string name="priority_mode_description">우선순위 알림 허용</string>
+    <string name="priority_mode_details">즐겨찾기 및 반복 발신자의 전화는 울릴 수 있습니다. 우선순위 알림도 계속 표시됩니다.</string>
+    <string name="total_silence_title">완전 무음</string>
+    <string name="total_silence_description">알람 포함 모든 소리 차단</string>
+    <string name="total_silence_details">즐겨찾기도 울리지 않습니다. 긴급 전화를 기대한다면 주의하세요.</string>
+
+    <!-- Calendar Picker -->
+    <string name="select_calendars">캘린더 선택</string>
+
+    <!-- Debug Logs -->
+    <string name="debug_logs">디버그 로그</string>
+    <string name="debug_logs_show_details">세부 정보 보기</string>
+    <string name="debug_logs_hide_details">세부 정보 숨기기</string>
+    <string name="search_logs">로그 검색</string>
+    <string name="close_search">검색 닫기</string>
+    <string name="no_logs_yet">아직 로그 없음</string>
+    <string name="clear_logs">로그 지우기</string>
+    <string name="copy_logs">로그 복사</string>
+    <string name="logs_copied">로그가 복사됨</string>
+    <string name="debug_tools_enabled">디버그 도구 활성화됨</string>
+
+    <!-- Notifications -->
+    <string name="pre_dnd_notification_title">곧 DND가 시작됩니다</string>
+    <string name="pre_dnd_notification_body">DND가 다음 일정에 대해 시작됩니다: %1$s</string>
+    <string name="pre_dnd_notification_body_generic">5분 후 DND가 켜집니다</string>
+    <string name="pre_dnd_notification_action">지금 켜기</string>
+    <string name="pre_dnd_notification_setting_title">사전 DND 알림</string>
+    <string name="pre_dnd_notification_setting">DND 시작 5분 전 알림</string>
+
+    <!-- Status Banner -->
+    <string name="status_setup_required">설정 필요</string>
+    <string name="status_missing_permissions">%1$d개 권한 필요</string>
+    <string name="status_complete_setup_hint">아래에서 설정을 완료하세요</string>
+    <string name="status_automation_paused">자동 무음 일시 중지</string>
+    <string name="status_automation_ready">자동 무음 준비됨</string>
+    <string name="status_automation_hint">DND가 자동으로 활성화됩니다</string>
+    <string name="status_dnd_mode_format">DND 모드: %1$s</string>
+    <string name="status_missing_permissions_summary">자동 DND를 사용하려면 설정을 완료하세요.</string>
+    <string name="status_automation_paused_summary">자동화가 꺼져 있습니다. DND는 자동으로 바뀌지 않습니다.</string>
+    <string name="status_dnd_active_summary">DND가 활성화됨. %1$s 후 종료됩니다.</string>
+    <string name="status_automation_ready_summary">DND가 %1$s 모드로 자동 활성화됩니다.</string>
+
+    <string name="dnd_mode_banner_message">DND가 %1$s 모드로 자동 활성화됩니다. 눌러서 변경하세요.</string>
+    <string name="dnd_mode_banner_title">DND 모드</string>
+    <string name="refresh_banner_title">상태 새로고침</string>
+    <string name="refresh_banner_message">아래로 당겨 새로고침하세요. 수동 확인은 설정에서도 가능합니다.</string>
+    <string name="status_dnd_active">방해 금지 활성</string>
+    <string name="status_in_meeting">회의 중: %1$s</string>
+    <string name="status_dnd_ends_in">%1$s 후 종료</string>
+    <string name="status_next_meeting_in">%1$s 후 다음 회의</string>
+
+    <!-- Tile -->
+    <string name="tile_disabled">꺼짐</string>
+    <string name="tile_disabled_desc">Calendar DND 자동화가 꺼져 있습니다</string>
+    <string name="tile_enabled">켜짐</string>
+    <string name="tile_enabled_desc">Calendar DND 자동화가 켜져 있습니다</string>
+    <string name="tile_next_prefix">다음: %1$s</string>
+    <string name="tile_next_desc">%1$s 후 %2$s에서 DND 시작</string>
+    <string name="tile_dnd_prefix">DND: %1$s</string>
+    <string name="tile_dnd_desc">%1$s 동안 방해 금지</string>
+    <string name="tile_dnd_desc_with_title">%1$s 동안 %2$s에서 방해 금지</string>
+    <string name="tile_less_than_minute">&lt; 1분</string>
+    <string name="tile_minutes">%1$d분</string>
+    <string name="tile_hours">%1$d시간</string>
+    <string name="tile_hours_minutes">%1$d시간 %2$d분</string>
+    <string name="tile_days">%1$d일</string>
+    <string name="tile_meeting_fallback">회의</string>
+
+    <!-- Settings -->
+    <string name="notifications_title">알림</string>
+    <string name="about_title">애플리케이션 정보</string>
+
+    <!-- Help -->
+    <string name="help_title">도움말</string>
+    <string name="help_about_title">애플리케이션 정보</string>
+    <string name="help_about_subtitle">버전, 제작자 및 지원</string>
+    <string name="help_feature_guide_title">기능 안내</string>
+    <string name="help_feature_guide_subtitle">각 설정과 기능의 의미를 확인하세요</string>
+    <string name="help_show_more">더 보기</string>
+    <string name="help_show_less">간단히</string>
+    <string name="help_search_placeholder">도움말 주제 검색</string>
+    <string name="help_search_clear">검색 지우기</string>
+    <string name="help_search_no_results">일치하는 도움말 주제가 없습니다</string>
+
+    <string name="help_item_automation_title">자동 DND</string>
+    <string name="help_item_automation_summary">캘린더에 따라 DND를 자동으로 켜고 끕니다.</string>
+    <string name="help_item_automation_details">활성화하면 앱이 캘린더를 읽고 진행 중인 회의를 감지해 해당 시간에 DND를 적용합니다. 앱이 켠 경우에만 DND를 끕니다.</string>
+
+    <string name="help_item_permissions_title">권한</string>
+    <string name="help_item_permissions_summary">자동화를 위해 캘린더와 DND 접근이 필요합니다.</string>
+    <string name="help_item_permissions_details">캘린더 권한은 이벤트 읽기를, DND 권한은 방해 금지 설정을 가능하게 합니다. 알림 권한은 리마인더를 활성화합니다.</string>
+    <string name="unable_to_open_link">링크를 열 수 없습니다.</string>
+
+    <string name="help_item_language_title">언어</string>
+    <string name="help_item_language_summary">설정에서 앱 언어를 선택합니다.</string>
+    <string name="help_item_language_details">설정에서 언어를 변경할 수 있습니다. 즉시 적용되며 기기 언어는 변경되지 않습니다.</string>
+
+    <string name="help_item_privacy_title">개인정보</string>
+    <string name="help_item_privacy_summary">분석 및 크래시 보고서를 관리합니다.</string>
+    <string name="help_item_privacy_details">사용 분석과 크래시 보고서를 각각 켜거나 끌 수 있습니다. 크래시 보고서는 버그 수정에 도움이 되고, 분석은 가장 많이 쓰는 기능을 보여줍니다.</string>
+
+    <string name="help_item_exact_alarms_title">정확한 알람</string>
+    <string name="help_item_exact_alarms_summary">최신 Android에서 정확한 타이밍을 보장합니다.</string>
+    <string name="help_item_exact_alarms_details">정확한 알람이 허용되면 시작/종료 시간을 정밀하게 예약합니다. 허용되지 않으면 가드 작업과 주기적 점검을 사용합니다.</string>
+
+    <string name="help_item_battery_title">배터리 최적화</string>
+    <string name="help_item_battery_summary">해제하면 알람과 작업이 제때 실행됩니다.</string>
+    <string name="help_item_battery_details">일부 기기는 백그라운드 작업을 지연시킵니다. DND가 늦게 동작한다면 Calendar DND의 배터리 최적화를 해제하세요.</string>
+
+    <string name="help_item_busy_only_title">바쁨 이벤트만</string>
+    <string name="help_item_busy_only_summary">비어 있음 또는 임시 이벤트를 무시합니다.</string>
+    <string name="help_item_busy_only_details">켜면 바쁨 이벤트만 DND를 트리거합니다. 선택적 또는 정보성 이벤트에서 무음이 되는 것을 방지합니다.</string>
+
+    <string name="help_item_ignore_all_day_title">하루 종일 이벤트 무시</string>
+    <string name="help_item_ignore_all_day_summary">하루 종일 이벤트로 DND가 켜지지 않게 합니다.</string>
+    <string name="help_item_ignore_all_day_details">하루 종일 이벤트는 보통 알림이나 휴일입니다. DND가 하루 종일 켜지는 것을 방지합니다.</string>
+
+    <string name="help_item_min_duration_title">최소 이벤트 길이</string>
+    <string name="help_item_min_duration_summary">짧은 이벤트를 필터링합니다.</string>
+    <string name="help_item_min_duration_details">이 값보다 짧은 이벤트는 무시됩니다. 불필요한 전환을 줄입니다.</string>
+
+    <string name="help_item_dnd_mode_title">DND 모드</string>
+    <string name="help_item_dnd_mode_summary">우선순위만 또는 완전 무음을 선택하세요.</string>
+    <string name="help_item_dnd_mode_details">우선순위만은 즐겨찾기 연락처와 우선순위 알림을 허용합니다. 완전 무음은 알람을 포함한 모든 소리를 차단합니다.</string>
+
+    <string name="help_item_dnd_timing_title">DND 타이밍</string>
+    <string name="help_item_dnd_timing_summary">회의 시작 전/후에 DND를 시작합니다.</string>
+    <string name="help_item_dnd_timing_details">슬라이더로 시작 시간을 이동합니다. 음수는 더 일찍, 양수는 더 늦게, 0은 회의 시작과 동일합니다.</string>
+
+    <string name="help_item_pre_dnd_notification_title">사전 DND 알림</string>
+    <string name="help_item_pre_dnd_notification_summary">DND 시작 5분 전 알림(선택).</string>
+    <string name="help_item_pre_dnd_notification_details">켜면 DND 시작 직전에 알림이 표시되고 즉시 DND를 켤 수 있습니다.</string>
+
+    <string name="help_item_tile_title">빠른 설정 타일</string>
+    <string name="help_item_tile_summary">빠른 설정에서 자동 DND를 토글합니다.</string>
+    <string name="help_item_tile_details">빠른 설정에 타일을 추가하면 한 번에 켜고 끌 수 있습니다. 설정이 부족하면 앱을 엽니다.</string>
+
+    <string name="help_item_debug_logs_title">디버그 로그</string>
+    <string name="help_item_debug_logs_summary">엔진 결정과 스케줄링을 보여줍니다.</string>
+    <string name="help_item_debug_logs_details">로그로 타이밍을 확인하고 문제를 진단하세요. 로그를 복사해 공유할 수 있으며, 헤더에 핵심 설정이 포함됩니다.</string>
+
+    <string name="help_item_pull_refresh_title">아래로 당겨 새로고침</string>
+    <string name="help_item_pull_refresh_summary">메인 화면에서 아래로 당겨 상태를 새로고침하세요.</string>
+    <string name="help_item_pull_refresh_details">홈 화면에서 아래로 당겨 회의 상태를 수동으로 새로고침하고 DND 상태를 다시 확인합니다. 캘린더가 최근에 변경되었고 업데이트된 상태를 즉시 보고 싶을 때 유용합니다.</string>
+
+    <!-- Common -->
+    <string name="back">뒤로</string>
+    <string name="continue_button">계속</string>
+    <string name="grant_permission">권한 허용</string>
+    <string name="open_settings">설정 열기</string>
+    <string name="open_app_settings">앱 설정 열기</string>
+    <string name="yes">예</string>
+    <string name="no">아니오</string>
+    <string name="done">완료</string>
+    <string name="ok">확인</string>
+
+    <!-- Onboarding Flow -->
+    <string name="intro_title">Calendar DND에 오신 것을 환영합니다</string>
+    <string name="intro_body">회의 중에는 휴대폰을 자동으로 무음으로 전환합니다. 간단한 설정을 안내해 드립니다.</string>
+    <string name="intro_notice">이 앱은 \"vibe-coded\"로 만들어져 간단하지만 잘 작동합니다. :)</string>
+    <string name="get_started">시작하기</string>
+
+    <string name="language_title">언어 선택</string>
+    <string name="language_description">나중에 설정에서 변경할 수 있습니다.</string>
+    <string name="step_indicator">%2$d단계 중 %1$d단계</string>
+
+    <string name="calendar_scope_title">모니터링할 캘린더</string>
+    <string name="calendar_scope_description">모든 캘린더를 사용하거나 특정 캘린더를 선택하세요.</string>
+    <string name="calendar_scope_privacy_hint">캘린더 데이터는 기기에만 저장됩니다.</string>
+    <string name="calendar_scope_all_title">모든 캘린더</string>
+    <string name="calendar_scope_all_summary">이 기기의 모든 캘린더를 사용합니다.</string>
+    <string name="calendar_scope_specific_title">캘린더 선택</string>
+    <string name="calendar_scope_specific_summary">사용할 캘린더를 직접 선택합니다.</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_general">일반</string>
+    <string name="privacy_title">개인정보</string>
+    <string name="dnd_timing_title">DND 타이밍</string>
+    <string name="dnd_timing_start_title">DND 시작</string>
+    <string name="dnd_timing_before_label">이전</string>
+    <string name="dnd_timing_after_label">이후</string>
+    <string name="dnd_timing_on_time">회의 시작 시점에 정확히 시작</string>
+    <string name="dnd_timing_before_meeting">%1$d분 전에 시작</string>
+    <string name="dnd_timing_after_meeting">%1$d분 후에 시작</string>
+    <string name="dnd_timing_value_zero">0분</string>
+    <string name="dnd_timing_value_before">%1$d분 전</string>
+    <string name="dnd_timing_value_after">%1$d분 후</string>
+
+    <string name="privacy_intro">데이터를 공유하여 앱 개선에 도움을 주세요. 나중에 변경할 수 있습니다.</string>
+    <string name="privacy_change_later">나중에 변경할 수 있습니다.</string>
+    <string name="privacy_defaults_hint">기본값: 분석 끔, 크래시 보고서 켬.</string>
+    <string name="analytics_opt_in_title">사용 분석</string>
+    <string name="analytics_opt_in_description">기능 개선을 위해 익명 사용 데이터를 공유합니다</string>
+    <string name="crashlytics_opt_in_title">크래시 보고서</string>
+    <string name="crashlytics_opt_in_description">버그를 수정할 수 있도록 크래시 보고서를 보냅니다</string>
+
+    <!-- About -->
+    <string name="app_version_format">버전 %1$s (%2$d)</string>
+    <string name="github_repo_title">Report issue</string>
+    <string name="github_repo_subtitle">소스 보기, 이슈 신고, 기여하기</string>
+    <string name="github_repo_url">https://github.com/BrunoAFK/CalendarDND</string>
+    <string name="github_issues_url">https://github.com/BrunoAFK/CalendarDND/issues</string>
+    <string name="github_releases_url">https://github.com/BrunoAFK/CalendarDND/releases</string>
+    <string name="github_latest_release_url">https://github.com/BrunoAFK/CalendarDND/releases/latest</string>
+    <string name="about_intro">Calendar DND는 회의 중 휴대폰을 조용히 하고 다음 일정도 보여줍니다.</string>
+    <string name="about_application_section_title">애플리케이션</string>
+    <string name="about_author_label">제작자</string>
+    <string name="about_author_section_title">제작자</string>
+    <string name="about_author_value">Bruno Pavelja</string>
+    <string name="about_github_label">GitHub</string>
+    <string name="about_report_title">문제 신고</string>
+    <string name="about_report_body">문제가 있으면 GitHub 이슈를 열고 기기 모델, Android 버전, 재현 절차를 포함하세요. 스크린샷이 도움이 됩니다.</string>
+    <string name="about_version_title">버전</string>
+    <string name="about_version_subtitle">GitHub에서 릴리스 보기</string>
+    <string name="about_whats_new_title">새로운 내용</string>
+    <string name="about_whats_new_action">변경 사항 보기</string>
+    <string name="about_whats_new_subtitle">최신 변경 사항과 릴리스 노트</string>
+    <string name="about_features_title">기능</string>
+    <string name="about_features_debug_title">디버그 도구</string>
+    <string name="about_features_debug_subtitle">문제 해결을 위한 고급 디버그 기능 활성화</string>
+    <string name="whats_new_title">새로운 내용</string>
+    <string name="whats_new_latest_title">최신 릴리스</string>
+    <string name="whats_new_latest_body">전체 변경 사항은 GitHub 릴리스 노트를 확인하세요.</string>
+    <string name="whats_new_latest_action">릴리스 노트 열기</string>
+    <string name="whats_new_latest_subtitle">브라우저에서 GitHub 열기</string>
+    <string name="whats_new_features_title">주요 변경 사항</string>
+    <string name="whats_new_features_body">- 앱 정보 및 새로운 내용 화면 추가(릴리스 링크 포함)\n- 한 줄 상태로 정리한 컴팩트 DND 배너\n- 전체 카드 리플과 캘린더 이벤트 열기\n- 상단바 제목으로 정렬된 설정/권한 화면\n- 수동 DND 확인과 자동화 강조 개선</string>
+    <string name="whats_new_history_title">이전 버전</string>
+    <string name="whats_new_history_action">모든 릴리스 보기</string>
+    <string name="whats_new_history_subtitle">GitHub에서 이전 버전 확인</string>
+    <string name="update_menu_title">업데이트</string>
+    <string name="update_menu_subtitle">릴리스 노트 및 버전 기록</string>
+    <string name="update_screen_title">업데이트</string>
+    <string name="update_screen_current_version">현재 버전: %1$s</string>
+    <string name="update_screen_latest_title">최신 릴리스</string>
+    <string name="update_screen_history_title">버전 기록</string>
+    <string name="update_screen_loading">업데이트 정보를 불러오는 중...</string>
+    <string name="update_screen_no_data">업데이트 정보가 없습니다.</string>
+    <string name="update_screen_unavailable">이 빌드에서는 업데이트를 사용할 수 없습니다.</string>
+    <string name="update_dialog_title">업데이트 사용 가능</string>
+    <string name="update_dialog_body">버전 %1$s 사용 가능.</string>
+    <string name="update_action_download">다운로드</string>
+    <string name="update_action_later">나중에</string>
+    <string name="update_notification_title">업데이트 사용 가능</string>
+    <string name="update_notification_body">버전 %1$s 다운로드 준비됨.</string>
+
+    <!-- Debug Tools -->
+    <string name="debug_tools_title">디버그</string>
+    <string name="debug_tools_description">자동화 결정과 알림 미리보기를 검토하고 디버그 도구를 제어합니다.</string>
+    <string name="debug_tools_app_info_title">애플리케이션 정보</string>
+    <string name="debug_tools_open_title">디버그 도구</string>
+    <string name="debug_tools_open_subtitle">현지화 문자열과 빌드 정보를 확인합니다</string>
+    <string name="debug_tools_languages_title">언어</string>
+    <string name="debug_language_title">문자열: %1$s</string>
+    <string name="debug_tools_preview_title">미리보기</string>
+    <string name="debug_tools_splash_title">스플래시 미리보기</string>
+    <string name="debug_tools_splash_subtitle">현재 아이콘으로 스플래시 레이아웃을 미리 봅니다</string>
+    <string name="debug_tools_notifications_title">알림</string>
+    <string name="debug_tools_test_notification_title">테스트 알림</string>
+    <string name="debug_tools_test_notification_subtitle">DND 전 알림을 보냅니다</string>
+    <string name="debug_tools_logs_section_title">로그</string>
+    <string name="debug_tools_logs_subtitle">자동화 엔진 로그를 보고 무슨 일이 일어나고 있는지 확인합니다</string>
+    <string name="debug_log_settings_title">로그 설정</string>
+    <string name="debug_log_settings_subtitle">디버그 항목의 상세 수준을 선택하세요</string>
+    <string name="debug_log_settings_level_label">로그 수준</string>
+    <string name="debug_log_settings_include_details_title">상세 로그 포함</string>
+    <string name="debug_log_settings_include_details_subtitle">각 로그에 엔진 실행 세부 정보 추가</string>
+    <string name="debug_tools_maintenance_title">유지 관리</string>
+    <string name="debug_tools_total_silence_dialog_title">완전 무음 확인</string>
+    <string name="debug_tools_total_silence_dialog_subtitle">완전 무음을 활성화하기 전에 확인 대화상자를 표시합니다</string>
+    <string name="debug_tools_app_control_title">애플리케이션 제어</string>
+    <string name="debug_tools_restore_dnd_banner_title">DND 배너 복원</string>
+    <string name="debug_tools_restore_dnd_banner_subtitle">홈 화면에서 DND 안내를 다시 표시합니다</string>
+    <string name="debug_tools_restore_banners_title">모든 배너 복원</string>
+    <string name="debug_tools_restore_banners_subtitle">홈 화면에서 DND 모드와 새로고침 배너를 다시 표시합니다</string>
+    <string name="debug_tools_reset_total_silence_title">완전 무음 확인 재설정</string>
+    <string name="debug_tools_reset_total_silence_subtitle">완전 무음 선택 시 경고 대화상자를 다시 표시합니다</string>
+
+    <!-- Debug tools -->
+    <string name="debug_section_title">디버그</string>
+    <string name="debug_tools_disabled">디버그 도구 숨김</string>
+    <string name="debug_tools_hint">5번 탭하여 디버그 도구를 전환하세요.</string>
+
+    <string name="app_version_name_only">버전 %1$s</string>
+
+    <!-- Settings help text -->
+    <string name="settings_busy_only_help">\"자유\" 또는 \"임시\"로 표시된 일정도 DND를 켭니다.</string>
+    <string name="settings_min_duration_help">더 짧은 일정은 DND를 켜지 않습니다. 짧은 확인에 유용합니다.</string>
+    <string name="dnd_timing_help_on_time">회의 시작 시간에 정확히 DND가 켜집니다.</string>
+    <string name="dnd_timing_help_before">회의 시작 %1$d분 전에 DND가 켜집니다.</string>
+    <string name="dnd_timing_help_after">회의 시작 %1$d분 후에 DND가 켜집니다.</string>
+
+    <!-- Permission status -->
+    <string name="permissions_title">권한</string>
+    <string name="permissions_subtitle">필요한 접근을 확인하고 수정하세요.</string>
+    <string name="fix">수정</string>
+    <string name="permission_status_calendar">캘린더 접근</string>
+    <string name="permission_status_calendar_message">일정을 읽기 위해 필요합니다.</string>
+    <string name="permission_status_dnd">DND 제어</string>
+    <string name="permission_status_dnd_message">방해 금지를 변경하려면 필요합니다.</string>
+    <string name="permission_status_exact_alarms">정확한 타이밍</string>
+    <string name="permission_status_exact_alarms_message">타이밍이 최대 15분까지 달라질 수 있습니다.</string>
+    <string name="permission_status_notifications">알림</string>
+    <string name="permission_status_notifications_message">DND 사전 알림에 필요합니다.</string>
+
+    <!-- Error states -->
+    <string name="error_calendar_permission_title">캘린더를 읽을 수 없음</string>
+    <string name="error_calendar_permission_message">일정을 보려면 캘린더 권한을 허용하세요.</string>
+    <string name="error_dnd_permission_title">DND를 제어할 수 없음</string>
+    <string name="error_dnd_permission_message">자동 무음을 사용하려면 방해 금지 접근을 허용하세요.</string>
+    <string name="error_calendar_query_title">캘린더를 불러올 수 없음</string>
+    <string name="error_calendar_query_message">일정을 읽는 중 문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="error_dnd_change_title">DND를 변경할 수 없음</string>
+    <string name="error_dnd_change_message">DND 변경을 막는 문제가 발생했습니다. 삼성 기기에서 가끔 발생합니다.</string>
+    <string name="error_no_calendars_title">캘린더를 찾을 수 없음</string>
+    <string name="error_no_calendars_message">기기에 동기화된 캘린더가 하나 이상 있는지 확인하세요.</string>
+    <string name="error_network_title">연결 문제</string>
+    <string name="error_network_message">업데이트를 확인할 수 없습니다. 인터넷 연결을 확인하세요.</string>
+    <string name="error_action_open_settings">설정 열기</string>
+    <string name="error_action_retry">다시 시도</string>
+    <string name="error_action_try_again">다시 시도</string>
+    <string name="error_action_open_calendar">캘린더 열기</string>
+    <string name="dismiss">닫기</string>
+
+    <string name="dnd_mode_manage_hint">시스템 DND 설정에서 통과 허용 대상을 선택하세요.</string>
+    <string name="dnd_total_silence_confirm_title">완전 무음을 활성화할까요?</string>
+    <string name="dnd_total_silence_confirm_body">회의가 끝날 때까지 알람을 포함한 모든 소리가 차단됩니다.</string>
+    <string name="dnd_total_silence_confirm_button">완전 무음 활성화</string>
+    <string name="dnd_total_silence_cancel_button">취소</string>
+    <string name="dnd_mode_screen_subtitle">회의 중 방해 금지 모드의 엄격도를 선택하세요.</string>
+    <string name="check_dnd_complete">DND 확인 완료</string>
+
+    <string name="warning_degraded_mode">DND 타이밍이 덜 정확할 수 있습니다. 정확한 타이밍을 위해 정확한 알람을 허용하세요.</string>
+    <string name="fix_now">지금 수정</string>
+    <string name="dnd_will_activate">DND가 %1$s에 활성화됩니다</string>
+    <string name="time_until_format">%1$s 후</string>
+    <string name="time_until_now">지금</string>
+    <string name="untitled_meeting">제목 없는 회의</string>
+    <string name="no_upcoming_meetings">일정이 없습니다!</string>
+    <string name="no_meetings_hint">다음 7일 동안 회의가 없습니다</string>
+    <string name="empty_no_meetings_title">일정이 없습니다!</string>
+    <string name="empty_no_meetings_message">다음 7일 동안 회의가 없습니다. 이벤트를 추가하면 DND가 자동으로 활성화됩니다.</string>
+    <string name="open_calendar">캘린더 열기</string>
+    <string name="empty_no_calendars_title">캘린더를 찾을 수 없음</string>
+    <string name="empty_no_calendars_message">시작하려면 Google, Outlook 또는 다른 캘린더 계정을 추가하세요.</string>
+    <string name="add_account">계정 추가</string>
+    <string name="empty_no_logs_title">활동 없음</string>
+    <string name="empty_no_logs_message">DND가 켜지거나 꺼지면 여기에 로그가 표시됩니다.</string>
+    <string name="empty_disabled_title">자동 무음 일시 중지</string>
+    <string name="empty_disabled_message">캘린더 이벤트 동안 DND를 자동으로 켜려면 자동 무음을 활성화하세요.</string>
+    <string name="enable_now">지금 활성화</string>
+    <string name="event_overview_now_label">지금</string>
+    <string name="event_overview_next_label">다음</string>
+    <string name="event_overview_ends_in_format">%1$s 후 종료</string>
+    <string name="event_overview_starts_in_format">%1$s 후 시작</string>
+
+    <string name="about_section_title">About</string>
+    <string name="about_version_label">Version</string>
+    <string name="about_version_section_title">Version</string>
+    <string name="debug_logs_share">Share debug summary</string>
+    <string name="debug_tools_dnd_preview_priority_title">Preview Priority Only</string>
+    <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
+    <string name="debug_tools_dnd_preview_title">DND Preview</string>
+    <string name="debug_tools_dnd_preview_total_title">Preview Total Silence</string>
+    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
+    <string name="debug_tools_dry_run_title">Test run (dry)</string>
+    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
+    <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
+    <string name="debug_tools_nav_title">Navigation</string>
+    <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
+    <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
+    <string name="dnd_priority_category_alarms">Alarms</string>
+    <string name="dnd_priority_category_calls_with">Calls (%1$s)</string>
+    <string name="dnd_priority_category_events">Events</string>
+    <string name="dnd_priority_category_messages_with">Messages (%1$s)</string>
+    <string name="dnd_priority_category_reminders">Reminders</string>
+    <string name="dnd_priority_category_repeat_callers">Repeat callers</string>
+    <string name="dnd_priority_description">Choose which people and apps can still interrupt you while Priority Only is active.</string>
+    <string name="dnd_priority_manage_button">Manage priority exceptions</string>
+    <string name="dnd_priority_senders_anyone">Anyone</string>
+    <string name="dnd_priority_senders_contacts">Contacts</string>
+    <string name="dnd_priority_senders_starred">Starred</string>
+    <string name="dnd_priority_summary_fallback">Allowed: Configure in system settings</string>
+    <string name="dnd_priority_summary_format">Allowed: %1$s</string>
+    <string name="dnd_priority_summary_none">Allowed: None</string>
+    <string name="dnd_priority_summary_title">Priority interruptions</string>
+    <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
+    <string name="dnd_total_silence_manage_button">Open DND settings</string>
+    <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
+    <string name="dnd_total_silence_warning_title">Total Silence warning</string>
+    <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
+    <string name="meeting_overrun_channel_name">Meeting Overrun</string>
+    <string name="meeting_overrun_extend_format">+%1$dm</string>
+    <string name="meeting_overrun_message">Extend DND to stay focused</string>
+    <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="settings_help">Help</string>
+    <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
+    <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
+    <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
+    <string name="tile_hint_title">Quick Settings tile</string>
+</resources>

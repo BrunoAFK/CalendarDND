@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calendar DND</string>
+    <string name="tile_label">Calendar DND</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Einrichtung erforderlich</string>
+    <string name="onboarding_description">Calendar DND benötigt einige Berechtigungen:</string>
+    <string name="onboarding_description_short">Calendar DND benötigt diese Berechtigungen:</string>
+    <string name="calendar_permission_title">Kalenderzugriff</string>
+    <string name="calendar_permission_description">Erkennt Meetings und bevorstehende belegte Zeiten.</string>
+    <string name="calendar_permission_description_short">Kalender lesen, um Meetings zu erkennen</string>
+    <string name="dnd_permission_title">Nicht stören Zugriff</string>
+    <string name="dnd_permission_description">Erforderlich, um DND beim Start zu aktivieren.</string>
+    <string name="dnd_permission_description_short">DND während Meetings steuern</string>
+    <string name="notification_permission_title">Benachrichtigungen</string>
+    <string name="notification_permission_description">Erlaubt eine kurze Vorwarnung vor DND.</string>
+    <string name="notification_permission_description_short">Hinweis vor DND</string>
+    <string name="exact_alarm_title">Exakte Alarme (Empfohlen)</string>
+    <string name="exact_alarm_description">Hält Start und Ende präzise, auch bei Systemverzögerungen.</string>
+    <string name="exact_alarm_description_short">Präzises Timing</string>
+    <string name="battery_title">Akku-Optimierung (Empfohlen)</string>
+    <string name="battery_description">Verbessert die Zuverlässigkeit bei strengen Akku-Limits.</string>
+    <string name="battery_description_short">Verhindert Akkubeschränkungen</string>
+    <string name="permission_required_label">Erforderlich</string>
+    <string name="why_we_need_this">Warum wir das brauchen</string>
+    <string name="calendar_permission_rationale">Wir lesen nur Titel und Zeiten und ändern nichts.</string>
+    <string name="dnd_permission_rationale">Ohne Zugriff gibt es nur Hinweise statt automatischer Umschaltung.</string>
+    <string name="notification_permission_rationale">DND funktioniert weiterhin, aber ohne Warnung.</string>
+    <string name="exact_alarm_rationale">Ohne diese Option kann das Timing um Minuten abweichen.</string>
+    <string name="battery_rationale">Ohne Ausnahme können Alarme verspätet oder übersprungen werden.</string>
+    <string name="permissions_helper_text">Kalender + DND gewähren, um fortzufahren.</string>
+
+    <!-- Status Screen -->
+    <string name="automation">Automatisches DND</string>
+    <string name="automation_description">Schaltet DND anhand deines Kalenders ein und aus</string>
+    <string name="active">Aktiv</string>
+    <string name="inactive">Inaktiv</string>
+    <string name="setup_required">⚠️ Einrichtung erforderlich – fehlende Berechtigungen</string>
+    <string name="complete_setup">Einrichtung abschließen</string>
+    <string name="current_meeting">Aktuelles Meeting</string>
+    <string name="next_meeting">Nächstes Meeting</string>
+    <string name="none">Keine</string>
+    <string name="none_scheduled">Nicht geplant</string>
+    <string name="dnd_status">DND-Status</string>
+    <string name="system_dnd">System-DND:</string>
+    <string name="app_controls_dnd">App steuert DND:</string>
+    <string name="run_engine_now">DND jetzt prüfen</string>
+    <string name="manual_check_subtitle">Manuelle DND-Prüfung in den Einstellungen</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Einstellungen</string>
+    <string name="selected_calendars">Ausgewählte Kalender</string>
+    <string name="all_calendars">Alle Kalender</string>
+    <string name="calendars_selected">%d Kalender ausgewählt</string>
+    <string name="event_filters">Ereignisfilter</string>
+    <string name="busy_only_title">Nur belegte Termine</string>
+    <string name="busy_only_description">Freie/vorläufige Termine ignorieren</string>
+    <string name="ignore_allday_title">Ganztägige Termine ignorieren</string>
+    <string name="ignore_allday_description">DND nicht für ganztägige Termine auslösen</string>
+    <string name="min_duration_title">Minimale Termindauer</string>
+    <string name="min_duration_description">Termine kürzer als %d Minuten werden ignoriert</string>
+    <string name="min_duration_value">%d Minuten</string>
+    <string name="dnd_mode">DND-Modus</string>
+    <string name="priority_mode_title">Nur Priorität</string>
+    <string name="priority_mode_description">Prioritätsbenachrichtigungen zulassen</string>
+    <string name="priority_mode_details">Anrufe von Favoriten und wiederholten Anrufern können durchkommen. Als Priorität markierte Benachrichtigungen bleiben hörbar.</string>
+    <string name="total_silence_title">Komplett stumm</string>
+    <string name="total_silence_description">Alle Töne blockieren (einschließlich Wecker)</string>
+    <string name="total_silence_details">Nichts klingelt, auch keine Favoriten. Vorsicht, wenn du dringende Anrufe erwartest.</string>
+
+    <!-- Calendar Picker -->
+    <string name="select_calendars">Kalender auswählen</string>
+
+    <!-- Debug Logs -->
+    <string name="debug_logs">Debug-Protokolle</string>
+    <string name="debug_logs_show_details">Details anzeigen</string>
+    <string name="debug_logs_hide_details">Details ausblenden</string>
+    <string name="search_logs">Protokolle durchsuchen</string>
+    <string name="close_search">Suche schließen</string>
+    <string name="no_logs_yet">Noch keine Protokolle</string>
+    <string name="clear_logs">Protokolle löschen</string>
+    <string name="copy_logs">Protokolle kopieren</string>
+    <string name="logs_copied">Protokolle kopiert</string>
+    <string name="debug_tools_enabled">Debug-Tools aktiviert</string>
+
+    <!-- Notifications -->
+    <string name="pre_dnd_notification_title">DND startet bald</string>
+    <string name="pre_dnd_notification_body">DND startet für: %1$s</string>
+    <string name="pre_dnd_notification_body_generic">DND wird in 5 Minuten aktiviert</string>
+    <string name="pre_dnd_notification_action">Jetzt aktivieren</string>
+    <string name="pre_dnd_notification_setting_title">Vorab-DND-Benachrichtigung</string>
+    <string name="pre_dnd_notification_setting">5 Minuten vor DND-Start benachrichtigen</string>
+
+    <!-- Status Banner -->
+    <string name="status_setup_required">Einrichtung erforderlich</string>
+    <string name="status_missing_permissions">%1$d Berechtigungen erforderlich</string>
+    <string name="status_complete_setup_hint">Unten Einrichtung abschließen</string>
+    <string name="status_automation_paused">Auto-Stummschaltung pausiert</string>
+    <string name="status_automation_ready">Auto-Stummschaltung bereit</string>
+    <string name="status_automation_hint">DND wird automatisch aktiviert</string>
+    <string name="status_dnd_mode_format">DND-Modus: %1$s</string>
+    <string name="status_missing_permissions_summary">Einrichtung abschließen, um automatisches DND zu aktivieren.</string>
+    <string name="status_automation_paused_summary">Automatik ist aus. DND wird nicht automatisch geändert.</string>
+    <string name="status_dnd_active_summary">DND ist aktiv. Endet in %1$s.</string>
+    <string name="status_automation_ready_summary">DND wird automatisch im Modus %1$s aktiviert.</string>
+
+    <string name="dnd_mode_banner_message">DND wird automatisch im Modus %1$s aktiviert. Tippen zum Ändern.</string>
+    <string name="dnd_mode_banner_title">DND-Modus</string>
+    <string name="refresh_banner_title">Status aktualisieren</string>
+    <string name="refresh_banner_message">Nach unten ziehen, um zu aktualisieren. Manuelle Prüfung ist auch in den Einstellungen verfügbar.</string>
+    <string name="status_dnd_active">Nicht stören aktiv</string>
+    <string name="status_in_meeting">In: %1$s</string>
+    <string name="status_dnd_ends_in">Endet in %1$s</string>
+    <string name="status_next_meeting_in">Nächstes Meeting in %1$s</string>
+
+    <!-- Tile -->
+    <string name="tile_disabled">Deaktiviert</string>
+    <string name="tile_disabled_desc">Calendar DND ist deaktiviert</string>
+    <string name="tile_enabled">Aktiviert</string>
+    <string name="tile_enabled_desc">Calendar DND ist aktiviert</string>
+    <string name="tile_next_prefix">Nächstes: %1$s</string>
+    <string name="tile_next_desc">DND aktiviert sich in %1$s für %2$s</string>
+    <string name="tile_dnd_prefix">DND: %1$s</string>
+    <string name="tile_dnd_desc">Nicht stören aktiv für %1$s</string>
+    <string name="tile_dnd_desc_with_title">Nicht stören aktiv für %1$s während %2$s</string>
+    <string name="tile_less_than_minute">&lt; 1 Min</string>
+    <string name="tile_minutes">%1$d Min</string>
+    <string name="tile_hours">%1$d Std</string>
+    <string name="tile_hours_minutes">%1$d Std %2$d Min</string>
+    <string name="tile_days">%1$d T</string>
+    <string name="tile_meeting_fallback">Meeting</string>
+
+    <!-- Settings -->
+    <string name="notifications_title">Benachrichtigungen</string>
+    <string name="about_title">Über die Anwendung</string>
+
+    <!-- Help -->
+    <string name="help_title">Hilfe</string>
+    <string name="help_about_title">Über die Anwendung</string>
+    <string name="help_about_subtitle">Version, Autor und Support</string>
+    <string name="help_feature_guide_title">Funktionsübersicht</string>
+    <string name="help_feature_guide_subtitle">Erfahre, was jede Einstellung und Funktion bewirkt</string>
+    <string name="help_show_more">Mehr anzeigen</string>
+    <string name="help_show_less">Weniger anzeigen</string>
+    <string name="help_search_placeholder">Hilfethemen suchen</string>
+    <string name="help_search_clear">Suche löschen</string>
+    <string name="help_search_no_results">Keine passenden Hilfethemen gefunden</string>
+
+    <string name="help_item_automation_title">Automatisches DND</string>
+    <string name="help_item_automation_summary">Schaltet DND automatisch basierend auf deinem Kalender ein und aus.</string>
+    <string name="help_item_automation_details">Wenn aktiviert, liest die App deinen Kalender, erkennt aktive Meetings und aktiviert DND während dieser Zeiten. DND wird nur deaktiviert, wenn die App es zuvor aktiviert hat.</string>
+
+    <string name="help_item_permissions_title">Berechtigungen</string>
+    <string name="help_item_permissions_summary">Kalender- und DND-Zugriff sind für die Automatisierung erforderlich.</string>
+    <string name="help_item_permissions_details">Kalenderzugriff erlaubt das Lesen von Terminen. DND-Zugriff erlaubt das Setzen von Nicht stören. Benachrichtigungen aktivieren Erinnerungen.</string>
+    <string name="unable_to_open_link">Link konnte nicht geöffnet werden.</string>
+
+    <string name="help_item_language_title">Sprache</string>
+    <string name="help_item_language_summary">App-Sprache in den Einstellungen wählen.</string>
+    <string name="help_item_language_details">Du kannst die Sprache in den Einstellungen ändern. Sie wird sofort angewendet und ändert nicht die Gerätesprache.</string>
+
+    <string name="help_item_privacy_title">Datenschutz</string>
+    <string name="help_item_privacy_summary">Analytics und Crash-Berichte steuern.</string>
+    <string name="help_item_privacy_details">Du kannst Nutzungs-Analytics und Crash-Berichte separat aktivieren oder deaktivieren. Crash-Berichte helfen beim Beheben von Bugs, Analytics zeigen die meistgenutzten Funktionen.</string>
+
+    <string name="help_item_exact_alarms_title">Exakte Alarme</string>
+    <string name="help_item_exact_alarms_summary">Verbessert die Timing-Zuverlässigkeit auf neueren Android-Versionen.</string>
+    <string name="help_item_exact_alarms_details">Wenn exakte Alarme erlaubt sind, plant die App präzise Start- und Endzeiten. Andernfalls nutzt sie Schutzjobs und periodische Checks.</string>
+
+    <string name="help_item_battery_title">Akku-Optimierung</string>
+    <string name="help_item_battery_summary">Deaktivieren hilft, dass Alarme und Worker pünktlich laufen.</string>
+    <string name="help_item_battery_details">Einige Geräte verzögern Hintergrundarbeit. Wenn DND spät schaltet, deaktiviere die Akku-Optimierung für Calendar DND.</string>
+
+    <string name="help_item_busy_only_title">Nur belegte Termine</string>
+    <string name="help_item_busy_only_summary">Ignoriert Termine, die als Frei oder Vorläufig markiert sind.</string>
+    <string name="help_item_busy_only_details">Wenn aktiviert, können nur belegte Termine DND auslösen. So wird nicht bei optionalen oder informativen Terminen stummgeschaltet.</string>
+
+    <string name="help_item_ignore_all_day_title">Ganztägige Termine ignorieren</string>
+    <string name="help_item_ignore_all_day_summary">Verhindert, dass ganztägige Termine DND auslösen.</string>
+    <string name="help_item_ignore_all_day_details">Ganztägige Termine sind oft Erinnerungen oder Feiertage. So bleibt DND nicht den ganzen Tag aktiv.</string>
+
+    <string name="help_item_min_duration_title">Minimale Termindauer</string>
+    <string name="help_item_min_duration_summary">Filtert kurze Termine heraus.</string>
+    <string name="help_item_min_duration_details">Termine kürzer als dieser Wert werden ignoriert. Dadurch gibt es weniger ungewollte Umschaltungen.</string>
+
+    <string name="help_item_dnd_mode_title">DND-Modus</string>
+    <string name="help_item_dnd_mode_summary">Wähle Nur Priorität oder Komplett stumm.</string>
+    <string name="help_item_dnd_mode_details">Nur Priorität lässt favorisierte Kontakte und Prioritätsbenachrichtigungen durch. Komplett stumm blockiert alle Töne, einschließlich Wecker.</string>
+
+    <string name="help_item_dnd_timing_title">DND-Timing</string>
+    <string name="help_item_dnd_timing_summary">DND vor oder nach Meetingbeginn starten.</string>
+    <string name="help_item_dnd_timing_details">Mit dem Regler lässt sich der Start verschieben. Negative Werte starten früher, positive später, 0 genau zum Meetingstart.</string>
+
+    <string name="help_item_pre_dnd_notification_title">Vorab-DND-Benachrichtigung</string>
+    <string name="help_item_pre_dnd_notification_summary">Optionale Erinnerung 5 Minuten bevor DND startet.</string>
+    <string name="help_item_pre_dnd_notification_details">Wenn aktiviert, zeigt die App kurz vorher eine Erinnerung und lässt dich DND sofort aktivieren.</string>
+
+    <string name="help_item_tile_title">Schnelleinstellungen-Kachel</string>
+    <string name="help_item_tile_summary">Automatisches DND in der Schnellleiste umschalten.</string>
+    <string name="help_item_tile_details">Füge die Kachel zu den Schnelleinstellungen hinzu. Bei fehlendem Setup öffnet die Kachel die App.</string>
+
+    <string name="help_item_debug_logs_title">Debug-Protokolle</string>
+    <string name="help_item_debug_logs_summary">Zeigt Engine-Entscheidungen und Planung.</string>
+    <string name="help_item_debug_logs_details">Nutze Logs zur Bestätigung und Fehlersuche. Du kannst Logs kopieren und teilen; der Header enthält wichtige Einstellungen.</string>
+
+    <string name="help_item_pull_refresh_title">Nach unten ziehen</string>
+    <string name="help_item_pull_refresh_summary">Ziehe auf dem Hauptbildschirm nach unten, um den Status zu aktualisieren.</string>
+    <string name="help_item_pull_refresh_details">Ziehe auf dem Startbildschirm nach unten, um deinen Meetingstatus manuell zu aktualisieren und den DND-Zustand erneut zu prüfen. Das ist nützlich, wenn sich dein Kalender kürzlich geändert hat und du den aktualisierten Status sofort sehen möchtest.</string>
+
+    <!-- Common -->
+    <string name="back">Zurück</string>
+    <string name="continue_button">Weiter</string>
+    <string name="grant_permission">Berechtigung erteilen</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="open_app_settings">App-Einstellungen öffnen</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="done">Fertig</string>
+    <string name="ok">OK</string>
+
+    <!-- Onboarding Flow -->
+    <string name="intro_title">Willkommen bei Calendar DND</string>
+    <string name="intro_body">Dein Handy wird während Meetings automatisch stummgeschaltet. Wir führen dich in wenigen Schritten durch die Einrichtung.</string>
+    <string name="intro_notice">Diese App ist „vibe-coded“, also einfach, aber sie funktioniert. :)</string>
+    <string name="get_started">Los geht\'s</string>
+
+    <string name="language_title">Sprache auswählen</string>
+    <string name="language_description">Du kannst dies später in den Einstellungen ändern.</string>
+    <string name="step_indicator">Schritt %1$d von %2$d</string>
+
+    <string name="calendar_scope_title">Zu überwachende Kalender</string>
+    <string name="calendar_scope_description">Wähle alle Kalender oder bestimmte Kalender aus.</string>
+    <string name="calendar_scope_privacy_hint">Alle Kalenderdaten bleiben auf dem Gerät.</string>
+    <string name="calendar_scope_all_title">Alle Kalender</string>
+    <string name="calendar_scope_all_summary">Alle Kalender auf diesem Gerät verwenden.</string>
+    <string name="calendar_scope_specific_title">Kalender auswählen</string>
+    <string name="calendar_scope_specific_summary">Lege fest, welche Kalender verwendet werden.</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_general">Allgemein</string>
+    <string name="privacy_title">Datenschutz</string>
+    <string name="dnd_timing_title">DND-Timing</string>
+    <string name="dnd_timing_start_title">DND starten</string>
+    <string name="dnd_timing_before_label">Vorher</string>
+    <string name="dnd_timing_after_label">Nachher</string>
+    <string name="dnd_timing_on_time">Startet genau mit Beginn des Meetings</string>
+    <string name="dnd_timing_before_meeting">Startet %1$d Min vor dem Meeting</string>
+    <string name="dnd_timing_after_meeting">Startet %1$d Min nach dem Meeting</string>
+    <string name="dnd_timing_value_zero">0 Minuten</string>
+    <string name="dnd_timing_value_before">%1$d Minuten vorher</string>
+    <string name="dnd_timing_value_after">%1$d Minuten nachher</string>
+
+    <string name="privacy_intro">Hilf, die App zu verbessern, indem du Daten teilst. Das kannst du später ändern.</string>
+    <string name="privacy_change_later">Du kannst das später ändern.</string>
+    <string name="privacy_defaults_hint">Standard: Analytics aus, Crashberichte an.</string>
+    <string name="analytics_opt_in_title">Nutzungsanalyse</string>
+    <string name="analytics_opt_in_description">Anonyme Nutzungsdaten teilen, um Funktionen zu verbessern</string>
+    <string name="crashlytics_opt_in_title">Absturzberichte</string>
+    <string name="crashlytics_opt_in_description">Absturzberichte senden, um Fehler zu beheben</string>
+
+    <!-- About -->
+    <string name="app_version_format">Version %1$s (%2$d)</string>
+    <string name="github_repo_title">Report issue</string>
+    <string name="github_repo_subtitle">Quellcode ansehen, Probleme melden und beitragen</string>
+    <string name="github_repo_url">https://github.com/BrunoAFK/CalendarDND</string>
+    <string name="github_issues_url">https://github.com/BrunoAFK/CalendarDND/issues</string>
+    <string name="github_releases_url">https://github.com/BrunoAFK/CalendarDND/releases</string>
+    <string name="github_latest_release_url">https://github.com/BrunoAFK/CalendarDND/releases/latest</string>
+    <string name="about_intro">Calendar DND hält dein Telefon während Meetings leise und zeigt, was als Nächstes ansteht.</string>
+    <string name="about_application_section_title">Anwendung</string>
+    <string name="about_author_label">Autor</string>
+    <string name="about_author_section_title">Autor</string>
+    <string name="about_author_value">Bruno Pavelja</string>
+    <string name="about_github_label">GitHub</string>
+    <string name="about_report_title">Problem melden</string>
+    <string name="about_report_body">Wenn etwas nicht stimmt, erstelle ein GitHub-Issue und nenne Gerät, Android-Version und Schritte zur Reproduktion. Screenshots helfen.</string>
+    <string name="about_version_title">Version</string>
+    <string name="about_version_subtitle">Releases auf GitHub ansehen</string>
+    <string name="about_whats_new_title">Neuigkeiten</string>
+    <string name="about_whats_new_action">Neuigkeiten ansehen</string>
+    <string name="about_whats_new_subtitle">Aktuelle Änderungen und Release Notes</string>
+    <string name="about_features_title">Funktionen</string>
+    <string name="about_features_debug_title">Debug-Werkzeuge</string>
+    <string name="about_features_debug_subtitle">Erweiterte Debug-Funktionen zur Fehlerbehebung aktivieren</string>
+    <string name="whats_new_title">Neuigkeiten</string>
+    <string name="whats_new_latest_title">Aktuelles Release</string>
+    <string name="whats_new_latest_body">Öffne die GitHub-Release-Notes für den vollständigen Changelog.</string>
+    <string name="whats_new_latest_action">Release Notes öffnen</string>
+    <string name="whats_new_latest_subtitle">Öffnet GitHub im Browser</string>
+    <string name="whats_new_features_title">Highlights</string>
+    <string name="whats_new_features_body">- Neue Über-die-App- und Neuigkeiten-Seiten mit Release-Links\n- Kompakter DND-Banner mit einer klaren Statuszeile\n- Volle Karten-Animation mit Tippen zum Öffnen des Kalendereintrags\n- Einstellungen und Berechtigungen mit Titeln in der Topbar\n- Manuelle DND-Prüfung und Automations-Highlights verbessert</string>
+    <string name="whats_new_history_title">Ältere Versionen</string>
+    <string name="whats_new_history_action">Alle Releases ansehen</string>
+    <string name="whats_new_history_subtitle">Vorherige Versionen auf GitHub</string>
+    <string name="update_menu_title">Updates</string>
+    <string name="update_menu_subtitle">Versionshinweise und Verlauf</string>
+    <string name="update_screen_title">Updates</string>
+    <string name="update_screen_current_version">Aktuelle Version: %1$s</string>
+    <string name="update_screen_latest_title">Neueste Version</string>
+    <string name="update_screen_history_title">Versionsverlauf</string>
+    <string name="update_screen_loading">Update-Infos werden geladen...</string>
+    <string name="update_screen_no_data">Keine Update-Infos verfügbar.</string>
+    <string name="update_screen_unavailable">Updates sind für diesen Build nicht verfügbar.</string>
+    <string name="update_dialog_title">Update verfügbar</string>
+    <string name="update_dialog_body">Version %1$s ist verfügbar.</string>
+    <string name="update_action_download">Herunterladen</string>
+    <string name="update_action_later">Später</string>
+    <string name="update_notification_title">Update verfügbar</string>
+    <string name="update_notification_body">Version %1$s steht zum Download bereit.</string>
+
+    <!-- Debug Tools -->
+    <string name="debug_tools_title">Debug</string>
+    <string name="debug_tools_description">Automation überwachen, Vorschauen anzeigen und Debug-Optionen steuern.</string>
+    <string name="debug_tools_app_info_title">Anwendungsinfo</string>
+    <string name="debug_tools_open_title">Debug-Werkzeuge</string>
+    <string name="debug_tools_open_subtitle">Lokalisierte Strings und Build-Infos ansehen</string>
+    <string name="debug_tools_languages_title">Sprachen</string>
+    <string name="debug_language_title">Strings: %1$s</string>
+    <string name="debug_tools_preview_title">Vorschau</string>
+    <string name="debug_tools_splash_title">Splash-Vorschau</string>
+    <string name="debug_tools_splash_subtitle">Vorschau der Splash-Ansicht mit dem aktuellen Icon</string>
+    <string name="debug_tools_notifications_title">Benachrichtigungen</string>
+    <string name="debug_tools_test_notification_title">Testbenachrichtigung</string>
+    <string name="debug_tools_test_notification_subtitle">Eine Vor-DND-Erinnerung senden</string>
+    <string name="debug_tools_logs_section_title">Protokolle</string>
+    <string name="debug_tools_logs_subtitle">Automationsprotokolle anzeigen, um zu sehen, was passiert</string>
+    <string name="debug_log_settings_title">Protokolleinstellungen</string>
+    <string name="debug_log_settings_subtitle">Wähle, wie detailliert die Debug-Einträge sein sollen</string>
+    <string name="debug_log_settings_level_label">Protokollstufe</string>
+    <string name="debug_log_settings_include_details_title">Detaillierte Protokolle einschließen</string>
+    <string name="debug_log_settings_include_details_subtitle">Engine-Ausführungsdetails zu jedem Protokoll hinzufügen</string>
+    <string name="debug_tools_maintenance_title">Wartung</string>
+    <string name="debug_tools_total_silence_dialog_title">Bestätigung für Total Silence</string>
+    <string name="debug_tools_total_silence_dialog_subtitle">Zeigt den Bestätigungsdialog, bevor Total Silence aktiviert wird</string>
+    <string name="debug_tools_app_control_title">Anwendungssteuerung</string>
+    <string name="debug_tools_restore_dnd_banner_title">DND-Banner wiederherstellen</string>
+    <string name="debug_tools_restore_dnd_banner_subtitle">Das DND-Modal auf dem Hauptbildschirm erneut anzeigen</string>
+    <string name="debug_tools_restore_banners_title">Alle Banner wiederherstellen</string>
+    <string name="debug_tools_restore_banners_subtitle">DND-Modus und Aktualisierungsbanner auf dem Startbildschirm erneut anzeigen</string>
+    <string name="debug_tools_reset_total_silence_title">Vollständige Stille zurücksetzen</string>
+    <string name="debug_tools_reset_total_silence_subtitle">Zeigt den Warndialog erneut an, wenn Vollständige Stille ausgewählt wird</string>
+
+    <!-- Debug tools -->
+    <string name="debug_section_title">Debug</string>
+    <string name="debug_tools_disabled">Debug-Tools ausgeblendet</string>
+    <string name="debug_tools_hint">5-mal tippen, um Debug-Tools umzuschalten.</string>
+
+    <string name="app_version_name_only">Version %1$s</string>
+
+    <!-- Settings help text -->
+    <string name="settings_busy_only_help">Ereignisse, die als \"Frei\" oder \"Vorläufig\" markiert sind, lösen ebenfalls DND aus.</string>
+    <string name="settings_min_duration_help">Kürzere Meetings lösen kein DND aus. Nützlich für kurze Abstimmungen.</string>
+    <string name="dnd_timing_help_on_time">DND startet genau mit Beginn des Meetings.</string>
+    <string name="dnd_timing_help_before">DND startet %1$d Minuten vor Beginn des Meetings.</string>
+    <string name="dnd_timing_help_after">DND startet %1$d Minuten nach Beginn des Meetings.</string>
+
+    <!-- Permission status -->
+    <string name="permissions_title">Berechtigungen</string>
+    <string name="permissions_subtitle">Zugriffe prüfen und beheben.</string>
+    <string name="fix">Beheben</string>
+    <string name="permission_status_calendar">Kalenderzugriff</string>
+    <string name="permission_status_calendar_message">Erforderlich, um Termine zu lesen.</string>
+    <string name="permission_status_dnd">DND-Steuerung</string>
+    <string name="permission_status_dnd_message">Erforderlich, um \"Nicht stören\" zu ändern.</string>
+    <string name="permission_status_exact_alarms">Präzises Timing</string>
+    <string name="permission_status_exact_alarms_message">Timing kann um bis zu 15 Minuten abweichen.</string>
+    <string name="permission_status_notifications">Benachrichtigungen</string>
+    <string name="permission_status_notifications_message">Erforderlich für Vorab-Hinweise.</string>
+
+    <!-- Error states -->
+    <string name="error_calendar_permission_title">Kalender nicht lesbar</string>
+    <string name="error_calendar_permission_message">Kalenderberechtigung erteilen, um Meetings zu sehen.</string>
+    <string name="error_dnd_permission_title">DND nicht steuerbar</string>
+    <string name="error_dnd_permission_message">Zugriff auf \"Nicht stören\" erteilen, um Auto-Stumm zu aktivieren.</string>
+    <string name="error_calendar_query_title">Kalender konnte nicht geladen werden</string>
+    <string name="error_calendar_query_message">Beim Lesen der Termine ist ein Problem aufgetreten. Versuche es erneut.</string>
+    <string name="error_dnd_change_title">DND konnte nicht geändert werden</string>
+    <string name="error_dnd_change_message">Etwas hat die Änderung von DND verhindert. Das passiert manchmal auf Samsung-Geräten.</string>
+    <string name="error_no_calendars_title">Keine Kalender gefunden</string>
+    <string name="error_no_calendars_message">Stelle sicher, dass mindestens ein Kalender auf deinem Gerät synchronisiert ist.</string>
+    <string name="error_network_title">Verbindungsproblem</string>
+    <string name="error_network_message">Updates konnten nicht geprüft werden. Prüfe deine Internetverbindung.</string>
+    <string name="error_action_open_settings">Einstellungen öffnen</string>
+    <string name="error_action_retry">Erneut versuchen</string>
+    <string name="error_action_try_again">Nochmals versuchen</string>
+    <string name="error_action_open_calendar">Kalender öffnen</string>
+    <string name="dismiss">Schließen</string>
+
+    <string name="dnd_mode_manage_hint">Lege in den System-DND-Einstellungen fest, wer durchkommen darf.</string>
+    <string name="dnd_total_silence_confirm_title">Komplett stumm aktivieren?</string>
+    <string name="dnd_total_silence_confirm_body">Dies blockiert alle Töne, einschließlich Wecker, bis das Meeting endet.</string>
+    <string name="dnd_total_silence_confirm_button">Komplett stumm aktivieren</string>
+    <string name="dnd_total_silence_cancel_button">Abbrechen</string>
+    <string name="dnd_mode_screen_subtitle">Wähle, wie streng der Nicht-stören-Modus während Meetings sein soll.</string>
+    <string name="check_dnd_complete">DND-Prüfung abgeschlossen</string>
+
+    <string name="warning_degraded_mode">Der DND-Zeitpunkt kann ungenauer sein. Erlaube exakte Alarme für präzises Timing.</string>
+    <string name="fix_now">Jetzt beheben</string>
+    <string name="dnd_will_activate">DND wird um %1$s aktiviert</string>
+    <string name="time_until_format">in %1$s</string>
+    <string name="time_until_now">jetzt</string>
+    <string name="untitled_meeting">Unbenanntes Meeting</string>
+    <string name="no_upcoming_meetings">Alles frei!</string>
+    <string name="no_meetings_hint">Keine Meetings in den nächsten 7 Tagen</string>
+    <string name="empty_no_meetings_title">Alles frei!</string>
+    <string name="empty_no_meetings_message">Keine Meetings in den nächsten 7 Tagen. DND aktiviert sich automatisch, wenn du Termine hinzufügst.</string>
+    <string name="open_calendar">Kalender öffnen</string>
+    <string name="empty_no_calendars_title">Keine Kalender gefunden</string>
+    <string name="empty_no_calendars_message">Füge ein Google-, Outlook- oder anderes Kalenderkonto hinzu.</string>
+    <string name="add_account">Konto hinzufügen</string>
+    <string name="empty_no_logs_title">Noch keine Aktivität</string>
+    <string name="empty_no_logs_message">Logs erscheinen hier, wenn DND ein- und ausgeschaltet wird.</string>
+    <string name="empty_disabled_title">Auto-Stumm pausiert</string>
+    <string name="empty_disabled_message">Aktiviere Auto-Stumm, um DND während Kalenderterminen automatisch einzuschalten.</string>
+    <string name="enable_now">Jetzt aktivieren</string>
+    <string name="event_overview_now_label">Jetzt</string>
+    <string name="event_overview_next_label">Als nächstes</string>
+    <string name="event_overview_ends_in_format">Endet in %1$s</string>
+    <string name="event_overview_starts_in_format">Startet in %1$s</string>
+
+    <string name="about_section_title">About</string>
+    <string name="about_version_label">Version</string>
+    <string name="about_version_section_title">Version</string>
+    <string name="debug_logs_share">Share debug summary</string>
+    <string name="debug_tools_dnd_preview_priority_title">Preview Priority Only</string>
+    <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
+    <string name="debug_tools_dnd_preview_title">DND Preview</string>
+    <string name="debug_tools_dnd_preview_total_title">Preview Total Silence</string>
+    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
+    <string name="debug_tools_dry_run_title">Test run (dry)</string>
+    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
+    <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
+    <string name="debug_tools_nav_title">Navigation</string>
+    <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
+    <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
+    <string name="dnd_priority_category_alarms">Alarms</string>
+    <string name="dnd_priority_category_calls_with">Calls (%1$s)</string>
+    <string name="dnd_priority_category_events">Events</string>
+    <string name="dnd_priority_category_messages_with">Messages (%1$s)</string>
+    <string name="dnd_priority_category_reminders">Reminders</string>
+    <string name="dnd_priority_category_repeat_callers">Repeat callers</string>
+    <string name="dnd_priority_description">Choose which people and apps can still interrupt you while Priority Only is active.</string>
+    <string name="dnd_priority_manage_button">Manage priority exceptions</string>
+    <string name="dnd_priority_senders_anyone">Anyone</string>
+    <string name="dnd_priority_senders_contacts">Contacts</string>
+    <string name="dnd_priority_senders_starred">Starred</string>
+    <string name="dnd_priority_summary_fallback">Allowed: Configure in system settings</string>
+    <string name="dnd_priority_summary_format">Allowed: %1$s</string>
+    <string name="dnd_priority_summary_none">Allowed: None</string>
+    <string name="dnd_priority_summary_title">Priority interruptions</string>
+    <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
+    <string name="dnd_total_silence_manage_button">Open DND settings</string>
+    <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
+    <string name="dnd_total_silence_warning_title">Total Silence warning</string>
+    <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
+    <string name="meeting_overrun_channel_name">Meeting Overrun</string>
+    <string name="meeting_overrun_extend_format">+%1$dm</string>
+    <string name="meeting_overrun_message">Extend DND to stay focused</string>
+    <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="settings_help">Help</string>
+    <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
+    <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
+    <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
+    <string name="tile_hint_title">Quick Settings tile</string>
+</resources>

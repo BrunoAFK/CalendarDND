@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calendar DND</string>
+    <string name="tile_label">Calendar DND</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Postavljanje potrebno</string>
+    <string name="onboarding_description">Calendar DND treba nekoliko dozvola:</string>
+    <string name="onboarding_description_short">Calendar DND treba ove dozvole:</string>
+    <string name="calendar_permission_title">Pristup kalendaru</string>
+    <string name="calendar_permission_description">Koristi se za otkrivanje sastanaka i zauzetih termina.</string>
+    <string name="calendar_permission_description_short">Čitanje kalendara za sastanke</string>
+    <string name="dnd_permission_title">Pristup Ne ometaj</string>
+    <string name="dnd_permission_description">Potrebno za uključivanje DND-a na početku sastanka.</string>
+    <string name="dnd_permission_description_short">Upravljanje DND-om tijekom sastanaka</string>
+    <string name="notification_permission_title">Obavijesti</string>
+    <string name="notification_permission_description">Omogućuje kratku najavu prije DND-a.</string>
+    <string name="notification_permission_description_short">Najava prije DND-a</string>
+    <string name="exact_alarm_title">Točni alarmi (Preporučeno)</string>
+    <string name="exact_alarm_description">Drži precizan start i kraj unatoč sistemskim kašnjenjima.</string>
+    <string name="exact_alarm_description_short">Precizan tajming</string>
+    <string name="battery_title">Optimizacija baterije (Preporuceno)</string>
+    <string name="battery_description">Poboljšava pouzdanost kad su ograničenja baterije stroga.</string>
+    <string name="battery_description_short">Smanjuje ograničenja baterije</string>
+    <string name="permission_required_label">Obavezno</string>
+    <string name="why_we_need_this">Zašto je ovo potrebno</string>
+    <string name="calendar_permission_rationale">Čitamo samo naslove i vremena, ne mijenjamo događaje.</string>
+    <string name="dnd_permission_rationale">Bez toga aplikacija može samo podsjetiti, ne i prebaciti DND.</string>
+    <string name="notification_permission_rationale">DND će i dalje raditi, ali bez upozorenja.</string>
+    <string name="exact_alarm_rationale">Bez toga se vrijeme može pomaknuti za nekoliko minuta.</string>
+    <string name="battery_rationale">Bez iznimke alarmi mogu kasniti ili biti preskočeni.</string>
+    <string name="permissions_helper_text">Odobri Kalendar + DND za nastavak.</string>
+
+    <!-- Status Screen -->
+    <string name="automation">Automatski DND</string>
+    <string name="automation_description">Automatski uključuje i isključuje DND prema kalendaru</string>
+    <string name="active">Aktivno</string>
+    <string name="inactive">Neaktivno</string>
+    <string name="setup_required">⚠️ Potrebno postavljanje – nedostaju dozvole</string>
+    <string name="complete_setup">Završi postavljanje</string>
+    <string name="current_meeting">Trenutačni sastanak</string>
+    <string name="next_meeting">Sljedeći sastanak</string>
+    <string name="none">Nema</string>
+    <string name="none_scheduled">Nema zakazanih</string>
+    <string name="dnd_status">DND status</string>
+    <string name="system_dnd">Sustavni DND:</string>
+    <string name="app_controls_dnd">Aplikacija upravlja DND-om:</string>
+    <string name="run_engine_now">Provjeri DND sada</string>
+    <string name="manual_check_subtitle">Rucna DND provjera u postavkama</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Postavke</string>
+    <string name="selected_calendars">Odabrani kalendari</string>
+    <string name="all_calendars">Svi kalendari</string>
+    <string name="calendars_selected">%d kalendara odabrano</string>
+    <string name="event_filters">Filtri događaja</string>
+    <string name="busy_only_title">Samo zauzeti događaji</string>
+    <string name="busy_only_description">Ignoriraj slobodne/privremene događaje</string>
+    <string name="ignore_allday_title">Ignoriraj cjelodnevne događaje</string>
+    <string name="ignore_allday_description">Ne pokreći DND za cjelodnevne događaje</string>
+    <string name="min_duration_title">Minimalno trajanje događaja</string>
+    <string name="min_duration_description">Događaji kraći od %d min se ignoriraju</string>
+    <string name="min_duration_value">%d min</string>
+    <string name="dnd_mode">DND način</string>
+    <string name="priority_mode_title">Samo prioritet</string>
+    <string name="priority_mode_description">Dopusti prioritetne obavijesti</string>
+    <string name="priority_mode_details">Pozivi od favorita i ponovljenih pozivatelja mogu zazvoniti. Prioritetne obavijesti i dalje mogu upozoriti.</string>
+    <string name="total_silence_title">Potpuna tišina</string>
+    <string name="total_silence_description">Blokiraj sve zvukove (uključujući alarme)</string>
+    <string name="total_silence_details">Nista ne zvoni, ni favoriti. Oprez ako ocekujes hitne pozive.</string>
+
+    <!-- Calendar Picker -->
+    <string name="select_calendars">Odaberi kalendare</string>
+
+    <!-- Debug Logs -->
+    <string name="debug_logs">Dijagnostički zapisi</string>
+    <string name="debug_logs_show_details">Prikaži detalje</string>
+    <string name="debug_logs_hide_details">Sakrij detalje</string>
+    <string name="search_logs">Pretraži zapise</string>
+    <string name="close_search">Zatvori pretraživanje</string>
+    <string name="no_logs_yet">Još nema zapisa</string>
+    <string name="clear_logs">Obriši zapise</string>
+    <string name="copy_logs">Kopiraj zapise</string>
+    <string name="logs_copied">Zapisi kopirani</string>
+    <string name="debug_tools_enabled">Debug alati omogućeni</string>
+
+    <!-- Notifications -->
+    <string name="pre_dnd_notification_title">DND uskoro počinje</string>
+    <string name="pre_dnd_notification_body">DND će se uključiti za: %1$s</string>
+    <string name="pre_dnd_notification_body_generic">DND će se uključiti za 5 minuta</string>
+    <string name="pre_dnd_notification_action">Uključi odmah</string>
+    <string name="pre_dnd_notification_setting_title">Obavijest prije DND-a</string>
+    <string name="pre_dnd_notification_setting">Obavijesti 5 minuta prije početka DND-a</string>
+
+    <!-- Status Banner -->
+    <string name="status_setup_required">Potrebna je postavka</string>
+    <string name="status_missing_permissions">%1$d potrebnih dopuštenja</string>
+    <string name="status_complete_setup_hint">Dovrši postavke u nastavku</string>
+    <string name="status_automation_paused">Auto-utišavanje pauzirano</string>
+    <string name="status_automation_ready">Auto-utišavanje spremno</string>
+    <string name="status_automation_hint">DND će se automatski uključiti</string>
+    <string name="status_dnd_mode_format">DND nacin: %1$s</string>
+    <string name="status_missing_permissions_summary">Zavrsi postavljanje kako bi DND radio automatski.</string>
+    <string name="status_automation_paused_summary">Automatika je iskljucena. DND se nece mijenjati automatski.</string>
+    <string name="status_dnd_active_summary">DND je aktivan. Zavrsava za %1$s.</string>
+    <string name="status_automation_ready_summary">DND ce se automatski ukljuciti u nacinu %1$s.</string>
+
+    <string name="dnd_mode_banner_message">DND ce se automatski ukljuciti u nacinu %1$s. Dodirni za promjenu.</string>
+    <string name="dnd_mode_banner_title">DND nacin</string>
+    <string name="refresh_banner_title">Osvjezi status</string>
+    <string name="refresh_banner_message">Povuci dolje za osvjezavanje. Rucna provjera je dostupna i u postavkama.</string>
+    <string name="status_dnd_active">Ne uznemiravaj aktivno</string>
+    <string name="status_in_meeting">U: %1$s</string>
+    <string name="status_dnd_ends_in">Završava za %1$s</string>
+    <string name="status_next_meeting_in">Sljedeći sastanak za %1$s</string>
+
+    <!-- Tile -->
+    <string name="tile_disabled">Isključeno</string>
+    <string name="tile_disabled_desc">Calendar DND je isključen</string>
+    <string name="tile_enabled">Uključeno</string>
+    <string name="tile_enabled_desc">Calendar DND je uključen</string>
+    <string name="tile_next_prefix">Sljedeće: %1$s</string>
+    <string name="tile_next_desc">DND će se uključiti za %1$s za %2$s</string>
+    <string name="tile_dnd_prefix">DND: %1$s</string>
+    <string name="tile_dnd_desc">Ne uznemiravaj aktivno %1$s</string>
+    <string name="tile_dnd_desc_with_title">Ne uznemiravaj aktivno %1$s tijekom %2$s</string>
+    <string name="tile_less_than_minute">&lt; 1 min</string>
+    <string name="tile_minutes">%1$d min</string>
+    <string name="tile_hours">%1$d h</string>
+    <string name="tile_hours_minutes">%1$d h %2$d min</string>
+    <string name="tile_days">%1$d d</string>
+    <string name="tile_meeting_fallback">Sastanak</string>
+
+    <!-- Settings -->
+    <string name="notifications_title">Obavijesti</string>
+    <string name="about_title">O aplikaciji</string>
+
+    <!-- Help -->
+    <string name="help_title">Pomoć</string>
+    <string name="help_about_title">O aplikaciji</string>
+    <string name="help_about_subtitle">Verzija, autor i podrška</string>
+    <string name="help_feature_guide_title">Vodič kroz značajke</string>
+    <string name="help_feature_guide_subtitle">Saznaj što svaka postavka i značajka radi</string>
+    <string name="help_show_more">Prikaži više</string>
+    <string name="help_show_less">Prikaži manje</string>
+    <string name="help_search_placeholder">Pretraži teme pomoći</string>
+    <string name="help_search_clear">Obriši pretragu</string>
+    <string name="help_search_no_results">Nema odgovarajućih tema pomoći</string>
+
+    <string name="help_item_automation_title">Automatski DND</string>
+    <string name="help_item_automation_summary">Automatski uključuje i isključuje DND prema kalendaru.</string>
+    <string name="help_item_automation_details">Kad je uključeno, aplikacija čita kalendar, prepoznaje aktivne sastanke i uključuje DND u tim periodima. DND će isključiti samo ako ga je prethodno uključila.</string>
+
+    <string name="help_item_permissions_title">Dozvole</string>
+    <string name="help_item_permissions_summary">Pristup kalendaru i DND-u potreban je za automatizaciju.</string>
+    <string name="help_item_permissions_details">Dozvola za kalendar omogućuje čitanje događaja. DND dozvola omogućuje postavljanje Ne ometaj. Obavijesti omogućuju podsjetnike.</string>
+    <string name="unable_to_open_link">Nije moguce otvoriti poveznicu.</string>
+
+    <string name="help_item_language_title">Jezik</string>
+    <string name="help_item_language_summary">Odaberite jezik aplikacije u postavkama.</string>
+    <string name="help_item_language_details">Jezik možete promijeniti u postavkama. Primjenjuje se odmah i ne mijenja jezik uređaja.</string>
+
+    <string name="help_item_privacy_title">Privatnost</string>
+    <string name="help_item_privacy_summary">Kontrolirajte analitiku i izvješća o rušenju.</string>
+    <string name="help_item_privacy_details">Možete zasebno uključiti ili isključiti analitiku korištenja i izvješća o rušenju. Izvješća o rušenju pomažu ispraviti bugove, a analitika pokazuje koje se značajke najviše koriste.</string>
+
+    <string name="help_item_exact_alarms_title">Točni alarmi</string>
+    <string name="help_item_exact_alarms_summary">Poboljšava točnost vremena na novijim verzijama Androida.</string>
+    <string name="help_item_exact_alarms_details">Ako su točni alarmi dopušteni, aplikacija zakazuje precizna vremena početka i završetka. Ako nisu, koristi zaštitne zadatke i periodične provjere.</string>
+
+    <string name="help_item_battery_title">Optimizacija baterije</string>
+    <string name="help_item_battery_summary">Isključivanje pomaže da alarmi i radnici rade na vrijeme.</string>
+    <string name="help_item_battery_details">Neki uređaji odgađaju rad u pozadini. Ako je DND kasnio, isključite optimizaciju baterije za Calendar DND.</string>
+
+    <string name="help_item_busy_only_title">Samo zauzeti događaji</string>
+    <string name="help_item_busy_only_summary">Ignorira događaje označene kao Slobodno ili Privremeno.</string>
+    <string name="help_item_busy_only_details">Kad je uključeno, samo zauzeti događaji mogu uključiti DND. To sprječava utišavanje tijekom opcionalnih ili informativnih događaja.</string>
+
+    <string name="help_item_ignore_all_day_title">Ignoriraj cjelodnevne događaje</string>
+    <string name="help_item_ignore_all_day_summary">Sprječava da cjelodnevni događaji uključe DND.</string>
+    <string name="help_item_ignore_all_day_details">Cjelodnevni događaji često su podsjetnici ili praznici. Tako DND ne ostaje uključen cijeli dan.</string>
+
+    <string name="help_item_min_duration_title">Minimalno trajanje događaja</string>
+    <string name="help_item_min_duration_summary">Filtrira kratke događaje.</string>
+    <string name="help_item_min_duration_details">Događaji kraći od ove vrijednosti bit će ignorirani. To smanjuje neželjena prebacivanja.</string>
+
+    <string name="help_item_dnd_mode_title">DND način</string>
+    <string name="help_item_dnd_mode_summary">Odaberite Samo prioritet ili Potpuna tišina.</string>
+    <string name="help_item_dnd_mode_details">Samo prioritet dopušta omiljene kontakte i prioritetne obavijesti. Potpuna tišina blokira sve zvukove, uključujući alarme.</string>
+
+    <string name="help_item_dnd_timing_title">DND vrijeme</string>
+    <string name="help_item_dnd_timing_summary">Pokrenite DND prije ili poslije početka sastanka.</string>
+    <string name="help_item_dnd_timing_details">Klizačem pomičete početak. Negativne vrijednosti pokreću ranije, pozitivne kasnije, a 0 točno na početku.</string>
+
+    <string name="help_item_pre_dnd_notification_title">Obavijest prije DND-a</string>
+    <string name="help_item_pre_dnd_notification_summary">Opcionalni podsjetnik 5 minuta prije početka DND-a.</string>
+    <string name="help_item_pre_dnd_notification_details">Kad je uključeno, aplikacija prikazuje podsjetnik neposredno prije početka i omogućuje trenutno uključivanje DND-a.</string>
+
+    <string name="help_item_tile_title">Pločica brzih postavki</string>
+    <string name="help_item_tile_summary">Uključivanje automatskog DND-a iz brzih postavki.</string>
+    <string name="help_item_tile_details">Dodajte pločicu u brze postavke za jedno dodirno uključivanje/isključivanje. Ako nedostaje postavljanje, pločica otvara aplikaciju.</string>
+
+    <string name="help_item_debug_logs_title">Dijagnostički zapisi</string>
+    <string name="help_item_debug_logs_summary">Prikazuje odluke engine-a i raspoređivanje.</string>
+    <string name="help_item_debug_logs_details">Koristite zapise za potvrdu vremena i dijagnostiku. Zapise možete kopirati i dijeliti; zaglavlje sadrži ključne postavke.</string>
+
+    <string name="help_item_pull_refresh_title">Povuci za osvježavanje</string>
+    <string name="help_item_pull_refresh_summary">Povuci dolje na glavnom zaslonu za osvježavanje statusa.</string>
+    <string name="help_item_pull_refresh_details">Povuci dolje na početnom zaslonu za ručno osvježavanje statusa sastanka i ponovnu provjeru DND stanja. Korisno je ako se tvoj kalendar nedavno promijenio i želiš odmah vidjeti ažurirani status.</string>
+
+    <!-- Common -->
+    <string name="back">Natrag</string>
+    <string name="continue_button">Nastavi</string>
+    <string name="grant_permission">Daj dozvolu</string>
+    <string name="open_settings">Otvori postavke</string>
+    <string name="open_app_settings">Otvori postavke aplikacije</string>
+    <string name="yes">Da</string>
+    <string name="no">Ne</string>
+    <string name="done">Gotovo</string>
+    <string name="ok">U redu</string>
+
+    <!-- Onboarding Flow -->
+    <string name="intro_title">Dobrodošli u Calendar DND</string>
+    <string name="intro_body">Automatski utišajte telefon tijekom sastanaka. Vodit ćemo vas kroz kratko postavljanje.</string>
+    <string name="intro_notice">Ova aplikacija je “vibe-coded”, pa je jednostavna, ali radi. :)</string>
+    <string name="get_started">Započni</string>
+
+    <string name="language_title">Odaberi jezik</string>
+    <string name="language_description">Kasnije to možete promijeniti u Postavkama.</string>
+    <string name="step_indicator">Korak %1$d od %2$d</string>
+
+    <string name="calendar_scope_title">Kalendari za praćenje</string>
+    <string name="calendar_scope_description">Odaberite sve kalendare ili samo određene.</string>
+    <string name="calendar_scope_privacy_hint">Svi podaci iz kalendara ostaju na uređaju.</string>
+    <string name="calendar_scope_all_title">Svi kalendari</string>
+    <string name="calendar_scope_all_summary">Koristi sve kalendare na ovom uređaju.</string>
+    <string name="calendar_scope_specific_title">Odaberi kalendare</string>
+    <string name="calendar_scope_specific_summary">Odaberite koje će se kalendare koristiti.</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_general">Općenito</string>
+    <string name="privacy_title">Privatnost</string>
+    <string name="dnd_timing_title">DND vrijeme</string>
+    <string name="dnd_timing_start_title">Pokreni DND</string>
+    <string name="dnd_timing_before_label">Prije</string>
+    <string name="dnd_timing_after_label">Poslije</string>
+    <string name="dnd_timing_on_time">Počinje točno na početku sastanka</string>
+    <string name="dnd_timing_before_meeting">Počinje %1$d min prije sastanka</string>
+    <string name="dnd_timing_after_meeting">Počinje %1$d min nakon sastanka</string>
+    <string name="dnd_timing_value_zero">0 minuta</string>
+    <string name="dnd_timing_value_before">%1$d minuta prije</string>
+    <string name="dnd_timing_value_after">%1$d minuta nakon</string>
+
+    <string name="privacy_intro">Pomozite poboljšati aplikaciju dijeljenjem podataka. To možete kasnije promijeniti.</string>
+    <string name="privacy_change_later">To možete kasnije promijeniti.</string>
+    <string name="privacy_defaults_hint">Zadano: analitika isključena, izvješća o rušenju uključena.</string>
+    <string name="analytics_opt_in_title">Analitika korištenja</string>
+    <string name="analytics_opt_in_description">Podijelite anonimne podatke o korištenju kako bismo poboljšali značajke</string>
+    <string name="crashlytics_opt_in_title">Izvješća o rušenju</string>
+    <string name="crashlytics_opt_in_description">Šaljite izvješća o rušenju kako bismo popravili greške</string>
+
+    <!-- About -->
+    <string name="app_version_format">Verzija %1$s (%2$d)</string>
+    <string name="github_repo_title">Report issue</string>
+    <string name="github_repo_subtitle">Pogledaj izvorni kod, prijavi probleme i doprinesi</string>
+    <string name="github_repo_url">https://github.com/BrunoAFK/CalendarDND</string>
+    <string name="github_issues_url">https://github.com/BrunoAFK/CalendarDND/issues</string>
+    <string name="github_releases_url">https://github.com/BrunoAFK/CalendarDND/releases</string>
+    <string name="github_latest_release_url">https://github.com/BrunoAFK/CalendarDND/releases/latest</string>
+    <string name="about_intro">Calendar DND stišava telefon tijekom sastanaka i prikazuje što slijedi.</string>
+    <string name="about_application_section_title">Aplikacija</string>
+    <string name="about_author_label">Autor</string>
+    <string name="about_author_section_title">Autor</string>
+    <string name="about_author_value">Bruno Pavelja</string>
+    <string name="about_github_label">GitHub</string>
+    <string name="about_report_title">Prijavi problem</string>
+    <string name="about_report_body">Ako nešto ne radi, otvori GitHub issue i navedi uređaj, verziju Androida i korake za reprodukciju. Snimke zaslona pomažu.</string>
+    <string name="about_version_title">Verzija</string>
+    <string name="about_version_subtitle">Pogledaj izdanja na GitHubu</string>
+    <string name="about_whats_new_title">Što je novo</string>
+    <string name="about_whats_new_action">Pogledaj novosti</string>
+    <string name="about_whats_new_subtitle">Najnovije promjene i bilješke</string>
+    <string name="about_features_title">Značajke</string>
+    <string name="about_features_debug_title">Debug alati</string>
+    <string name="about_features_debug_subtitle">Uključi napredne opcije za dijagnostiku problema</string>
+    <string name="whats_new_title">Što je novo</string>
+    <string name="whats_new_latest_title">Najnovije izdanje</string>
+    <string name="whats_new_latest_body">Otvori GitHub bilješke izdanja za cijeli popis promjena.</string>
+    <string name="whats_new_latest_action">Otvori bilješke izdanja</string>
+    <string name="whats_new_latest_subtitle">Otvara GitHub u pregledniku</string>
+    <string name="whats_new_features_title">Istaknuto</string>
+    <string name="whats_new_features_body">- Novi ekrani O aplikaciji i Sto je novo s linkovima na izdanja\n- Kompaktan DND banner s jednom jasnom statusnom linijom\n- Cijela kartica reagira na dodir i otvara kalendar\n- Postavke i dozvole s naslovima u gornjoj traci\n- Poboljsana rucna provjera DND-a i isticanje automacije</string>
+    <string name="whats_new_history_title">Starije verzije</string>
+    <string name="whats_new_history_action">Pogledaj sva izdanja</string>
+    <string name="whats_new_history_subtitle">Pregled prethodnih verzija na GitHubu</string>
+    <string name="update_menu_title">Azuriranja</string>
+    <string name="update_menu_subtitle">Biljeske izdanja i povijest verzija</string>
+    <string name="update_screen_title">Azuriranja</string>
+    <string name="update_screen_current_version">Trenutna verzija: %1$s</string>
+    <string name="update_screen_latest_title">Najnovije izdanje</string>
+    <string name="update_screen_history_title">Povijest verzija</string>
+    <string name="update_screen_loading">Ucitavanje informacija o azuriranju...</string>
+    <string name="update_screen_no_data">Nema dostupnih informacija o azuriranju.</string>
+    <string name="update_screen_unavailable">Azuriranja nisu dostupna za ovu verziju.</string>
+    <string name="update_dialog_title">Azuriranje dostupno</string>
+    <string name="update_dialog_body">Verzija %1$s je dostupna.</string>
+    <string name="update_action_download">Preuzmi</string>
+    <string name="update_action_later">Kasnije</string>
+    <string name="update_notification_title">Azuriranje dostupno</string>
+    <string name="update_notification_body">Verzija %1$s je spremna za preuzimanje.</string>
+
+    <!-- Debug Tools -->
+    <string name="debug_tools_title">Debug</string>
+    <string name="debug_tools_description">Prati odluke automatizacije, pregledaj obavijesti i upravljaj debug alatima.</string>
+    <string name="debug_tools_app_info_title">Informacije o aplikaciji</string>
+    <string name="debug_tools_open_title">Debug alati</string>
+    <string name="debug_tools_open_subtitle">Pregledaj lokalizirane stringove i build podatke</string>
+    <string name="debug_tools_languages_title">Jezici</string>
+    <string name="debug_language_title">Stringovi: %1$s</string>
+    <string name="debug_tools_preview_title">Pregled</string>
+    <string name="debug_tools_splash_title">Pregled spasha</string>
+    <string name="debug_tools_splash_subtitle">Prikaz spash zaslona s trenutnom ikonom</string>
+    <string name="debug_tools_notifications_title">Obavijesti</string>
+    <string name="debug_tools_test_notification_title">Testna obavijest</string>
+    <string name="debug_tools_test_notification_subtitle">Pošalji podsjetnik prije DND-a</string>
+    <string name="debug_tools_logs_section_title">Zapisi</string>
+    <string name="debug_tools_logs_subtitle">Pokaži zapise automatizacije da vidiš što se događa</string>
+    <string name="debug_log_settings_title">Postavke zapisa</string>
+    <string name="debug_log_settings_subtitle">Odaberi koliko detaljni trebaju biti zapisi</string>
+    <string name="debug_log_settings_level_label">Razina zapisa</string>
+    <string name="debug_log_settings_include_details_title">Uključi detaljne zapise</string>
+    <string name="debug_log_settings_include_details_subtitle">Dodaj detalje pokretanja motora svakom zapisu</string>
+    <string name="debug_tools_maintenance_title">Održavanje</string>
+    <string name="debug_tools_total_silence_dialog_title">Potvrda potpune tišine</string>
+    <string name="debug_tools_total_silence_dialog_subtitle">Prikaži dijalog potvrde prije aktivacije potpune tišine</string>
+    <string name="debug_tools_app_control_title">Kontrole aplikacije</string>
+    <string name="debug_tools_restore_dnd_banner_title">Vrati DND banner</string>
+    <string name="debug_tools_restore_dnd_banner_subtitle">Ponovno prikaži DND poruku na početnom zaslonu</string>
+    <string name="debug_tools_restore_banners_title">Vrati sve bannere</string>
+    <string name="debug_tools_restore_banners_subtitle">Ponovno prikaži DND i banner za osvježavanje na početnom zaslonu</string>
+    <string name="debug_tools_reset_total_silence_title">Resetiraj potvrdu potpune tišine</string>
+    <string name="debug_tools_reset_total_silence_subtitle">Prikaži upozorenje ponovno pri odabiru potpune tišine</string>
+
+    <!-- Debug tools -->
+    <string name="debug_section_title">Debug</string>
+    <string name="debug_tools_disabled">Debug alati skriveni</string>
+    <string name="debug_tools_hint">Dodirni 5 puta za ukljucivanje debug alata.</string>
+
+    <string name="app_version_name_only">Verzija %1$s</string>
+
+    <!-- Settings help text -->
+    <string name="settings_busy_only_help">Događaji označeni kao \"Slobodno\" ili \"Privremeno\" također će uključiti DND.</string>
+    <string name="settings_min_duration_help">Kraći sastanci neće uključiti DND. Korisno za kratke provjere.</string>
+    <string name="dnd_timing_help_on_time">DND će se uključiti točno kad sastanak počne.</string>
+    <string name="dnd_timing_help_before">DND će se uključiti %1$d minuta prije početka sastanka.</string>
+    <string name="dnd_timing_help_after">DND će se uključiti %1$d minuta nakon početka sastanka.</string>
+
+    <!-- Permission status -->
+    <string name="permissions_title">Dozvole</string>
+    <string name="permissions_subtitle">Provjeri i popravi potrebne dozvole.</string>
+    <string name="fix">Popravi</string>
+    <string name="permission_status_calendar">Pristup kalendaru</string>
+    <string name="permission_status_calendar_message">Potrebno za čitanje događaja.</string>
+    <string name="permission_status_dnd">DND kontrola</string>
+    <string name="permission_status_dnd_message">Potrebno za promjenu Ne ometaj.</string>
+    <string name="permission_status_exact_alarms">Precizno vrijeme</string>
+    <string name="permission_status_exact_alarms_message">Vrijeme može odstupati do 15 minuta.</string>
+    <string name="permission_status_notifications">Obavijesti</string>
+    <string name="permission_status_notifications_message">Potrebno za pre-DND upozorenja.</string>
+
+    <!-- Error states -->
+    <string name="error_calendar_permission_title">Ne mogu čitati kalendar</string>
+    <string name="error_calendar_permission_message">Dajte dozvolu za kalendar da vidite sastanke.</string>
+    <string name="error_dnd_permission_title">Ne mogu upravljati DND</string>
+    <string name="error_dnd_permission_message">Dajte pristup Ne ometaj za automatsku tišinu.</string>
+    <string name="error_calendar_query_title">Ne mogu učitati kalendar</string>
+    <string name="error_calendar_query_message">Došlo je do problema pri čitanju događaja. Pokušajte ponovno.</string>
+    <string name="error_dnd_change_title">Ne mogu promijeniti DND</string>
+    <string name="error_dnd_change_message">Nešto je spriječilo promjenu DND-a. To se ponekad događa na Samsung uređajima.</string>
+    <string name="error_no_calendars_title">Nema kalendara</string>
+    <string name="error_no_calendars_message">Provjerite da imate barem jedan sinkroniziran kalendar.</string>
+    <string name="error_network_title">Problem s vezom</string>
+    <string name="error_network_message">Ne mogu provjeriti ažuriranja. Provjerite internetsku vezu.</string>
+    <string name="error_action_open_settings">Otvori postavke</string>
+    <string name="error_action_retry">Pokušaj ponovno</string>
+    <string name="error_action_try_again">Pokušaj ponovno</string>
+    <string name="error_action_open_calendar">Otvori kalendar</string>
+    <string name="dismiss">Zatvori</string>
+
+    <string name="dnd_mode_manage_hint">U sustavnim DND postavkama odaberi tko može proći.</string>
+    <string name="dnd_total_silence_confirm_title">Uključiti potpunu tišinu?</string>
+    <string name="dnd_total_silence_confirm_body">Ovo će blokirati sve zvukove, uključujući alarme, do kraja sastanka.</string>
+    <string name="dnd_total_silence_confirm_button">Uključi potpunu tišinu</string>
+    <string name="dnd_total_silence_cancel_button">Odustani</string>
+    <string name="dnd_mode_screen_subtitle">Odaberi koliko strogi treba biti DND način tijekom sastanaka.</string>
+    <string name="check_dnd_complete">DND provjera završena</string>
+
+    <string name="warning_degraded_mode">Vrijeme DND-a može biti manje precizno. Dopusti točne alarme za precizno vrijeme.</string>
+    <string name="fix_now">Popravi sada</string>
+    <string name="dnd_will_activate">DND će se uključiti u %1$s</string>
+    <string name="time_until_format">za %1$s</string>
+    <string name="time_until_now">sada</string>
+    <string name="untitled_meeting">Sastanak bez naslova</string>
+    <string name="no_upcoming_meetings">Sve je mirno!</string>
+    <string name="no_meetings_hint">Nema sastanaka u sljedećih 7 dana</string>
+    <string name="empty_no_meetings_title">Sve je mirno!</string>
+    <string name="empty_no_meetings_message">Nema sastanaka u sljedećih 7 dana. DND će se automatski uključiti kada dodaš događaje.</string>
+    <string name="open_calendar">Otvori kalendar</string>
+    <string name="empty_no_calendars_title">Nema kalendara</string>
+    <string name="empty_no_calendars_message">Dodaj Google, Outlook ili drugi kalendarski račun.</string>
+    <string name="add_account">Dodaj račun</string>
+    <string name="empty_no_logs_title">Još nema aktivnosti</string>
+    <string name="empty_no_logs_message">Zapisi će se pojaviti ovdje kada se DND uključi ili isključi.</string>
+    <string name="empty_disabled_title">Auto-utisavanje pauzirano</string>
+    <string name="empty_disabled_message">Uključi auto-utisavanje za automatsko uključivanje DND-a tijekom događaja.</string>
+    <string name="enable_now">Uključi sada</string>
+    <string name="event_overview_now_label">Sada</string>
+    <string name="event_overview_next_label">Sljedece</string>
+    <string name="event_overview_ends_in_format">Zavrsava za %1$s</string>
+    <string name="event_overview_starts_in_format">Pocinje za %1$s</string>
+
+    <string name="about_section_title">About</string>
+    <string name="about_version_label">Version</string>
+    <string name="about_version_section_title">Version</string>
+    <string name="debug_logs_share">Share debug summary</string>
+    <string name="debug_tools_dnd_preview_priority_title">Preview Priority Only</string>
+    <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
+    <string name="debug_tools_dnd_preview_title">DND Preview</string>
+    <string name="debug_tools_dnd_preview_total_title">Preview Total Silence</string>
+    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
+    <string name="debug_tools_dry_run_title">Test run (dry)</string>
+    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
+    <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
+    <string name="debug_tools_nav_title">Navigation</string>
+    <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
+    <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
+    <string name="dnd_priority_category_alarms">Alarms</string>
+    <string name="dnd_priority_category_calls_with">Calls (%1$s)</string>
+    <string name="dnd_priority_category_events">Events</string>
+    <string name="dnd_priority_category_messages_with">Messages (%1$s)</string>
+    <string name="dnd_priority_category_reminders">Reminders</string>
+    <string name="dnd_priority_category_repeat_callers">Repeat callers</string>
+    <string name="dnd_priority_description">Choose which people and apps can still interrupt you while Priority Only is active.</string>
+    <string name="dnd_priority_manage_button">Manage priority exceptions</string>
+    <string name="dnd_priority_senders_anyone">Anyone</string>
+    <string name="dnd_priority_senders_contacts">Contacts</string>
+    <string name="dnd_priority_senders_starred">Starred</string>
+    <string name="dnd_priority_summary_fallback">Allowed: Configure in system settings</string>
+    <string name="dnd_priority_summary_format">Allowed: %1$s</string>
+    <string name="dnd_priority_summary_none">Allowed: None</string>
+    <string name="dnd_priority_summary_title">Priority interruptions</string>
+    <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
+    <string name="dnd_total_silence_manage_button">Open DND settings</string>
+    <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
+    <string name="dnd_total_silence_warning_title">Total Silence warning</string>
+    <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
+    <string name="meeting_overrun_channel_name">Meeting Overrun</string>
+    <string name="meeting_overrun_extend_format">+%1$dm</string>
+    <string name="meeting_overrun_message">Extend DND to stay focused</string>
+    <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="settings_help">Help</string>
+    <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
+    <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
+    <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
+    <string name="tile_hint_title">Quick Settings tile</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="status_enabled">#90CAF9</color>
+    <color name="status_disabled">#8D9199</color>
+    <color name="status_active">#D5BDE2</color>
+    <color name="status_error">#FFB4AB</color>
+
+    <color name="text_primary">#E2E2E6</color>
+    <color name="text_secondary">#C3C6CF</color>
+    <color name="text_hint">#8D9199</color>
+</resources>

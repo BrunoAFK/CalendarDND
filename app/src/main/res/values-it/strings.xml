@@ -436,7 +436,7 @@
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
     <string name="debug_tools_updates_title">Aggiornamenti</string>
     <string name="debug_tools_force_update_title">Forza aggiornamento</string>
-    <string name="debug_tools_force_update_subtitle">Scarica e avvia l'installer per l'ultima release</string>
+    <string name="debug_tools_force_update_subtitle">Scarica e avvia l\'installer per l\'ultima release</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
     <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>

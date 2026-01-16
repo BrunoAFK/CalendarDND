@@ -79,6 +79,8 @@ import androidx.compose.foundation.verticalScroll
 fun StatusScreen(
     showTileHint: Boolean,
     onTileHintDismissed: () -> Unit,
+    updateStatus: com.brunoafk.calendardnd.system.update.ManualUpdateManager.UpdateStatus?,
+    onOpenUpdates: () -> Unit,
     onOpenSettings: (Boolean) -> Unit,
     onOpenDebugLogs: () -> Unit,
     onOpenSetup: () -> Unit,
@@ -117,6 +119,7 @@ fun StatusScreen(
     var refreshBannerDismissed by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     var tileHintVisible by remember { mutableStateOf(false) }
+    var lastSeenUpdateVersion by remember { mutableStateOf("") }
 
     LaunchedEffect(showTileHint) {
         tileHintVisible = showTileHint
@@ -249,6 +252,15 @@ fun StatusScreen(
         val job = scope.launch {
             settingsStore.refreshBannerDismissed.collectLatest { dismissed ->
                 refreshBannerDismissed = dismissed
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.lastSeenUpdateVersion.collectLatest { value ->
+                lastSeenUpdateVersion = value ?: ""
             }
         }
         onDispose { job.cancel() }
@@ -424,7 +436,20 @@ fun StatusScreen(
                         }
                     )
                 }
-                if (showDndBanner) {
+                val updateVersion = updateStatus?.info?.versionName
+                if (!updateVersion.isNullOrBlank() && updateVersion != lastSeenUpdateVersion) {
+                    InfoBanner(
+                        title = stringResource(R.string.update_banner_title),
+                        message = stringResource(R.string.update_banner_message, updateVersion),
+                        onDismiss = {
+                            scope.launch { settingsStore.setLastSeenUpdateVersion(updateVersion) }
+                        },
+                        onClick = {
+                            scope.launch { settingsStore.setLastSeenUpdateVersion(updateVersion) }
+                            onOpenUpdates()
+                        }
+                    )
+                } else if (showDndBanner) {
                     val dndModeLabel = stringResource(
                         if (dndMode == DndMode.PRIORITY) {
                             R.string.priority_mode_title

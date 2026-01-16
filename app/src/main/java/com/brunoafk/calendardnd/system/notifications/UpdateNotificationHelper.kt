@@ -6,12 +6,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
+import com.brunoafk.calendardnd.ui.MainActivity
 import com.brunoafk.calendardnd.util.PermissionUtils
 
 object UpdateNotificationHelper {
@@ -28,7 +28,9 @@ object UpdateNotificationHelper {
 
         ensureChannel(context)
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.apkUrl))
+        val intent = Intent(context, MainActivity::class.java).apply {
+            putExtra(MainActivity.EXTRA_OPEN_UPDATES, true)
+        }
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,

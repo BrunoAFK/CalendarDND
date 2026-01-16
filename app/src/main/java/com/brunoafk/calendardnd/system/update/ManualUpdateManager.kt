@@ -36,32 +36,49 @@ object ManualUpdateManager {
         val updateType: UpdateType
     )
 
-    suspend fun checkForUpdate(context: Context): UpdatePrompt? {
+    data class UpdateStatus(
+        val info: ReleaseInfo,
+        val updateType: UpdateType
+    )
+
+    data class UpdateEvaluation(
+        val isNewer: Boolean,
+        val updateType: UpdateType
+    )
+
+    data class UpdateCheckResult(
+        val status: UpdateStatus?,
+        val prompt: UpdatePrompt?
+    )
+
+    suspend fun checkForUpdates(context: Context): UpdateCheckResult {
         if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
-            return null
+            return UpdateCheckResult(null, null)
         }
 
-        val metadata = fetchUpdateMetadata() ?: return null
-        val latest = metadata.releases.firstOrNull() ?: return null
-        val currentVersion = parseSemver(BuildConfig.VERSION_NAME) ?: return null
-        val latestVersion = parseSemver(latest.versionName) ?: return null
+        val metadata = fetchUpdateMetadata() ?: return UpdateCheckResult(null, null)
+        val latest = metadata.releases.firstOrNull() ?: return UpdateCheckResult(null, null)
+        val evaluation = evaluateUpdate(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, latest)
+            ?: return UpdateCheckResult(null, null)
 
-        val updateType = determineUpdateType(currentVersion, latestVersion)
-        if (updateType == UpdateType.NONE || updateType == UpdateType.PATCH) {
-            return null
+        if (!evaluation.isNewer || evaluation.updateType == UpdateType.NONE || evaluation.updateType == UpdateType.PATCH) {
+            return UpdateCheckResult(null, null)
         }
 
         val settingsStore = SettingsStore(context)
-        var showInApp = false
-        if (updateType == UpdateType.MINOR || updateType == UpdateType.MAJOR) {
+        var prompt: UpdatePrompt? = null
+        if (evaluation.updateType == UpdateType.MINOR || evaluation.updateType == UpdateType.MAJOR) {
             val lastInAppVersion = settingsStore.getLastInAppUpdateVersion()
             if (latest.versionName != lastInAppVersion) {
-                showInApp = true
                 settingsStore.setLastInAppUpdateVersion(latest.versionName)
+                prompt = UpdatePrompt(latest, evaluation.updateType)
             }
         }
 
-        return if (showInApp) UpdatePrompt(latest, updateType) else null
+        return UpdateCheckResult(
+            status = UpdateStatus(latest, evaluation.updateType),
+            prompt = prompt
+        )
     }
 
     suspend fun fetchUpdateMetadata(): UpdateMetadata? {
@@ -153,12 +170,12 @@ object ManualUpdateManager {
     private fun parseSemver(versionName: String): Semver? {
         val clean = versionName.substringBefore("-").trim()
         val parts = clean.split(".")
-        if (parts.size < 3) {
+        if (parts.size < 2) {
             return null
         }
         val major = parts[0].toIntOrNull() ?: return null
         val minor = parts[1].toIntOrNull() ?: return null
-        val patch = parts[2].toIntOrNull() ?: return null
+        val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
         return Semver(major, minor, patch)
     }
 
@@ -170,6 +187,33 @@ object ManualUpdateManager {
                 latest.minor == current.minor &&
                 latest.patch > current.patch -> UpdateType.PATCH
             else -> UpdateType.NONE
+        }
+    }
+
+    fun evaluateUpdate(
+        currentVersionName: String,
+        currentVersionCode: Int,
+        latest: ReleaseInfo
+    ): UpdateEvaluation? {
+        val currentVersion = parseSemver(currentVersionName) ?: return null
+        val latestVersion = parseSemver(latest.versionName) ?: return null
+
+        val versionCodeNewer = latest.versionCode?.let { it > currentVersionCode }
+        val isNewer = versionCodeNewer ?: (compareSemver(latestVersion, currentVersion) > 0)
+        val updateType = if (isNewer) {
+            determineUpdateType(currentVersion, latestVersion)
+        } else {
+            UpdateType.NONE
+        }
+
+        return UpdateEvaluation(isNewer = isNewer, updateType = updateType)
+    }
+
+    private fun compareSemver(left: Semver, right: Semver): Int {
+        return when {
+            left.major != right.major -> left.major - right.major
+            left.minor != right.minor -> left.minor - right.minor
+            else -> left.patch - right.patch
         }
     }
 }

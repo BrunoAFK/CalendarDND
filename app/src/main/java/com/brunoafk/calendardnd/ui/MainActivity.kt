@@ -22,6 +22,7 @@ import androidx.core.view.WindowCompat
 import com.brunoafk.calendardnd.ui.navigation.AppNavigation
 import com.brunoafk.calendardnd.ui.theme.CalendarDndTheme
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
+import com.brunoafk.calendardnd.system.notifications.UpdateNotificationHelper
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.ManualUpdatePrompt
 import android.content.res.Configuration
@@ -30,11 +31,17 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_OPEN_UPDATES = "open_updates"
+    }
+
     private val tileHintState = mutableStateOf(false)
+    private val openUpdatesState = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         tileHintState.value = isTilePreferencesIntent(intent)
+        openUpdatesState.value = shouldOpenUpdates(intent)
 
         setContent {
             val baseContext = LocalContext.current
@@ -48,9 +55,21 @@ class MainActivity : AppCompatActivity() {
                 baseContext.createConfigurationContext(config)
             }
             var updatePrompt by remember { mutableStateOf<ManualUpdateManager.UpdatePrompt?>(null) }
+            var updateStatus by remember { mutableStateOf<ManualUpdateManager.UpdateStatus?>(null) }
+            val openUpdates by openUpdatesState
 
             LaunchedEffect(Unit) {
-                updatePrompt = ManualUpdateManager.checkForUpdate(baseContext)
+                val updateResult = ManualUpdateManager.checkForUpdates(baseContext)
+                updatePrompt = updateResult.prompt
+                updateStatus = updateResult.status
+
+                updateResult.status?.let { status ->
+                    val lastNotified = settingsStore.getLastNotificationUpdateVersion()
+                    if (status.info.versionName != lastNotified) {
+                        UpdateNotificationHelper.showUpdateNotification(baseContext, status.info)
+                        settingsStore.setLastNotificationUpdateVersion(status.info.versionName)
+                    }
+                }
             }
 
             CompositionLocalProvider(
@@ -73,7 +92,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     AppNavigation(
                         showTileHint = showTileHint,
-                        onTileHintConsumed = { tileHintState.value = false }
+                        onTileHintConsumed = { tileHintState.value = false },
+                        updateStatus = updateStatus,
+                        openUpdates = openUpdates,
+                        onOpenUpdatesConsumed = { openUpdatesState.value = false }
                     )
                     updatePrompt?.let { prompt ->
                         ManualUpdatePrompt(
@@ -89,10 +111,15 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         tileHintState.value = isTilePreferencesIntent(intent)
+        openUpdatesState.value = shouldOpenUpdates(intent)
     }
 
     private fun isTilePreferencesIntent(intent: Intent?): Boolean {
         return intent?.action == TileService.ACTION_QS_TILE_PREFERENCES
+    }
+
+    private fun shouldOpenUpdates(intent: Intent?): Boolean {
+        return intent?.getBooleanExtra(EXTRA_OPEN_UPDATES, false) == true
     }
 
     private fun resolveSupportedLanguage(language: String): String {

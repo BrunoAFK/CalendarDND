@@ -387,6 +387,10 @@
     <string name="update_action_later">Later</string>
     <string name="update_notification_title">Update available</string>
     <string name="update_notification_body">Version %1$s is ready to download.</string>
+    <string name="update_banner_title">Update available</string>
+    <string name="update_banner_message">Version %1$s is ready to download.</string>
+    <string name="update_screen_up_to_date">You are on the latest version.</string>
+    <string name="update_open_failed">No app found to open the download link.</string>
 
     <string name="update_menu_title">Updates</string>
     <string name="update_menu_subtitle">Release notes and version history</string>

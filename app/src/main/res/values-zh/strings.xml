@@ -489,4 +489,9 @@
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
     <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
     <string name="tile_hint_title">Quick Settings tile</string>
+
+    <string name="update_banner_message">Version %1$s is ready to download.</string>
+    <string name="update_banner_title">Update available</string>
+    <string name="update_open_failed">No app found to open the download link.</string>
+    <string name="update_screen_up_to_date">You are on the latest version.</string>
 </resources>

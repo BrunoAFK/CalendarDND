@@ -506,4 +506,11 @@
 
     <string name="update_download_failed">Failed to download or verify the update.</string>
     <string name="update_download_missing_hash">Update verification is unavailable for this release.</string>
+    <string name="signature_warning_title">Signature verification</string>
+    <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
+    <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="external_link_prompt_title">Open external link?</string>
+    <string name="external_link_prompt_message">This link will open in your browser.</string>
+    <string name="external_link_open">Open</string>
+    <string name="external_link_cancel">Cancel</string>
 </resources>

@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.brunoafk.calendardnd" />
-                  <option name="mobileSdkAppId" value="1:628388437740:android:43ed2142cbf7c4851a0fc9" />
-                  <option name="projectId" value="calendar-dnd" />
-                  <option name="projectNumber" value="628388437740" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

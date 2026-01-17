@@ -222,7 +222,7 @@ fun DebugLogScreen(
                                 modifier = Modifier.padding(12.dp)
                             )
                         }
-                        Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
                 }
             }

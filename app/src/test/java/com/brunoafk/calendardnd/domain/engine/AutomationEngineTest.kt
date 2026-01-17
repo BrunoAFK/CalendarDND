@@ -137,6 +137,97 @@ class AutomationEngineTest {
     }
 
     @Test
+    fun `active meeting without exact alarms should mark degraded mode`() = runBlocking {
+        val now = 1000L
+        val meetingStart = 900L
+        val meetingEnd = 1200L
+
+        mockCalendarRepository.activeInstances = listOf(
+            EventInstance(
+                id = 1L,
+                eventId = 1L,
+                calendarId = 1L,
+                title = "Test Meeting",
+                begin = meetingStart,
+                end = meetingEnd,
+                allDay = false,
+                availability = 0
+            )
+        )
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            hasExactAlarms = false,
+            systemDndIsOn = false
+        )
+
+        val output = engine.run(input)
+
+        assertEquals("Should notify degraded mode",
+            NotificationNeeded.DEGRADED_MODE,
+            output.decision.notificationNeeded)
+    }
+
+    @Test
+    fun `active meeting merges with touching future event`() = runBlocking {
+        val now = 1500L
+        val meetingStart = 1000L
+        val meetingEnd = 2000L
+        val nextStart = 2000L
+        val nextEnd = 3000L
+
+        mockCalendarRepository.instancesInRange = listOf(
+            EventInstance(
+                id = 1L,
+                eventId = 1L,
+                calendarId = 1L,
+                title = "Current Meeting",
+                begin = meetingStart,
+                end = meetingEnd,
+                allDay = false,
+                availability = 0
+            ),
+            EventInstance(
+                id = 2L,
+                eventId = 2L,
+                calendarId = 1L,
+                title = "Next Meeting",
+                begin = nextStart,
+                end = nextEnd,
+                allDay = false,
+                availability = 0
+            )
+        )
+        mockCalendarRepository.nextInstance = EventInstance(
+            id = 2L,
+            eventId = 2L,
+            calendarId = 1L,
+            title = "Next Meeting",
+            begin = nextStart,
+            end = nextEnd,
+            allDay = false,
+            availability = 0
+        )
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            systemDndIsOn = false,
+            dndSetByApp = false
+        )
+
+        val output = engine.run(input)
+
+        assertTrue("Should enable DND", output.decision.shouldEnableDnd)
+        assertEquals("Should extend active window to merged end", nextEnd, output.decision.setActiveWindowEnd)
+    }
+
+    @Test
     fun `active meeting with DND already on should not re-enable`() = runBlocking {
         val now = 1000L
         val meetingStart = 900L
@@ -306,6 +397,26 @@ class AutomationEngineTest {
         assertTrue("Should disable DND", output.decision.shouldDisableDnd)
         assertEquals("Should clear ownership", false, output.decision.setDndSetByApp)
         assertEquals("Should clear active window", 0L, output.decision.setActiveWindowEnd)
+    }
+
+    @Test
+    fun `no active meeting without exact alarms should mark degraded mode`() = runBlocking {
+        mockCalendarRepository.activeInstances = emptyList()
+
+        val input = createEngineInput(
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            hasExactAlarms = false,
+            systemDndIsOn = false,
+            dndSetByApp = false
+        )
+
+        val output = engine.run(input)
+
+        assertEquals("Should notify degraded mode",
+            NotificationNeeded.DEGRADED_MODE,
+            output.decision.notificationNeeded)
     }
 
     @Test
@@ -543,6 +654,7 @@ class AutomationEngineTest {
     private class MockCalendarRepository : ICalendarRepository {
         var activeInstances: List<EventInstance> = emptyList()
         var nextInstance: EventInstance? = null
+        var instancesInRange: List<EventInstance> = emptyList()
 
         override suspend fun getActiveInstances(
             now: Long,
@@ -568,6 +680,20 @@ class AutomationEngineTest {
             titleKeywordMatchMode: KeywordMatchMode
         ): EventInstance? {
             return nextInstance
+        }
+
+        override suspend fun getInstancesInRange(
+            beginMs: Long,
+            endMs: Long,
+            selectedCalendarIds: Set<String>,
+            busyOnly: Boolean,
+            ignoreAllDay: Boolean,
+            minEventMinutes: Int,
+            requireTitleKeyword: Boolean,
+            titleKeyword: String,
+            titleKeywordMatchMode: KeywordMatchMode
+        ): List<EventInstance> {
+            return if (instancesInRange.isNotEmpty()) instancesInRange else activeInstances
         }
 
         override suspend fun getCalendars(): List<CalendarInfo> {

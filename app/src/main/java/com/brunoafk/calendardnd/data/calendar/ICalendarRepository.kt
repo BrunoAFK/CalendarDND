@@ -29,5 +29,17 @@ interface ICalendarRepository {
         titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode
     ): EventInstance?
 
+    suspend fun getInstancesInRange(
+        beginMs: Long,
+        endMs: Long,
+        selectedCalendarIds: Set<String>,
+        busyOnly: Boolean,
+        ignoreAllDay: Boolean,
+        minEventMinutes: Int,
+        requireTitleKeyword: Boolean,
+        titleKeyword: String,
+        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+    ): List<EventInstance>
+
     suspend fun getCalendars(): List<CalendarInfo>
 }

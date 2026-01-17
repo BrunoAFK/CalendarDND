@@ -6,7 +6,7 @@ Quick start guide for developers to get Calendar DND running.
 
 - **Android Studio**: Hedgehog (2023.1.1) or newer
 - **JDK**: 17 or higher
-- **Android SDK**: API 26 (Android 8.0) minimum, API 34 (Android 14) target
+- **Android SDK**: API 26 (Android 8.0) minimum, API 36 (Android 14) target
 - **Test Device**: Samsung device recommended (Galaxy S25 or similar)
 
 ---

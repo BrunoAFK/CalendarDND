@@ -1,6 +1,0 @@
-<data-extraction-rules>
-    <cloud-backup>
-        <include domain="sharedpref" path="." />
-        <exclude domain="sharedpref" path="debug_log.preferences_pb" />
-    </cloud-backup>
-</data-extraction-rules>

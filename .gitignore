@@ -17,3 +17,6 @@ release-notes/generated/
 .env
 *.jks
 *.keystore
+*.log
+firebase-admin.json
+app/google-services.json

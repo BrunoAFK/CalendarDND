@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Build
 import com.brunoafk.calendardnd.App
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.brunoafk.calendardnd.util.TelemetryController
 
 object AnalyticsTracker {
 
@@ -79,7 +79,7 @@ object AnalyticsTracker {
         }
 
         try {
-            FirebaseAnalytics.getInstance(App.instance).logEvent("exception", params)
+            TelemetryController.logEvent(App.instance, "exception", params)
         } catch (_: Exception) {
             // Ignore analytics failures to avoid impacting app behavior.
         }
@@ -91,7 +91,7 @@ object AnalyticsTracker {
         }
 
         try {
-            FirebaseAnalytics.getInstance(context).logEvent(name, params)
+            TelemetryController.logEvent(context, name, params)
         } catch (_: Exception) {
             // Ignore analytics failures to avoid impacting app behavior.
         }

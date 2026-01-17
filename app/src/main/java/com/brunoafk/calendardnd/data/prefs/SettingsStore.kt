@@ -60,7 +60,8 @@ class SettingsStore(private val context: Context) {
         val preDndNotificationEnabled: Boolean,
         val requireTitleKeyword: Boolean,
         val titleKeyword: String,
-        val titleKeywordMatchMode: KeywordMatchMode
+        val titleKeywordMatchMode: KeywordMatchMode,
+        val crashlyticsOptIn: Boolean
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -176,7 +177,8 @@ class SettingsStore(private val context: Context) {
             preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false,
             requireTitleKeyword = prefs[REQUIRE_TITLE_KEYWORD] ?: false,
             titleKeyword = prefs[TITLE_KEYWORD] ?: "",
-            titleKeywordMatchMode = KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE])
+            titleKeywordMatchMode = KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE]),
+            crashlyticsOptIn = prefs[CRASHLYTICS_OPT_IN] ?: true
         )
     }
 

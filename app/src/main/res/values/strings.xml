@@ -189,8 +189,8 @@
     <string name="help_item_language_details">You can change language from Settings. It updates the app UI right away and does not change your device language.</string>
 
     <string name="help_item_privacy_title">Privacy</string>
-    <string name="help_item_privacy_summary">Control analytics and crash reports.</string>
-    <string name="help_item_privacy_details">You can enable or disable usage analytics and crash reports separately. Crash reports help fix bugs; analytics show which features are used most.</string>
+    <string name="help_item_privacy_summary">Control analytics and crash/performance reports.</string>
+    <string name="help_item_privacy_details">You can enable or disable usage analytics and crash/performance reports. Analytics is off by default. Crash reports help fix bugs; performance reports track app stability.</string>
 
     <string name="help_item_updates_title">Updates</string>
     <string name="help_item_updates_summary">Manual updates are delivered from GitHub releases.</string>
@@ -291,11 +291,11 @@
 
     <string name="privacy_intro">Help improve the app by sharing data. You can change this later.</string>
     <string name="privacy_change_later">You can change this later.</string>
-    <string name="privacy_defaults_hint">Defaults: analytics off, crash reports on.</string>
+    <string name="privacy_defaults_hint">Defaults: analytics off, crash &amp; performance reports on.</string>
     <string name="analytics_opt_in_title">Usage analytics</string>
     <string name="analytics_opt_in_description">Share anonymous usage data to improve features</string>
-    <string name="crashlytics_opt_in_title">Crash reports</string>
-    <string name="crashlytics_opt_in_description">Send crash reports to help fix bugs</string>
+    <string name="crashlytics_opt_in_title">Crash &amp; performance reports</string>
+    <string name="crashlytics_opt_in_description">Send crash and performance reports to help fix bugs</string>
 
     <!-- About -->
     <string name="app_version_format">Version %1$s (%2$d)</string>
@@ -316,6 +316,9 @@
     <string name="about_github_label">GitHub</string>
     <string name="about_report_title">Report an issue</string>
     <string name="about_report_body">If something is wrong, open a GitHub issue and include device model, Android version, and steps to reproduce. Screenshots help.</string>
+    <string name="fcm_channel_name">Updates</string>
+    <string name="fcm_channel_description">Announcements and update notices</string>
+    <string name="fcm_default_title">Calendar DND</string>
     <string name="about_version_title">Version</string>
     <string name="about_version_subtitle">View releases on GitHub</string>
     <string name="about_whats_new_title">What is new</string>
@@ -415,6 +418,13 @@
     <string name="update_notification_body">Version %1$s is ready to download.</string>
     <string name="update_banner_title">Update available</string>
     <string name="update_banner_message">Version %1$s is ready to download.</string>
+    <string name="signature_warning_title">Signature verification</string>
+    <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
+    <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="external_link_prompt_title">Open external link</string>
+    <string name="external_link_prompt_message">Open link to %1$s in your browser?</string>
+    <string name="external_link_open">Open</string>
+    <string name="external_link_cancel">Not now</string>
     <string name="update_screen_up_to_date">You are on the latest version.</string>
     <string name="update_open_failed">No app found to open the download link.</string>
     <string name="update_download_missing_hash">Update verification is unavailable for this release.</string>

@@ -115,7 +115,7 @@ class DebugLogStore(private val context: Context) {
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
-                appendLine("Title filter pattern: ${settingsSnapshot.titleKeyword}")
+                appendLine("Title filter pattern: [redacted]")
             }
             appendLine("Analytics opt-in: $analyticsOptIn")
             appendLine("Crashlytics opt-in: $crashlyticsOptIn")

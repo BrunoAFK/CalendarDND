@@ -1,27 +1,69 @@
 # Developer Documentation
 
-Technical documentation for Calendar DND.
-
-## Main Documentation
-
-**[DEVELOPER_DOCUMENTATION.md](DEVELOPER_DOCUMENTATION.md)** - Complete developer guide including:
-- Architecture overview
-- Project structure
-- Core components
-- Background execution
-- Build configuration
-- Contributing guidelines
-
-## Additional Documentation
-
-| Document | Description |
-|----------|-------------|
-| [ACCEPTANCE_TESTS.md](ACCEPTANCE_TESTS.md) | Test scenarios and expected behavior |
-| [FIREBASE_TOGGLES.md](FIREBASE_TOGGLES.md) | Firebase Crashlytics & Analytics configuration |
-| [manual-updates.md](manual-updates.md) | Manual update system documentation |
+Technical documentation for Calendar DND contributors and developers.
 
 ## Quick Links
 
-- **User README**: [../README.md](../README.md)
-- **Release Notes**: [../release-notes/](../release-notes/)
-- **Archive**: [archive/](archive/) (old documentation)
+| Document | Description |
+|----------|-------------|
+| [Getting Started](getting-started.md) | Development environment setup |
+| [Architecture](architecture.md) | System design and code structure |
+| [Features](features.md) | Detailed feature documentation |
+| [Configuration](configuration.md) | Build flavors, toggles, and settings |
+| [Testing](testing.md) | Testing strategy and commands |
+| [Privacy Policy](privacy-policy.md) | User privacy policy |
+
+## Project Overview
+
+Calendar DND is an Android app that automatically controls Do Not Disturb mode based on calendar events. It's built with:
+
+- **Language**: Kotlin
+- **UI**: Jetpack Compose
+- **Min SDK**: 26 (Android 8.0)
+- **Target SDK**: 36 (Android 15)
+- **Architecture**: Clean Architecture (4 layers)
+
+## Quick Commands
+
+```bash
+# Debug build
+./gradlew assembleDebug
+
+# Run tests
+./gradlew test
+
+# Lint check
+./gradlew lint
+
+# Release builds
+./gradlew assemblePlayRelease      # Play Store
+./gradlew assembleFdroidRelease    # F-Droid
+./gradlew assembleManualRelease    # Manual distribution
+```
+
+## Architecture at a Glance
+
+```
+UI Layer (Compose)
+    │
+Domain Layer (Pure Kotlin)
+    │
+Data Layer (Repositories)
+    │
+System Layer (Alarms, Workers)
+```
+
+See [Architecture](architecture.md) for details.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `./gradlew test`
+5. Run lint: `./gradlew lint`
+6. Submit a pull request
+
+## Archive
+
+Previous documentation versions are available in the [archive](archive/) folder.

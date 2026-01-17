@@ -49,6 +49,7 @@ import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.domain.planning.MeetingWindowResolver
 import com.brunoafk.calendardnd.system.alarms.AlarmScheduler
 import com.brunoafk.calendardnd.system.alarms.EngineRunner
+import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.AppError
 import com.brunoafk.calendardnd.ui.components.DndModeBanner
 import com.brunoafk.calendardnd.ui.components.InfoBanner
@@ -57,6 +58,7 @@ import com.brunoafk.calendardnd.ui.components.ErrorCard
 import com.brunoafk.calendardnd.ui.components.EventOverviewCard
 import com.brunoafk.calendardnd.ui.components.EventOverviewState
 import com.brunoafk.calendardnd.ui.components.EventSummary
+import com.brunoafk.calendardnd.ui.components.PersistentWarningBanner
 import com.brunoafk.calendardnd.ui.components.StatusBanner
 import com.brunoafk.calendardnd.ui.components.StatusBannerKind
 import com.brunoafk.calendardnd.ui.components.StatusBannerState
@@ -81,6 +83,7 @@ fun StatusScreen(
     showTileHint: Boolean,
     onTileHintDismissed: () -> Unit,
     updateStatus: com.brunoafk.calendardnd.system.update.ManualUpdateManager.UpdateStatus?,
+    signatureStatus: ManualUpdateManager.SignatureStatus,
     onOpenUpdates: () -> Unit,
     onOpenSettings: (Boolean) -> Unit,
     onOpenDebugLogs: () -> Unit,
@@ -462,6 +465,17 @@ fun StatusScreen(
                     compact = true,
                     modifier = Modifier.padding(top = 0.dp)
                 )
+                if (!signatureStatus.isAllowed) {
+                    val messageRes = if (signatureStatus.isPinned) {
+                        R.string.signature_warning_message
+                    } else {
+                        R.string.signature_warning_unconfigured
+                    }
+                    PersistentWarningBanner(
+                        title = stringResource(R.string.signature_warning_title),
+                        message = stringResource(messageRes)
+                    )
+                }
                 if (tileHintVisible) {
                     val tileHintMessage = if (automationEnabled) {
                         stringResource(R.string.tile_hint_enabled_message)

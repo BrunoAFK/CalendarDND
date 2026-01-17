@@ -214,91 +214,99 @@ fun DebugToolsScreen(
                 }
             }
 
-            item {
-                SettingsSection(title = stringResource(R.string.debug_tools_updates_title)) {
-                    Column {
-                        SettingsNavigationRow(
-                            title = stringResource(R.string.debug_tools_force_update_title),
-                            subtitle = stringResource(R.string.debug_tools_force_update_subtitle),
-                            onClick = {
-                                scope.launch {
-                                    val debugLogStore = DebugLogStore(context)
-                                    if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
+            if (BuildConfig.MANUAL_UPDATE_ENABLED) {
+                item {
+                    SettingsSection(title = stringResource(R.string.debug_tools_updates_title)) {
+                        Column {
+                            SettingsNavigationRow(
+                                title = stringResource(R.string.debug_tools_force_update_title),
+                                subtitle = stringResource(R.string.debug_tools_force_update_subtitle),
+                                onClick = {
+                                    scope.launch {
+                                        val debugLogStore = DebugLogStore(context)
                                         debugLogStore.appendLog(
-                                            DebugLogLevel.WARNING,
-                                            "UPDATE_DEBUG: Manual updates disabled for this build."
+                                            DebugLogLevel.INFO,
+                                            "UPDATE_DEBUG: Force update requested."
                                         )
-                                        Toast.makeText(
-                                            context,
-                                            R.string.update_screen_unavailable,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        return@launch
-                                    }
-                                    debugLogStore.appendLog(
-                                        DebugLogLevel.INFO,
-                                        "UPDATE_DEBUG: Force update requested."
-                                    )
-                                    val metadata = ManualUpdateManager.fetchUpdateMetadata(context)
-                                    val latest = metadata?.releases?.firstOrNull()
-                                    if (latest == null) {
-                                        debugLogStore.appendLog(
-                                            DebugLogLevel.WARNING,
-                                            "UPDATE_DEBUG: No update metadata available."
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            R.string.update_screen_no_data,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        return@launch
-                                    }
-                                    val apkFile = if (latest.sha256.isNullOrBlank()) {
-                                        debugLogStore.appendLog(
-                                            DebugLogLevel.WARNING,
-                                            "UPDATE_DEBUG: Missing SHA-256 for ${latest.versionName}"
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            R.string.update_download_missing_hash,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        null
-                                    } else {
-                                        ManualUpdateManager.downloadAndVerifyApk(context, latest)
-                                    }
-                                    if (apkFile == null) {
-                                        debugLogStore.appendLog(
-                                            DebugLogLevel.ERROR,
-                                            "UPDATE_DEBUG: Download or verification failed for ${latest.versionName}"
-                                        )
-                                        if (!latest.sha256.isNullOrBlank()) {
-                                            Toast.makeText(
-                                                context,
-                                                R.string.update_download_failed,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                        return@launch
-                                    }
-                                    try {
-                                        if (!ManualUpdateManager.canRequestPackageInstalls(context)) {
+                                        val metadata = ManualUpdateManager.fetchUpdateMetadata(context)
+                                        val latest = metadata?.releases?.firstOrNull()
+                                        if (latest == null) {
                                             debugLogStore.appendLog(
                                                 DebugLogLevel.WARNING,
-                                                "UPDATE_DEBUG: Install permission missing."
+                                                "UPDATE_DEBUG: No update metadata available."
                                             )
-                                            ManualUpdateManager.createInstallPermissionIntent(context)?.let {
-                                                context.startActivity(it)
-                                            } ?: Toast.makeText(
+                                            Toast.makeText(
                                                 context,
-                                                R.string.update_install_permission_required,
+                                                R.string.update_screen_no_data,
                                                 Toast.LENGTH_LONG
                                             ).show()
                                             return@launch
                                         }
-                                        val installIntent =
-                                            ManualUpdateManager.createInstallIntent(context, apkFile)
-                                        if (installIntent.resolveActivity(context.packageManager) == null) {
+                                        val apkFile = if (latest.sha256.isNullOrBlank()) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.WARNING,
+                                                "UPDATE_DEBUG: Missing SHA-256 for ${latest.versionName}"
+                                            )
+                                            Toast.makeText(
+                                                context,
+                                                R.string.update_download_missing_hash,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            null
+                                        } else {
+                                            ManualUpdateManager.downloadAndVerifyApk(context, latest)
+                                        }
+                                        if (apkFile == null) {
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.ERROR,
+                                                "UPDATE_DEBUG: Download or verification failed for ${latest.versionName}"
+                                            )
+                                            if (!latest.sha256.isNullOrBlank()) {
+                                                Toast.makeText(
+                                                    context,
+                                                    R.string.update_download_failed,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                            return@launch
+                                        }
+                                        try {
+                                            if (!ManualUpdateManager.canRequestPackageInstalls(context)) {
+                                                debugLogStore.appendLog(
+                                                    DebugLogLevel.WARNING,
+                                                    "UPDATE_DEBUG: Install permission missing."
+                                                )
+                                                ManualUpdateManager.createInstallPermissionIntent(context)?.let {
+                                                    context.startActivity(it)
+                                                } ?: Toast.makeText(
+                                                    context,
+                                                    R.string.update_install_permission_required,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                return@launch
+                                            }
+                                            val installIntent =
+                                                ManualUpdateManager.createInstallIntent(context, apkFile)
+                                            if (installIntent.resolveActivity(context.packageManager) == null) {
+                                                debugLogStore.appendLog(
+                                                    DebugLogLevel.ERROR,
+                                                    "UPDATE_DEBUG: Installer activity not found"
+                                                )
+                                                Toast.makeText(
+                                                    context,
+                                                    R.string.update_open_failed,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                return@launch
+                                            }
+                                            debugLogStore.appendLog(
+                                                DebugLogLevel.INFO,
+                                                "UPDATE_DEBUG: Launch installer ${apkFile.absolutePath}"
+                                            )
+                                            context.startActivity(
+                                                installIntent
+                                            )
+                                        } catch (_: android.content.ActivityNotFoundException) {
                                             debugLogStore.appendLog(
                                                 DebugLogLevel.ERROR,
                                                 "UPDATE_DEBUG: Installer activity not found"
@@ -308,29 +316,11 @@ fun DebugToolsScreen(
                                                 R.string.update_open_failed,
                                                 Toast.LENGTH_LONG
                                             ).show()
-                                            return@launch
                                         }
-                                        debugLogStore.appendLog(
-                                            DebugLogLevel.INFO,
-                                            "UPDATE_DEBUG: Launch installer ${apkFile.absolutePath}"
-                                        )
-                                        context.startActivity(
-                                            installIntent
-                                        )
-                                    } catch (_: android.content.ActivityNotFoundException) {
-                                        debugLogStore.appendLog(
-                                            DebugLogLevel.ERROR,
-                                            "UPDATE_DEBUG: Installer activity not found"
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            R.string.update_open_failed,
-                                            Toast.LENGTH_LONG
-                                        ).show()
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }

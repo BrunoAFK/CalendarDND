@@ -94,7 +94,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
      * Get all instances within a specific time range
      * Used for merging windows
      */
-    suspend fun getInstancesInRange(
+    override suspend fun getInstancesInRange(
         beginMs: Long,
         endMs: Long,
         selectedCalendarIds: Set<String>,
@@ -187,24 +187,41 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             return false
         }
 
-        return when (matchMode) {
-            KeywordMatchMode.KEYWORDS -> {
-                val keywords = pattern
-                    .split(",", "\n")
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                if (keywords.isEmpty()) {
-                    false
-                } else {
-                    keywords.any { keyword ->
-                        title.contains(keyword, ignoreCase = true)
-                    }
+        return matchesTitleKeyword(title, requireTitleKeyword, pattern, matchMode)
+    }
+}
+
+internal fun matchesTitleKeyword(
+    title: String,
+    requireTitleKeyword: Boolean,
+    titleKeyword: String,
+    matchMode: KeywordMatchMode
+): Boolean {
+    if (!requireTitleKeyword) {
+        return true
+    }
+    val pattern = titleKeyword.trim()
+    if (pattern.isBlank()) {
+        return false
+    }
+
+    return when (matchMode) {
+        KeywordMatchMode.KEYWORDS -> {
+            val keywords = pattern
+                .split(",", "\n")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+            if (keywords.isEmpty()) {
+                false
+            } else {
+                keywords.any { keyword ->
+                    title.contains(keyword, ignoreCase = true)
                 }
             }
-            KeywordMatchMode.REGEX -> {
-                val regex = runCatching { Regex(pattern) }.getOrNull() ?: return false
-                regex.containsMatchIn(title)
-            }
+        }
+        KeywordMatchMode.REGEX -> {
+            val regex = runCatching { Regex(pattern) }.getOrNull() ?: return false
+            regex.containsMatchIn(title)
         }
     }
 }

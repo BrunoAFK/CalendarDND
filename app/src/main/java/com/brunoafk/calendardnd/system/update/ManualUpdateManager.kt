@@ -400,8 +400,9 @@ object ManualUpdateManager {
             "${context.packageName}.fileprovider",
             apkFile
         )
-        return android.content.Intent(android.content.Intent.ACTION_INSTALL_PACKAGE).apply {
+        return android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
             data = uri
+            setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
@@ -434,6 +435,7 @@ object ManualUpdateManager {
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             PackageManager.GET_SIGNING_CERTIFICATES
         } else {
+            @Suppress("DEPRECATION")
             PackageManager.GET_SIGNATURES
         }
         val archiveInfo = packageManager.getPackageArchiveInfo(apkFile.absolutePath, flags) ?: return false
@@ -454,6 +456,7 @@ object ManualUpdateManager {
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             PackageManager.GET_SIGNING_CERTIFICATES
         } else {
+            @Suppress("DEPRECATION")
             PackageManager.GET_SIGNATURES
         }
         val info = packageManager.getPackageInfo(packageName, flags)
@@ -464,6 +467,7 @@ object ManualUpdateManager {
         val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             info.signingInfo?.apkContentsSigners?.toList()
         } else {
+            @Suppress("DEPRECATION")
             info.signatures?.toList()
         }
         return signatures

@@ -6,6 +6,7 @@ import java.security.MessageDigest
 import com.brunoafk.calendardnd.domain.planning.MeetingWindowResolver
 import com.brunoafk.calendardnd.domain.planning.SchedulePlanner
 import com.brunoafk.calendardnd.domain.planning.SchedulePlanner.SchedulePlan
+import com.brunoafk.calendardnd.util.EngineConstants.ACTIVE_INSTANCES_WINDOW_MS
 import com.brunoafk.calendardnd.util.EngineConstants.MEETING_GAP_THRESHOLD_MS
 import com.brunoafk.calendardnd.util.EngineConstants.MEETING_OVERRUN_THRESHOLD_MS
 
@@ -34,19 +35,20 @@ class AutomationEngine(
             return handleMissingPermissions(input)
         }
 
-        // Get current calendar state
-        val activeInstances = calendarRepository.getActiveInstances(
-            now,
-            input.selectedCalendarIds,
-            input.busyOnly,
-            input.ignoreAllDay,
-            input.minEventMinutes,
-            input.requireTitleKeyword,
-            input.titleKeyword,
-            input.titleKeywordMatchMode
+        // Get calendar instances around now to resolve merged active windows.
+        val instancesAroundNow = calendarRepository.getInstancesInRange(
+            beginMs = now - ACTIVE_INSTANCES_WINDOW_MS,
+            endMs = now + ACTIVE_INSTANCES_WINDOW_MS,
+            selectedCalendarIds = input.selectedCalendarIds,
+            busyOnly = input.busyOnly,
+            ignoreAllDay = input.ignoreAllDay,
+            minEventMinutes = input.minEventMinutes,
+            requireTitleKeyword = input.requireTitleKeyword,
+            titleKeyword = input.titleKeyword,
+            titleKeywordMatchMode = input.titleKeywordMatchMode
         )
 
-        val activeWindow = MeetingWindowResolver.findActiveWindow(activeInstances, now)
+        val activeWindow = MeetingWindowResolver.findActiveWindow(instancesAroundNow, now)
 
         val nextInstance = calendarRepository.getNextInstance(
             now,

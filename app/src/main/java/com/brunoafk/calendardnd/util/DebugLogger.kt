@@ -53,7 +53,7 @@ object DebugLogger {
             decision.setDndSetByApp?.let { appendLine("- App owns DND: $it") }
             decision.setUserSuppressedUntil?.let { appendLine("- Suppress until: ${formatTime(it)}") }
             decision.setManualDndUntilMs?.let { appendLine("- Manual DND until: ${formatTime(it)}") }
-            if (decision.notificationNeeded != null) {
+            if (decision.notificationNeeded != com.brunoafk.calendardnd.domain.engine.NotificationNeeded.NONE) {
                 appendLine("- Notification: ${decision.notificationNeeded}")
             }
             if (output.userOverrideDetected) {

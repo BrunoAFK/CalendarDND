@@ -180,8 +180,8 @@
     <string name="help_item_language_details">Puoi cambiare lingua dalle impostazioni. Si applica subito e non cambia la lingua del dispositivo.</string>
 
     <string name="help_item_privacy_title">Privacy</string>
-    <string name="help_item_privacy_summary">Controlla analisi e segnalazioni di crash.</string>
-    <string name="help_item_privacy_details">Puoi abilitare o disabilitare separatamente l\'analisi di utilizzo e le segnalazioni di crash. I crash aiutano a correggere i bug, l\'analisi mostra le funzionalità più usate.</string>
+    <string name="help_item_privacy_summary">Controlla analisi e report di crash e prestazioni.</string>
+    <string name="help_item_privacy_details">Puoi abilitare o disabilitare l\'analisi di utilizzo e i report di crash e prestazioni. L\'analisi è disattivata per impostazione predefinita. I report di crash aiutano a correggere i bug, quelli di prestazioni monitorano la stabilità dell\'app.</string>
 
     <string name="help_item_updates_title">Aggiornamenti</string>
     <string name="help_item_updates_summary">Gli aggiornamenti manuali arrivano dai rilasci GitHub.</string>
@@ -276,11 +276,11 @@
 
     <string name="privacy_intro">Aiuta a migliorare l\'app condividendo dati. Puoi cambiarlo in seguito.</string>
     <string name="privacy_change_later">Puoi cambiarlo in seguito.</string>
-    <string name="privacy_defaults_hint">Predefiniti: analisi disattivata, crash attivi.</string>
+    <string name="privacy_defaults_hint">Predefiniti: analisi disattivata, report di crash e prestazioni attivi.</string>
     <string name="analytics_opt_in_title">Analisi di utilizzo</string>
     <string name="analytics_opt_in_description">Condividi dati anonimi di utilizzo per migliorare le funzionalità</string>
-    <string name="crashlytics_opt_in_title">Segnalazioni di crash</string>
-    <string name="crashlytics_opt_in_description">Invia segnalazioni di crash per correggere i bug</string>
+    <string name="crashlytics_opt_in_title">Report di crash e prestazioni</string>
+    <string name="crashlytics_opt_in_description">Invia report di crash e prestazioni per correggere i bug</string>
 
     <!-- About -->
     <string name="app_version_format">Versione %1$s (%2$d)</string>
@@ -298,6 +298,9 @@
     <string name="about_github_label">GitHub</string>
     <string name="about_report_title">Segnala un problema</string>
     <string name="about_report_body">Se qualcosa non va, apri una issue su GitHub e indica dispositivo, versione di Android e passaggi per riprodurre. Gli screenshot aiutano.</string>
+    <string name="fcm_channel_name">Aggiornamenti</string>
+    <string name="fcm_channel_description">Annunci e avvisi di aggiornamento</string>
+    <string name="fcm_default_title">Calendar DND</string>
     <string name="about_version_title">Versione</string>
     <string name="about_version_subtitle">Visualizza le release su GitHub</string>
     <string name="about_whats_new_title">Novità</string>

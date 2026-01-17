@@ -13,7 +13,6 @@ Technical documentation for Calendar DND.
 7. [UI Components](#ui-components)
 8. [Testing](#testing)
 9. [Build Configuration](#build-configuration)
-10. [Samsung Considerations](#samsung-considerations)
 11. [Contributing](#contributing)
 
 ---
@@ -108,6 +107,7 @@ com.brunoafk.calendardnd/
 │   ├── screens/
 │   │   ├── StatusScreen.kt             # Main dashboard
 │   │   ├── SettingsScreen.kt           # User settings
+│   │   ├── EventKeywordFilterScreen.kt # Keyword filter settings (experimental)
 │   │   ├── OnboardingScreen.kt         # Permission setup
 │   │   ├── AboutScreen.kt              # App info
 │   │   ├── DebugToolsScreen.kt         # Debug utilities
@@ -318,6 +318,7 @@ Trigger (Alarm/Worker/UI)
 **SettingsStore** (persisted):
 - User preferences
 - Modified by Settings UI
+- Experimental keyword filter: `requireTitleKeyword`, `titleKeyword`, `titleKeywordMatchMode`
 
 **RuntimeStateStore** (ephemeral):
 - `dndSetByApp` - Ownership flag
@@ -378,8 +379,8 @@ fun `merges touching events`() {
 ### Version Info
 
 ```kotlin
-versionCode = 10000
-versionName = "1.1.0"
+versionCode = 10700
+versionName = "1.7"
 minSdk = 26
 targetSdk = 36
 ```
@@ -390,9 +391,27 @@ Three distribution variants:
 
 | Flavor | Description |
 |--------|-------------|
-| `play` | Google Play Store |
-| `altstore` | AltStore distribution |
-| `manual` | Direct download + built-in updater |
+| `play` | Google Play Store (Firebase enabled) |
+| `fdroid` | F-Droid (no Firebase/FCM, no analytics UI) |
+| `manual` | Direct download + built-in updater (Firebase enabled) |
+
+Tip: For local Android Studio runs, use `playDebug` to keep Firebase enabled.
+
+### Store Build Scripts
+
+Helper scripts to build release APKs:
+
+```bash
+./scripts/build-play.sh
+./scripts/build-fdroid.sh
+./scripts/build-manual.sh
+```
+
+For manual builds, you can pass the signing cert pin:
+
+```bash
+MANUAL_SIGNER_SHA256=... ./scripts/build-manual.sh
+```
 
 ### Supported Languages
 
@@ -405,18 +424,49 @@ Three distribution variants:
 
 ---
 
+## FCM Broadcast Messages (Topic)
+
+Calendar DND subscribes devices to the `updates` topic at startup for Firebase-enabled
+flavors (`play`, `manual`). Use the local script to send broadcast messages with an
+optional deep link.
+
+### Prerequisites
+
+- Firebase service account JSON (example: `firebase-admin.json`)
+- `jq` and `openssl` installed
+
+### .env Setup (repo root)
+
+```bash
+FCM_PROJECT_ID=calendar-dnd
+GOOGLE_APPLICATION_CREDENTIALS=./firebase-admin.json
+FCM_TOPIC=updates
+```
+
+### Send a Message
+
+```bash
+./scripts/message.sh -t="Update available" -m="Check out v1.8" -a="calendardnd://updates"
+```
+
+### Deep Links
+
+- `calendardnd://updates` opens the in-app Updates screen.
+
+### Debugging
+
+```bash
+DEBUG=1 ./scripts/message.sh -t="Update available" -m="Check out v1.8"
+```
+
+This prints the JSON file path, size, and a small preview to help validate the
+service account file.
+
+---
+
 ## Samsung Considerations
 
-### Battery Management
-
-Samsung aggressively kills background apps. Mitigations:
-- Guide users to disable battery optimization
-- Multiple scheduling layers
-- Periodic worker as fallback
-
-### DND Policy Access
-
-Some Samsung devices have extra restrictions:
+Samsung-specific notes are no longer applicable since the Samsung flavor was removed.
 - Always check permission before operations
 - Wrap all DND calls in try-catch
 - Handle failures gracefully

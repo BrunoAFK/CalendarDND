@@ -180,8 +180,8 @@
     <string name="help_item_language_details">Du kannst die Sprache in den Einstellungen ändern. Sie wird sofort angewendet und ändert nicht die Gerätesprache.</string>
 
     <string name="help_item_privacy_title">Datenschutz</string>
-    <string name="help_item_privacy_summary">Analytics und Crash-Berichte steuern.</string>
-    <string name="help_item_privacy_details">Du kannst Nutzungs-Analytics und Crash-Berichte separat aktivieren oder deaktivieren. Crash-Berichte helfen beim Beheben von Bugs, Analytics zeigen die meistgenutzten Funktionen.</string>
+    <string name="help_item_privacy_summary">Analytics sowie Crash- und Performanceberichte steuern.</string>
+    <string name="help_item_privacy_details">Du kannst Nutzungs-Analytics und Crash-/Performanceberichte aktivieren oder deaktivieren. Analytics ist standardmäßig deaktiviert. Crashberichte helfen beim Beheben von Bugs, Performanceberichte zeigen App-Stabilität.</string>
 
     <string name="help_item_updates_title">Updates</string>
     <string name="help_item_updates_summary">Manuelle Updates kommen über GitHub-Releases.</string>
@@ -276,11 +276,11 @@
 
     <string name="privacy_intro">Hilf, die App zu verbessern, indem du Daten teilst. Das kannst du später ändern.</string>
     <string name="privacy_change_later">Du kannst das später ändern.</string>
-    <string name="privacy_defaults_hint">Standard: Analytics aus, Crashberichte an.</string>
+    <string name="privacy_defaults_hint">Standard: Analytics aus, Crash- und Performanceberichte an.</string>
     <string name="analytics_opt_in_title">Nutzungsanalyse</string>
     <string name="analytics_opt_in_description">Anonyme Nutzungsdaten teilen, um Funktionen zu verbessern</string>
-    <string name="crashlytics_opt_in_title">Absturzberichte</string>
-    <string name="crashlytics_opt_in_description">Absturzberichte senden, um Fehler zu beheben</string>
+    <string name="crashlytics_opt_in_title">Crash- und Performanceberichte</string>
+    <string name="crashlytics_opt_in_description">Crash- und Performanceberichte senden, um Fehler zu beheben</string>
 
     <!-- About -->
     <string name="app_version_format">Version %1$s (%2$d)</string>
@@ -298,6 +298,9 @@
     <string name="about_github_label">GitHub</string>
     <string name="about_report_title">Problem melden</string>
     <string name="about_report_body">Wenn etwas nicht stimmt, erstelle ein GitHub-Issue und nenne Gerät, Android-Version und Schritte zur Reproduktion. Screenshots helfen.</string>
+    <string name="fcm_channel_name">Updates</string>
+    <string name="fcm_channel_description">Ankündigungen und Update-Hinweise</string>
+    <string name="fcm_default_title">Calendar DND</string>
     <string name="about_version_title">Version</string>
     <string name="about_version_subtitle">Releases auf GitHub ansehen</string>
     <string name="about_whats_new_title">Neuigkeiten</string>

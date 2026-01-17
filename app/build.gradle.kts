@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
 }
 
 android {
@@ -38,15 +39,25 @@ android {
         // Manual update defaults (override per flavor).
         buildConfigField("boolean", "MANUAL_UPDATE_ENABLED", "false")
         buildConfigField("String", "MANUAL_UPDATE_URLS", "\"\"")
+        buildConfigField("String", "ALLOWED_SIGNER_SHA256", "\"\"")
+        buildConfigField("boolean", "FIREBASE_ENABLED", "true")
     }
+
+    val manualSignerSha256 = (project.findProperty("manualSignerSha256") as String?)
+        ?.trim()
+        ?.replace("\"", "")
+        .orEmpty()
 
     flavorDimensions += "distribution"
     productFlavors {
         create("play") {
             dimension = "distribution"
         }
-        create("altstore") {
+        create("fdroid") {
             dimension = "distribution"
+            buildConfigField("boolean", "FIREBASE_ENABLED", "false")
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
         }
         create("manual") {
             dimension = "distribution"
@@ -56,6 +67,11 @@ android {
                 "String",
                 "MANUAL_UPDATE_URLS",
                 "\"https://github.com/BrunoAFK/CalendarDND/releases/latest/download/update.json,https://calendar-dnd.app/update.json\""
+            )
+            buildConfigField(
+                "String",
+                "ALLOWED_SIGNER_SHA256",
+                "\"$manualSignerSha256\""
             )
         }
     }
@@ -113,12 +129,27 @@ android {
         compose = true
         buildConfig = true
     }
+
+    applicationVariants.all {
+        if (flavorName == "fdroid") {
+            val variantName = name.replaceFirstChar { it.uppercaseChar() }
+            tasks.matching { it.name == "process${variantName}GoogleServices" }
+                .configureEach { enabled = false }
+            tasks.matching { it.name == "injectCrashlyticsMappingFileId${variantName}" }
+                .configureEach { enabled = false }
+        }
+    }
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
+    val firebaseBom = platform("com.google.firebase:firebase-bom:34.7.0")
+    listOf("play", "manual").forEach { flavor ->
+        add("${flavor}Implementation", firebaseBom)
+        add("${flavor}Implementation", "com.google.firebase:firebase-analytics")
+        add("${flavor}Implementation", "com.google.firebase:firebase-crashlytics")
+        add("${flavor}Implementation", "com.google.firebase:firebase-messaging")
+        add("${flavor}Implementation", "com.google.firebase:firebase-perf")
+    }
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

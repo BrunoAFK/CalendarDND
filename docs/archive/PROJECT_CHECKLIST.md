@@ -10,13 +10,31 @@ Use this checklist to verify all components are properly implemented and working
 
 ### UI Layer
 - [ ] `ui/MainActivity.kt`
-- [ ] `ui/navigation/AppNavigation.kt`
+- [ ] `ui/navigation/AppNavigation.kt` (Accompanist animated navigation)
 - [ ] `ui/theme/Theme.kt`
+- [ ] `ui/screens/StartupScreen.kt`
+- [ ] `ui/screens/IntroScreen.kt`
+- [ ] `ui/screens/LanguageScreen.kt`
 - [ ] `ui/screens/OnboardingScreen.kt`
+- [ ] `ui/screens/CalendarScopeScreen.kt`
+- [ ] `ui/screens/CalendarPickerScreen.kt`
+- [ ] `ui/screens/PrivacyScreen.kt`
 - [ ] `ui/screens/StatusScreen.kt`
 - [ ] `ui/screens/SettingsScreen.kt`
-- [ ] `ui/screens/CalendarPickerScreen.kt`
+- [ ] `ui/screens/EventKeywordFilterScreen.kt` (experimental)
 - [ ] `ui/screens/DebugLogScreen.kt`
+- [ ] `ui/screens/DebugToolsScreen.kt`
+- [ ] `ui/screens/DebugLanguageScreen.kt`
+- [ ] `ui/screens/DebugSplashPreviewScreen.kt`
+- [ ] `ui/screens/UpdateScreen.kt`
+- [ ] `ui/screens/HelpScreen.kt`
+- [ ] `ui/components/PrimaryActionButton.kt`
+- [ ] `ui/components/StepIndicator.kt`
+- [ ] `ui/components/PermissionCard.kt`
+- [ ] `ui/components/OneUiHeader.kt`
+- [ ] `ui/components/OneUiTopAppBar.kt`
+- [ ] `ui/components/StatusCard.kt`
+- [ ] `ui/components/ManualUpdatePrompt.kt`
 - [ ] `ui/tiles/AutomationTileService.kt`
 
 ### Domain Layer
@@ -27,6 +45,7 @@ Use this checklist to verify all components are properly implemented and working
 - [ ] `domain/engine/AutomationEngine.kt`
 - [ ] `domain/engine/EngineInput.kt`
 - [ ] `domain/engine/EngineOutput.kt`
+- [ ] `domain/engine/TimeFormatter.kt`
 - [ ] `domain/planning/MeetingWindowResolver.kt`
 - [ ] `domain/planning/SchedulePlanner.kt`
 
@@ -34,6 +53,7 @@ Use this checklist to verify all components are properly implemented and working
 - [ ] `data/calendar/CalendarRepository.kt`
 - [ ] `data/calendar/CalendarQueries.kt`
 - [ ] `data/calendar/CalendarObserver.kt`
+- [ ] `data/calendar/CalendarInfo.kt`
 - [ ] `data/dnd/DndController.kt`
 - [ ] `data/prefs/SettingsStore.kt`
 - [ ] `data/prefs/RuntimeStateStore.kt`
@@ -50,30 +70,54 @@ Use this checklist to verify all components are properly implemented and working
 - [ ] `system/receivers/BootReceiver.kt`
 - [ ] `system/receivers/TimeChangeReceiver.kt`
 - [ ] `system/receivers/TimezoneChangeReceiver.kt`
+- [ ] `system/receivers/EnableDndNowReceiver.kt`
+- [ ] `system/notifications/DndNotificationHelper.kt`
+- [ ] `system/notifications/UpdateNotificationHelper.kt`
+- [ ] `system/update/ManualUpdateManager.kt`
 
 ### Utilities
+- [ ] `util/AnalyticsTracker.kt`
+- [ ] `util/AndroidTimeFormatter.kt`
 - [ ] `util/Debouncer.kt`
 - [ ] `util/TimeUtils.kt`
 - [ ] `util/PermissionUtils.kt`
+- [ ] `util/LocaleUtils.kt`
+- [ ] `util/AppConfig.kt`
+- [ ] `util/DebugTapLogger.kt`
 
 ### Resources
 - [ ] `res/values/strings.xml`
+- [ ] `res/values-de/strings.xml` (German)
+- [ ] `res/values-hr/strings.xml` (Croatian)
+- [ ] `res/values-it/strings.xml` (Italian)
+- [ ] `res/values-ko/strings.xml` (Korean)
 - [ ] `res/drawable/ic_tile.xml`
+- [ ] `res/drawable/ic_intro_logo.xml`
 - [ ] `res/xml/backup_rules.xml`
 - [ ] `res/xml/data_extraction_rules.xml`
 
 ### Build Files
-- [ ] `build.gradle.kts` (app module)
+- [ ] `build.gradle.kts` (app module with 3 flavors)
 - [ ] `build.gradle.kts` (project level)
 - [ ] `gradle.properties`
+- [ ] `gradle/libs.versions.toml`
+- [ ] `google-services.json` (Firebase)
+
+### Scripts
+- [ ] `scripts/release.sh` (Manual release automation)
 
 ### Documentation
-- [ ] `README.md`
-- [ ] `USER_GUIDE.md`
-- [ ] `DEVELOPER_DOCUMENTATION.md`
-- [ ] `ACCEPTANCE_TESTS.md`
-- [ ] `SETUP_GUIDE.md`
-- [ ] `PROJECT_CHECKLIST.md` (this file)
+- [ ] `docs/README.md`
+- [ ] `docs/DEVELOPER_DOCUMENTATION.md`
+- [ ] `docs/ACCEPTANCE_TESTS.md`
+- [ ] `docs/SETUP_GUIDE.md`
+- [ ] `docs/PROJECT_CHECKLIST.md` (this file)
+- [ ] `docs/PLAN.md`
+- [ ] `docs/FIREBASE_TOGGLES.md`
+- [ ] `docs/manual-updates.md`
+- [ ] `docs/IMPLEMENTATION_SUMMARY.md`
+- [ ] `docs/UPDATE_SUMMARY.md`
+- [ ] `AGENTS.md`
 
 ---
 
@@ -84,7 +128,11 @@ Use this checklist to verify all components are properly implemented and working
 - [ ] No import errors
 - [ ] No resource errors
 - [ ] Debug build compiles: `./gradlew assembleDebug`
-- [ ] Release build compiles: `./gradlew assembleRelease`
+- [ ] Play flavor release: `./gradlew assemblePlayRelease`
+- [ ] AltStore flavor release: `./gradlew assembleAltstoreRelease`
+- [ ] Manual flavor release: `./gradlew assembleManualRelease`
+- [ ] Firebase toggles work (crashlytics/analytics)
+- [ ] Debug tools can be enabled in release builds
 
 ---
 
@@ -288,6 +336,69 @@ Use this checklist to verify all components are properly implemented and working
 - [ ] Tap toggles automation
 - [ ] Tap opens app when setup needed
 - [ ] Tile updates when state changes
+
+### Multi-Language Support
+- [ ] Language screen shows all 5 languages
+- [ ] Language selection persists
+- [ ] Can switch between languages
+- [ ] All screens display in selected language
+- [ ] Debug language preview works for all languages
+- [ ] English (default)
+- [ ] German (de)
+- [ ] Croatian (hr)
+- [ ] Italian (it)
+- [ ] Korean (ko)
+
+### Pre-DND Notifications
+- [ ] 5-minute warning notification shows
+- [ ] Notification displays meeting title
+- [ ] Notification shows meeting end time
+- [ ] "Enable DND Now" action works
+- [ ] Notification respects permission (Android 13+)
+- [ ] Can be disabled in settings
+
+### DND Start Offset
+- [ ] Offset setting available in settings
+- [ ] Can set positive offset (delay DND)
+- [ ] Can set negative offset (early DND)
+- [ ] Default is 0 (no offset)
+- [ ] DND activates at offset time
+- [ ] Offset respects meeting boundaries
+
+### Debug Tools
+- [ ] Debug Tools screen accessible from Settings
+- [ ] Debug overlay toggle works
+- [ ] Navigation overlay shows current route
+- [ ] Tap logging works when enabled
+- [ ] Language preview opens correct language
+- [ ] Splash preview displays correctly
+- [ ] Test notification button works
+- [ ] App version displays correctly
+
+### Manual Update System (manual flavor only)
+- [ ] Update checker runs in background
+- [ ] Update notification shows for major/minor versions
+- [ ] Patch updates are silent
+- [ ] Update screen shows release notes
+- [ ] Download button works
+- [ ] Update metadata pulls from GitHub
+- [ ] Fallback URLs work if primary fails
+
+### Firebase Integration
+- [ ] Crashlytics opt-in works
+- [ ] Analytics opt-in works
+- [ ] Crash reports sent when opted in
+- [ ] Analytics events tracked when opted in
+- [ ] Can opt-out via settings
+- [ ] Build-time toggles work (gradle.properties)
+
+### Animated Navigation
+- [ ] Smooth slide transitions between screens
+- [ ] No jank during animations
+- [ ] Route locking prevents double-navigation
+- [ ] Back button works during animations
+- [ ] Interaction gating blocks taps during transitions
+- [ ] Animation duration ~220ms
 
 ---
 

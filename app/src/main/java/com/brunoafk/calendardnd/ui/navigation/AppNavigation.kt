@@ -50,6 +50,7 @@ import com.brunoafk.calendardnd.ui.screens.StartupScreen
 import com.brunoafk.calendardnd.ui.screens.StatusScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateHistoryScreen
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.util.debugTapLog
 import com.brunoafk.calendardnd.util.navInteractionGate
@@ -87,8 +88,20 @@ fun AppNavigation(
     showTileHint: Boolean = false,
     onTileHintConsumed: () -> Unit = {},
     updateStatus: ManualUpdateManager.UpdateStatus? = null,
+    signatureStatus: ManualUpdateManager.SignatureStatus = ManualUpdateManager.SignatureStatus(
+        isAllowed = true,
+        isPinned = true
+    ),
     openUpdates: Boolean = false,
-    onOpenUpdatesConsumed: () -> Unit = {}
+    onOpenUpdatesConsumed: () -> Unit = {},
+    openAbout: Boolean = false,
+    onOpenAboutConsumed: () -> Unit = {},
+    openSettings: Boolean = false,
+    onOpenSettingsConsumed: () -> Unit = {},
+    openKeywords: Boolean = false,
+    onOpenKeywordsConsumed: () -> Unit = {},
+    openHelp: Boolean = false,
+    onOpenHelpConsumed: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
@@ -110,7 +123,11 @@ fun AppNavigation(
     }
 
     LaunchedEffect(openUpdates, currentRoute, updateStatus) {
-        if (openUpdates && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+        if (BuildConfig.MANUAL_UPDATE_ENABLED &&
+            openUpdates &&
+            currentRoute.isNotBlank() &&
+            currentRoute != AppRoutes.STARTUP
+        ) {
             navController.navigate(AppRoutes.UPDATES) {
                 launchSingleTop = true
             }
@@ -118,6 +135,42 @@ fun AppNavigation(
                 settingsStore.setLastSeenUpdateVersion(status.info.versionName)
             }
             onOpenUpdatesConsumed()
+        }
+    }
+
+    LaunchedEffect(openAbout, currentRoute) {
+        if (openAbout && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+            navController.navigate(AppRoutes.ABOUT) {
+                launchSingleTop = true
+            }
+            onOpenAboutConsumed()
+        }
+    }
+
+    LaunchedEffect(openSettings, currentRoute) {
+        if (openSettings && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+            navController.navigate(AppRoutes.SETTINGS) {
+                launchSingleTop = true
+            }
+            onOpenSettingsConsumed()
+        }
+    }
+
+    LaunchedEffect(openKeywords, currentRoute) {
+        if (openKeywords && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+            navController.navigate(AppRoutes.EVENT_KEYWORD_FILTER) {
+                launchSingleTop = true
+            }
+            onOpenKeywordsConsumed()
+        }
+    }
+
+    LaunchedEffect(openHelp, currentRoute) {
+        if (openHelp && currentRoute.isNotBlank() && currentRoute != AppRoutes.STARTUP) {
+            navController.navigate(AppRoutes.HELP) {
+                launchSingleTop = true
+            }
+            onOpenHelpConsumed()
         }
     }
 
@@ -322,6 +375,7 @@ fun AppNavigation(
                         showTileHint = showTileHint,
                         onTileHintDismissed = onTileHintConsumed,
                         updateStatus = updateStatus,
+                        signatureStatus = signatureStatus,
                         onOpenUpdates = {
                             updateStatus?.let { status ->
                                 scope.launch {

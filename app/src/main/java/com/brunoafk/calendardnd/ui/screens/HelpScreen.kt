@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 
 data class HelpItem(
@@ -66,7 +67,7 @@ fun HelpScreen(
         AnalyticsTracker.logScreenView(context, "help")
     }
 
-    val allItems = listOf(
+    val allItems = listOfNotNull(
         HelpItem(
             id = "automation",
             title = stringResource(R.string.help_item_automation_title),
@@ -91,12 +92,16 @@ fun HelpScreen(
             summary = stringResource(R.string.help_item_privacy_summary),
             details = stringResource(R.string.help_item_privacy_details)
         ),
-        HelpItem(
-            id = "updates",
-            title = stringResource(R.string.help_item_updates_title),
-            summary = stringResource(R.string.help_item_updates_summary),
-            details = stringResource(R.string.help_item_updates_details)
-        ),
+        if (BuildConfig.MANUAL_UPDATE_ENABLED) {
+            HelpItem(
+                id = "updates",
+                title = stringResource(R.string.help_item_updates_title),
+                summary = stringResource(R.string.help_item_updates_summary),
+                details = stringResource(R.string.help_item_updates_details)
+            )
+        } else {
+            null
+        },
         HelpItem(
             id = "exact_alarms",
             title = stringResource(R.string.help_item_exact_alarms_title),

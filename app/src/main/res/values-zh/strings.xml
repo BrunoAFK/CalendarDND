@@ -180,6 +180,9 @@
     <string name="about_github_label">GitHub</string>
     <string name="about_report_title">报告问题</string>
     <string name="about_report_body">若出现问题，请在 GitHub 提交 issue，并说明设备型号、Android 版本和复现步骤。</string>
+    <string name="fcm_channel_name">更新</string>
+    <string name="fcm_channel_description">公告与更新通知</string>
+    <string name="fcm_default_title">Calendar DND</string>
     <string name="about_version_title">版本</string>
     <string name="about_version_subtitle">在 GitHub 上查看发布版本</string>
     <string name="about_whats_new_title">最新变化</string>
@@ -266,8 +269,8 @@
     <string name="help_item_language_details">你可以在设置中更改语言。它会立即更新应用界面，不会更改设备语言。</string>
 
     <string name="help_item_privacy_title">隐私</string>
-    <string name="help_item_privacy_summary">控制分析和崩溃报告。</string>
-    <string name="help_item_privacy_details">你可以分别启用或禁用使用分析和崩溃报告。崩溃报告帮助修复错误；分析显示最常用的功能。</string>
+    <string name="help_item_privacy_summary">管理分析与崩溃/性能报告。</string>
+    <string name="help_item_privacy_details">你可以启用或禁用使用分析与崩溃和性能报告。分析默认关闭。崩溃报告有助于修复错误；性能报告用于跟踪应用稳定性。</string>
 
     <string name="help_item_updates_title">更新</string>
     <string name="help_item_updates_summary">手动更新来自 GitHub 发布。</string>
@@ -338,11 +341,11 @@
     <!-- Privacy Settings -->
     <string name="privacy_intro">通过共享数据帮助改进应用。你可以稍后更改。</string>
     <string name="privacy_change_later">你可以稍后更改。</string>
-    <string name="privacy_defaults_hint">默认：分析关闭，崩溃报告开启。</string>
+    <string name="privacy_defaults_hint">默认：分析关闭，崩溃与性能报告开启。</string>
     <string name="analytics_opt_in_title">使用分析</string>
     <string name="analytics_opt_in_description">分享匿名使用数据以改进功能</string>
-    <string name="crashlytics_opt_in_title">崩溃报告</string>
-    <string name="crashlytics_opt_in_description">发送崩溃报告以帮助修复错误</string>
+    <string name="crashlytics_opt_in_title">崩溃与性能报告</string>
+    <string name="crashlytics_opt_in_description">发送崩溃与性能报告以帮助修复问题</string>
 
     <!-- Version -->
     <string name="app_version_format">版本 %1$s (%2$d)</string>

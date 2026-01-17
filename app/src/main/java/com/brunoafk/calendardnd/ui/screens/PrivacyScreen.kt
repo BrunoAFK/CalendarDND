@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.util.AppConfig
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.brunoafk.calendardnd.BuildConfig
+import com.brunoafk.calendardnd.util.TelemetryController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,81 +86,82 @@ fun PrivacyScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = surfaceColorAtElevation(1.dp)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                    if (BuildConfig.FIREBASE_ENABLED) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = surfaceColorAtElevation(1.dp)
+                            )
                         ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(R.string.analytics_opt_in_title),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = stringResource(R.string.analytics_opt_in_description),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            Switch(
-                                checked = analyticsOptIn,
-                                onCheckedChange = { enabled ->
-                                    scope.launch {
-                                        settingsStore.setAnalyticsOptIn(enabled)
-                                        if (AppConfig.analyticsEnabled) {
-                                            FirebaseAnalytics.getInstance(context)
-                                                .setAnalyticsCollectionEnabled(enabled)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = stringResource(R.string.analytics_opt_in_title),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.analytics_opt_in_description),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = analyticsOptIn,
+                                    onCheckedChange = { enabled ->
+                                        scope.launch {
+                                            settingsStore.setAnalyticsOptIn(enabled)
+                                            TelemetryController.setAnalyticsEnabled(
+                                                context,
+                                                AppConfig.analyticsEnabled && enabled
+                                            )
                                         }
                                     }
-                                }
-                            )
-                        }
-                    }
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = surfaceColorAtElevation(1.dp)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(R.string.crashlytics_opt_in_title),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = stringResource(R.string.crashlytics_opt_in_description),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                            Switch(
-                                checked = crashlyticsOptIn,
-                                onCheckedChange = { enabled ->
-                                    scope.launch {
-                                        settingsStore.setCrashlyticsOptIn(enabled)
-                                        FirebaseCrashlytics.getInstance()
-                                            .setCrashlyticsCollectionEnabled(
+                        }
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = surfaceColorAtElevation(1.dp)
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = stringResource(R.string.crashlytics_opt_in_title),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.crashlytics_opt_in_description),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = crashlyticsOptIn,
+                                    onCheckedChange = { enabled ->
+                                        scope.launch {
+                                            settingsStore.setCrashlyticsOptIn(enabled)
+                                            TelemetryController.setCrashlyticsEnabled(
                                                 AppConfig.crashlyticsEnabled && enabled
                                             )
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }

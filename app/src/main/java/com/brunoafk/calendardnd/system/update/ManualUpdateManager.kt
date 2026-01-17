@@ -66,14 +66,25 @@ object ManualUpdateManager {
         val prompt: UpdatePrompt?
     )
 
+    data class SignatureStatus(
+        val isAllowed: Boolean,
+        val isPinned: Boolean
+    )
+
     suspend fun checkForUpdates(context: Context): UpdateCheckResult {
         if (!BuildConfig.MANUAL_UPDATE_ENABLED) {
             logUpdate(context, DebugLogLevel.INFO, "Manual updates disabled for this build.")
             return UpdateCheckResult(null, null)
         }
-        if (!ensureSignaturePinned(context)) {
-            logUpdate(context, DebugLogLevel.WARNING, "Signature pin mismatch; skipping update checks.")
-            Log.w(TAG, "Signature pin mismatch; skipping update checks.")
+        val signatureStatus = getSignatureStatus(context)
+        if (!signatureStatus.isAllowed) {
+            val reason = if (signatureStatus.isPinned) {
+                "Signature pin mismatch; skipping update checks."
+            } else {
+                "Signature pinning not configured; skipping update checks."
+            }
+            logUpdate(context, DebugLogLevel.WARNING, reason)
+            Log.w(TAG, reason)
             return UpdateCheckResult(null, null)
         }
 
@@ -318,7 +329,8 @@ object ManualUpdateManager {
             }
 
             val updatesDir = java.io.File(context.cacheDir, "updates").apply { mkdirs() }
-            val outFile = java.io.File(updatesDir, "CalendarDND-${info.versionName}.apk")
+            val safeVersion = sanitizeFilenameComponent(info.versionName)
+            val outFile = java.io.File(updatesDir, "CalendarDND-${safeVersion}.apk")
             val digest = java.security.MessageDigest.getInstance("SHA-256")
 
             try {
@@ -426,12 +438,12 @@ object ManualUpdateManager {
     }
 
     private fun verifyApkSignature(context: Context, apkFile: java.io.File): Boolean {
-        val packageManager = context.packageManager
-        val installedDigests = getSigningCertDigestsForPackage(packageManager, context.packageName)
-        if (installedDigests.isEmpty()) {
+        val allowedDigests = parseAllowedSignerDigests()
+        if (allowedDigests.isEmpty()) {
             return false
         }
 
+        val packageManager = context.packageManager
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             PackageManager.GET_SIGNING_CERTIFICATES
         } else {
@@ -446,7 +458,18 @@ object ManualUpdateManager {
         archiveInfo.applicationInfo?.publicSourceDir = apkFile.absolutePath
 
         val apkDigests = getSigningCertDigests(archiveInfo)
-        return apkDigests.isNotEmpty() && apkDigests == installedDigests
+        return apkDigests.isNotEmpty() && apkDigests.any { it in allowedDigests }
+    }
+
+    private fun sanitizeFilenameComponent(raw: String): String {
+        val cleaned = raw.trim().replace(Regex("[^A-Za-z0-9._-]"), "_").trim('.', '_')
+        if (cleaned.isNotBlank()) {
+            return cleaned
+        }
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+            .digest(raw.toByteArray(Charsets.UTF_8))
+        val hex = digest.joinToString("") { "%02x".format(it) }
+        return hex.take(12)
     }
 
     private fun getSigningCertDigestsForPackage(
@@ -481,20 +504,26 @@ object ManualUpdateManager {
         return digest.joinToString("") { "%02x".format(it) }
     }
 
-    suspend fun ensureSignaturePinned(context: Context): Boolean {
+    fun getSignatureStatus(context: Context): SignatureStatus {
+        val allowedDigests = parseAllowedSignerDigests()
+        if (allowedDigests.isEmpty()) {
+            return SignatureStatus(isAllowed = false, isPinned = false)
+        }
         val packageManager = context.packageManager
         val digests = getSigningCertDigestsForPackage(packageManager, context.packageName)
         if (digests.isEmpty()) {
-            return false
+            return SignatureStatus(isAllowed = false, isPinned = true)
         }
-        val fingerprint = digests.sorted().joinToString(",")
-        val settingsStore = SettingsStore(context)
-        val stored = settingsStore.getSigningCertFingerprint()
-        if (stored.isNullOrBlank()) {
-            settingsStore.setSigningCertFingerprint(fingerprint)
-            return true
-        }
-        return stored == fingerprint
+        val isAllowed = digests.any { it in allowedDigests }
+        return SignatureStatus(isAllowed = isAllowed, isPinned = true)
+    }
+
+    private fun parseAllowedSignerDigests(): Set<String> {
+        return BuildConfig.ALLOWED_SIGNER_SHA256
+            .split(",")
+            .map { it.trim().lowercase() }
+            .filter { it.isNotEmpty() }
+            .toSet()
     }
 
     private suspend fun logUpdate(

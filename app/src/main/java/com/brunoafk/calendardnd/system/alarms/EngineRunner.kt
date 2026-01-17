@@ -19,10 +19,13 @@ import com.brunoafk.calendardnd.system.notifications.MeetingOverrunNotificationH
 import com.brunoafk.calendardnd.system.workers.Workers
 import com.brunoafk.calendardnd.util.AndroidTimeFormatter
 import com.brunoafk.calendardnd.util.AnalyticsTracker
+import com.brunoafk.calendardnd.util.AppConfig
 import com.brunoafk.calendardnd.util.DebugLogger
 import com.brunoafk.calendardnd.util.EngineConstants.PRE_DND_NOTIFICATION_LEAD_MS
 import com.brunoafk.calendardnd.util.EngineConstants.PRE_DND_NOTIFICATION_MIN_DELAY_MS
 import com.brunoafk.calendardnd.util.PermissionUtils
+import com.brunoafk.calendardnd.util.PerformanceTrace
+import com.brunoafk.calendardnd.util.PerformanceTracer
 import kotlinx.coroutines.flow.first
 
 /**
@@ -52,6 +55,7 @@ object EngineRunner {
             } else {
                 currentFilter
             }
+            val perfEnabled = AppConfig.crashlyticsEnabled && settingsSnapshot.crashlyticsOptIn
 
             // Gather input
             val input = EngineInput(
@@ -83,6 +87,7 @@ object EngineRunner {
             val includeDetailedLogs = settingsStore.debugLogIncludeDetails.first()
 
             // Run engine
+            val engineTrace = startEngineTraceIfEnabled(perfEnabled, input)
             val output = engine.run(input)
             val executionTime = System.currentTimeMillis() - startTime
 
@@ -118,6 +123,8 @@ object EngineRunner {
             )
             Log.d(TAG, if (dryRun) "DRY RUN | $compactLog" else compactLog)
 
+            finishEngineTrace(engineTrace, output)
+
             if (dryRun) {
                 return
             }
@@ -127,9 +134,11 @@ object EngineRunner {
 
             // DND changes
             if (decision.shouldEnableDnd) {
+                val dndTrace = startDndTraceIfEnabled(perfEnabled, "dnd_enable", input)
                 val beforeFilter = dndController.getCurrentFilterName()
                 val success = dndController.enableDnd(input.dndMode)
                 val afterFilter = dndController.getCurrentFilterName()
+                finishDndTrace(dndTrace, success)
                 debugLogStore.appendLog(
                     DebugLogLevel.INFO,
                     "DND Enable: mode=${input.dndMode.name} | before=$beforeFilter | after=$afterFilter | success=$success"
@@ -138,9 +147,11 @@ object EngineRunner {
                     runtimeStateStore.setLastKnownDndFilter(input.dndMode.filterValue)
                 }
             } else if (decision.shouldDisableDnd) {
+                val dndTrace = startDndTraceIfEnabled(perfEnabled, "dnd_disable", input)
                 val beforeFilter = dndController.getCurrentFilterName()
                 val success = dndController.disableDnd()
                 val afterFilter = dndController.getCurrentFilterName()
+                finishDndTrace(dndTrace, success)
                 debugLogStore.appendLog(
                     DebugLogLevel.INFO,
                     "DND Disable: before=$beforeFilter | after=$afterFilter | success=$success"
@@ -251,6 +262,66 @@ object EngineRunner {
             context,
             Manifest.permission.READ_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun startEngineTraceIfEnabled(enabled: Boolean, input: EngineInput): PerformanceTrace? {
+        if (!enabled) {
+            return null
+        }
+        return PerformanceTracer.newTrace("engine_run")?.apply {
+            putAttribute("trigger", input.trigger.name)
+            putAttribute("exact_alarms", input.hasExactAlarms.toString())
+            putAttribute("automation_enabled", input.automationEnabled.toString())
+            putAttribute("calendar_scope", if (input.selectedCalendarIds.isEmpty()) "all" else "specific")
+            putAttribute("policy_access", input.hasPolicyAccess.toString())
+            start()
+        }
+    }
+
+    private fun finishEngineTrace(
+        trace: PerformanceTrace?,
+        output: com.brunoafk.calendardnd.domain.engine.EngineOutput
+    ) {
+        if (trace == null) {
+            return
+        }
+        val decision = output.decision
+        trace.incrementMetric("dnd_enable", if (decision.shouldEnableDnd) 1 else 0)
+        trace.incrementMetric("dnd_disable", if (decision.shouldDisableDnd) 1 else 0)
+        trace.incrementMetric("no_change", if (!decision.shouldEnableDnd && !decision.shouldDisableDnd) 1 else 0)
+        trace.incrementMetric(
+            "missing_permissions",
+            if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.SETUP_REQUIRED) 1 else 0
+        )
+        trace.incrementMetric("user_override", if (output.userOverrideDetected) 1 else 0)
+        trace.incrementMetric(
+            "meeting_overrun",
+            if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.MEETING_OVERRUN) 1 else 0
+        )
+        trace.stop()
+    }
+
+    private fun startDndTraceIfEnabled(
+        enabled: Boolean,
+        traceName: String,
+        input: EngineInput
+    ): PerformanceTrace? {
+        if (!enabled) {
+            return null
+        }
+        return PerformanceTracer.newTrace(traceName)?.apply {
+            putAttribute("mode", input.dndMode.name)
+            putAttribute("policy_access", input.hasPolicyAccess.toString())
+            start()
+        }
+    }
+
+    private fun finishDndTrace(trace: PerformanceTrace?, success: Boolean) {
+        if (trace == null) {
+            return
+        }
+        trace.incrementMetric("success", if (success) 1 else 0)
+        trace.stop()
     }
 
 }

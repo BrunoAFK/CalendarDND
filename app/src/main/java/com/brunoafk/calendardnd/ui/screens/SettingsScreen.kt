@@ -51,8 +51,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.AppConfig
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.brunoafk.calendardnd.util.TelemetryController
 import com.brunoafk.calendardnd.data.dnd.DndController
 import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.system.alarms.EngineRunner
@@ -523,46 +522,47 @@ fun SettingsScreen(
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.permissions_subtitle),
                         onClick = onNavigateToPermissions
                     )
-                    SettingsDivider()
-                    SettingsSwitchRow(
-                        title = stringResource(com.brunoafk.calendardnd.R.string.analytics_opt_in_title),
-                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.analytics_opt_in_description),
-                        checked = analyticsOptIn,
-                        onCheckedChange = { enabled ->
-                            scope.launch {
-                                settingsStore.setAnalyticsOptIn(enabled)
-                                if (AppConfig.analyticsEnabled) {
-                                    FirebaseAnalytics.getInstance(context)
-                                        .setAnalyticsCollectionEnabled(enabled)
+                    if (BuildConfig.FIREBASE_ENABLED) {
+                        SettingsDivider()
+                        SettingsSwitchRow(
+                            title = stringResource(com.brunoafk.calendardnd.R.string.analytics_opt_in_title),
+                            subtitle = stringResource(com.brunoafk.calendardnd.R.string.analytics_opt_in_description),
+                            checked = analyticsOptIn,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setAnalyticsOptIn(enabled)
+                                    TelemetryController.setAnalyticsEnabled(
+                                        context,
+                                        AppConfig.analyticsEnabled && enabled
+                                    )
+                                    AnalyticsTracker.logSettingsChanged(
+                                        context,
+                                        "analytics_opt_in",
+                                        enabled.toString()
+                                    )
                                 }
-                                AnalyticsTracker.logSettingsChanged(
-                                    context,
-                                    "analytics_opt_in",
-                                    enabled.toString()
-                                )
                             }
-                        }
-                    )
-                    SettingsDivider()
-                    SettingsSwitchRow(
-                        title = stringResource(com.brunoafk.calendardnd.R.string.crashlytics_opt_in_title),
-                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.crashlytics_opt_in_description),
-                        checked = crashlyticsOptIn,
-                        onCheckedChange = { enabled ->
-                            scope.launch {
-                                settingsStore.setCrashlyticsOptIn(enabled)
-                                FirebaseCrashlytics.getInstance()
-                                    .setCrashlyticsCollectionEnabled(
+                        )
+                        SettingsDivider()
+                        SettingsSwitchRow(
+                            title = stringResource(com.brunoafk.calendardnd.R.string.crashlytics_opt_in_title),
+                            subtitle = stringResource(com.brunoafk.calendardnd.R.string.crashlytics_opt_in_description),
+                            checked = crashlyticsOptIn,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setCrashlyticsOptIn(enabled)
+                                    TelemetryController.setCrashlyticsEnabled(
                                         AppConfig.crashlyticsEnabled && enabled
                                     )
-                                AnalyticsTracker.logSettingsChanged(
-                                    context,
-                                    "crashlytics_opt_in",
-                                    enabled.toString()
-                                )
+                                    AnalyticsTracker.logSettingsChanged(
+                                        context,
+                                        "crashlytics_opt_in",
+                                        enabled.toString()
+                                    )
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
 

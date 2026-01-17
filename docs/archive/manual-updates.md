@@ -44,6 +44,39 @@ buildConfigField(
 
 The app tries URLs in order and stops at the first valid response.
 
+## Signature pinning (manual flavor)
+
+Manual updates verify APK signatures against an allowlist of SHA-256 cert fingerprints.
+Configure the allowlist with the `manualSignerSha256` Gradle property (comma-separated).
+
+Get the SHA-256 fingerprint from a JKS keystore:
+
+```
+keytool -list -v -keystore /path/to/your.jks -alias your_alias
+```
+
+Or from a signed APK:
+
+```
+keytool -printcert -jarfile /path/to/CalendarDND-1.2.3-manual.apk
+```
+
+Use lowercase hex without colons. Example:
+
+```
+manualSignerSha256=aa6c3d794be571f320e938ee51ffcfb95181a1d79b616d324393df1b6f0b7f6b
+```
+
+Multiple fingerprints:
+
+```
+manualSignerSha256=firstsha256hex,secondsha256hex
+```
+
+Where to set it:
+- `gradle.properties` (project or user-level) for a committed config, or
+- pass it on the command line: `./gradlew assembleManualRelease -PmanualSignerSha256=...`
+
 ## Local release script
 
 Use `scripts/release.sh` to create a release locally. It generates `update.json`, creates a tag,

@@ -3,8 +3,7 @@ package com.brunoafk.calendardnd
 import android.app.Application
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.util.AppConfig
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.brunoafk.calendardnd.util.TelemetryController
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -18,11 +17,10 @@ class App : Application() {
         val crashlyticsOptIn = runBlocking { settingsStore.crashlyticsOptIn.first() }
         val analyticsOptIn = runBlocking { settingsStore.analyticsOptIn.first() }
 
-        FirebaseCrashlytics.getInstance()
-            .setCrashlyticsCollectionEnabled(AppConfig.crashlyticsEnabled && crashlyticsOptIn)
-
-        FirebaseAnalytics.getInstance(this)
-            .setAnalyticsCollectionEnabled(AppConfig.analyticsEnabled && analyticsOptIn)
+        TelemetryController.setCrashlyticsEnabled(AppConfig.crashlyticsEnabled && crashlyticsOptIn)
+        TelemetryController.setPerformanceEnabled(AppConfig.crashlyticsEnabled && crashlyticsOptIn)
+        TelemetryController.setAnalyticsEnabled(this, AppConfig.analyticsEnabled && analyticsOptIn)
+        TelemetryController.subscribeToUpdatesTopic()
     }
 
     companion object {

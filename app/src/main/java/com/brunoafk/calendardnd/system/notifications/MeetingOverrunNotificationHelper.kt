@@ -22,7 +22,7 @@ object MeetingOverrunNotificationHelper {
         createNotificationChannel(context)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_tile_automation)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.meeting_overrun_title))
             .setContentText(context.getString(R.string.meeting_overrun_message))
             .setPriority(NotificationCompat.PRIORITY_HIGH)

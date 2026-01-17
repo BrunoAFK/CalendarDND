@@ -15,6 +15,7 @@ When a meeting starts, DND turns on. When it ends, DND turns off. Simple.
 - 🙌 **Respects You** - If you manually change DND during a meeting, the app stops interfering
 - 🔋 **Battery Friendly** - Minimal background activity
 - 🔒 **Private** - All data stays on your device
+- 🧪 **Experimental Keywords** - Only trigger DND for events matching a title keyword
 - 🌍 **Multi-Language** - English, German, Croatian, Italian, Korean, Chinese
 - ⏰ **Flexible Timing** - Start DND before or after meeting time
 - 🔔 **Pre-Warnings** - Optional notifications before DND activates
@@ -45,6 +46,7 @@ Once set up, you can customize:
 
 - **Calendars** - Choose which calendars to monitor
 - **Event Filters** - Only busy events, ignore all-day events, minimum duration
+- **Title Keyword Filter (experimental)** - Only activate for events matching a keyword
 - **DND Mode** - Priority Only or Total Silence
 - **Timing** - Start DND before or after the meeting time
 - **Notifications** - Get a 5-minute warning before DND activates
@@ -102,7 +104,13 @@ The app will guide you through these steps if needed.
 
 ## For Developers
 
-Technical documentation, architecture details, and contribution guidelines are available in the [Developer Documentation](docs/DEVELOPER_DOCUMENTATION.md).
+Technical documentation is available in the [docs](docs/) folder:
+
+- [Getting Started](docs/getting-started.md) - Development setup
+- [Architecture](docs/architecture.md) - System design
+- [Features](docs/features.md) - Feature details
+- [Configuration](docs/configuration.md) - Build flavors and toggles
+- [Testing](docs/testing.md) - Testing guide
 
 ## License
 

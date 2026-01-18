@@ -109,7 +109,7 @@ require_signing_props() {
   local props_file="${repo_root}/local.properties"
   local store_file=""
   local store_password=""
-  val key_alias=""
+  local key_alias=""
   local key_password=""
 
   if [[ -f "${props_file}" ]]; then

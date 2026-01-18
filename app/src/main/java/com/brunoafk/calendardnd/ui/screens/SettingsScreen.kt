@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -81,6 +82,7 @@ fun SettingsScreen(
     onNavigateToDndMode: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToEventKeywordFilter: () -> Unit,
+    onNavigateToNotificationAdvanced: () -> Unit,
     highlightAutomation: Boolean,
     showUpdatesMenu: Boolean
 ) {
@@ -96,6 +98,7 @@ fun SettingsScreen(
     val dndMode by settingsStore.dndMode.collectAsState(initial = DndMode.PRIORITY)
     val dndStartOffsetMinutes by settingsStore.dndStartOffsetMinutes.collectAsState(initial = 0)
     val preDndNotificationEnabled by settingsStore.preDndNotificationEnabled.collectAsState(initial = false)
+    val postMeetingNotificationEnabled by settingsStore.postMeetingNotificationEnabled.collectAsState(initial = true)
     val requireTitleKeyword by settingsStore.requireTitleKeyword.collectAsState(initial = false)
     val titleKeywordMatchMode by settingsStore.titleKeywordMatchMode.collectAsState(
         initial = KeywordMatchMode.KEYWORDS
@@ -168,6 +171,7 @@ fun SettingsScreen(
     val highlightAlpha = remember { Animatable(0f) }
     var highlightPlayed by rememberSaveable { mutableStateOf(false) }
     var isCheckingDnd by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
 
     fun refreshPermissions() {
         hasCalendarPermission = PermissionUtils.hasCalendarPermission(context)
@@ -218,34 +222,39 @@ fun SettingsScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                if (currentError != null && !permissionErrorDismissed) {
-                    ErrorCard(
-                        error = currentError,
-                        onPrimaryAction = {
-                            when (currentError) {
-                                AppError.CalendarPermissionDenied -> openAppSettings(context)
-                                AppError.DndPermissionDenied -> dndController.openPolicyAccessSettings()
-                                AppError.CalendarQueryFailed -> {}
-                                AppError.DndChangeFailed -> {}
-                                AppError.NoCalendarsFound -> openCalendarApp(context)
-                                AppError.NetworkError -> {}
-                            }
-                        },
-                        onDismiss = { permissionErrorDismissed = true }
-                    )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                state = listState,
+                contentPadding = PaddingValues(bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    if (currentError != null && !permissionErrorDismissed) {
+                        ErrorCard(
+                            error = currentError,
+                            onPrimaryAction = {
+                                when (currentError) {
+                                    AppError.CalendarPermissionDenied -> openAppSettings(context)
+                                    AppError.DndPermissionDenied -> dndController.openPolicyAccessSettings()
+                                    AppError.CalendarQueryFailed -> {}
+                                    AppError.DndChangeFailed -> {}
+                                    AppError.NoCalendarsFound -> openCalendarApp(context)
+                                    AppError.NetworkError -> {}
+                                }
+                            },
+                            onDismiss = { permissionErrorDismissed = true }
+                        )
+                    }
                 }
-            }
 
-            item {
+                item {
                 SettingsSection(title = stringResource(com.brunoafk.calendardnd.R.string.settings_general)) {
                     SettingsSwitchRow(
                         modifier = Modifier
@@ -512,6 +521,28 @@ fun SettingsScreen(
                             }
                         }
                     )
+                    SettingsDivider()
+                    SettingsSwitchRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.post_meeting_notification_title),
+                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.post_meeting_notification_subtitle),
+                        checked = postMeetingNotificationEnabled,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setPostMeetingNotificationEnabled(enabled)
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "post_meeting_notification",
+                                    enabled.toString()
+                                )
+                            }
+                        }
+                    )
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.notifications_advanced_title),
+                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.notifications_advanced_subtitle),
+                        onClick = onNavigateToNotificationAdvanced
+                    )
                 }
             }
 
@@ -601,6 +632,8 @@ fun SettingsScreen(
         }
     }
 }
+}
+
 
 private fun openAppSettings(context: android.content.Context) {
     val intent = Intent(

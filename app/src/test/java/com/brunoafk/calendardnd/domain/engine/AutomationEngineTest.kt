@@ -618,7 +618,10 @@ class AutomationEngineTest {
         hasPolicyAccess: Boolean = true,
         hasExactAlarms: Boolean = true,
         systemDndIsOn: Boolean = false,
-        currentSystemFilter: Int = 1
+        currentSystemFilter: Int = 1,
+        preDndNotificationLeadMinutes: Int = 5,
+        postMeetingNotificationEnabled: Boolean = true,
+        postMeetingNotificationOffsetMinutes: Int = 0
     ): EngineInput {
         return EngineInput(
             trigger = Trigger.MANUAL,
@@ -631,9 +634,12 @@ class AutomationEngineTest {
             dndMode = dndMode,
             dndStartOffsetMinutes = dndStartOffsetMinutes,
             preDndNotificationEnabled = preDndNotificationEnabled,
+            preDndNotificationLeadMinutes = preDndNotificationLeadMinutes,
             requireTitleKeyword = requireTitleKeyword,
             titleKeyword = titleKeyword,
             titleKeywordMatchMode = titleKeywordMatchMode,
+            postMeetingNotificationEnabled = postMeetingNotificationEnabled,
+            postMeetingNotificationOffsetMinutes = postMeetingNotificationOffsetMinutes,
             dndSetByApp = dndSetByApp,
             activeWindowEndMs = activeWindowEndMs,
             userSuppressedUntilMs = userSuppressedUntilMs,

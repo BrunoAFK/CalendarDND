@@ -70,11 +70,11 @@
     <string name="event_keyword_filter_mode_keywords">关键字</string>
     <string name="event_keyword_filter_mode_regex">正则</string>
     <string name="event_keyword_filter_keywords_label">关键字</string>
-    <string name="event_keyword_filter_keywords_help">逗号或换行分隔；不区分大小写。</string>
-    <string name="event_keyword_filter_keywords_examples">示例：focus, standup, 1:1</string>
+    <string name="event_keyword_filter_keywords_help">用逗号或换行分隔；不区分大小写。支持多词短语。</string>
+    <string name="event_keyword_filter_keywords_examples">示例：\nfocus\nstandup\n1:1\nvideo call\nproject kickoff\ncustomer sync</string>
     <string name="event_keyword_filter_regex_label">正则模式</string>
-    <string name="event_keyword_filter_regex_help">使用 Kotlin 正则；不区分大小写可加 (?i)。</string>
-    <string name="event_keyword_filter_regex_examples">示例：(?i)focus|standup|1:1</string>
+    <string name="event_keyword_filter_regex_help">使用 Kotlin 正则。不区分大小写可加 (?i)。可匹配短语和单词边界。</string>
+    <string name="event_keyword_filter_regex_examples">示例：\n(?i)focus|standup|1:1\n(?i)\\bvideo call\\b\n(?i)project\\s+kickoff\n(?i)customer\\s+(sync|update)</string>
     <string name="event_keyword_filter_regex_invalid">正则模式无效。</string>
     <string name="busy_only_title">仅忙碌事件</string>
     <string name="busy_only_description">忽略空闲/暂定事件</string>
@@ -234,12 +234,14 @@
     <string name="clear_logs">清除日志</string>
     <string name="copy_logs">复制日志</string>
     <string name="logs_copied">日志已复制</string>
+    <string name="debug_logs_menu">更多选项</string>
     <string name="debug_tools_enabled">调试工具已启用</string>
 
     <!-- Notifications -->
     <string name="pre_dnd_notification_title">免打扰即将开启</string>
     <string name="pre_dnd_notification_body">免打扰即将开启：%1$s</string>
     <string name="pre_dnd_notification_body_generic">免打扰将在 5 分钟后开启</string>
+    <string name="pre_dnd_notification_window">免打扰 %1$s\u2013%2$s</string>
     <string name="pre_dnd_notification_action">立即启用</string>
     <string name="pre_dnd_notification_setting_title">免打扰预提醒</string>
     <string name="pre_dnd_notification_setting">免打扰开启前 5 分钟提醒</string>
@@ -441,6 +443,7 @@
     <string name="meeting_overrun_title">会议超时了？</string>
     <string name="meeting_overrun_message">延长免打扰以保持专注</string>
     <string name="meeting_overrun_extend_format">+%1$d分钟</string>
+    <string name="meeting_overrun_restore">恢复</string>
     <string name="meeting_overrun_channel_name">会议超时</string>
     <string name="meeting_overrun_channel_description">会议超时时的通知</string>
 
@@ -533,8 +536,24 @@
     <string name="signature_warning_title">Signature verification</string>
     <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
     <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="signature_warning_debug_note">This is expected for debug builds.</string>
+    <string name="pre_dnd_notification_timing_title">提前提醒时间</string>
+    <string name="pre_dnd_notification_timing_value">提前 %d 分钟</string>
+    <string name="pre_dnd_notification_timing_help">设置在 DND 开始前多久显示提醒。</string>
+    <string name="post_meeting_notification_title">会议结束提醒</string>
+    <string name="post_meeting_notification_subtitle">会议结束后询问是否延长免打扰</string>
+    <string name="post_meeting_notification_timing_title">结束提醒时间</string>
+    <string name="post_meeting_notification_timing_at_end">会议结束时</string>
+    <string name="post_meeting_notification_timing_before">结束前 %d 分钟</string>
+    <string name="post_meeting_notification_timing_after">结束后 %d 分钟</string>
+    <string name="post_meeting_notification_timing_help">调整在会议结束前后显示延长 DND 提示的时间。</string>
+    <string name="post_meeting_notification_silent_title">结束提醒静音</string>
+    <string name="post_meeting_notification_silent_subtitle">低重要性（无声音）。是否振动取决于系统设置。</string>
+    <string name="notifications_advanced_title">通知高级设置</string>
+    <string name="notifications_advanced_subtitle">时间与静音选项</string>
     <string name="external_link_prompt_title">Open external link?</string>
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
+    <string name="meeting_overrun_channel_name_silent">会议延长（静音）</string>
 </resources>

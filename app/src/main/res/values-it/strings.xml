@@ -67,11 +67,11 @@
     <string name="event_keyword_filter_mode_keywords">Parole chiave</string>
     <string name="event_keyword_filter_mode_regex">Regex</string>
     <string name="event_keyword_filter_keywords_label">Parole chiave</string>
-    <string name="event_keyword_filter_keywords_help">Separate da virgola o riga; senza distinzione maiuscole.</string>
-    <string name="event_keyword_filter_keywords_examples">Esempio: focus, standup, 1:1</string>
+    <string name="event_keyword_filter_keywords_help">Separate da virgole o nuove righe; senza distinzione maiuscole. Sono consentite frasi con pi\u00f9 parole.</string>
+    <string name="event_keyword_filter_keywords_examples">Esempi:\nfocus\nstandup\n1:1\nvideo call\nproject kickoff\ncustomer sync</string>
     <string name="event_keyword_filter_regex_label">Pattern regex</string>
-    <string name="event_keyword_filter_regex_help">Regex Kotlin; aggiungi (?i) per ignorare maiuscole.</string>
-    <string name="event_keyword_filter_regex_examples">Esempio: (?i)focus|standup|1:1</string>
+    <string name="event_keyword_filter_regex_help">Regex Kotlin. Aggiungi (?i) per ignorare maiuscole/minuscole. Puoi cercare frasi e confini di parola.</string>
+    <string name="event_keyword_filter_regex_examples">Esempi:\n(?i)focus|standup|1:1\n(?i)\\bvideo call\\b\n(?i)project\\s+kickoff\n(?i)customer\\s+(sync|update)</string>
     <string name="event_keyword_filter_regex_invalid">Pattern regex non valido.</string>
     <string name="busy_only_title">Solo eventi occupati</string>
     <string name="busy_only_description">Ignora eventi liberi/da definire</string>
@@ -101,12 +101,14 @@
     <string name="clear_logs">Cancella log</string>
     <string name="copy_logs">Copia log</string>
     <string name="logs_copied">Log copiati</string>
+    <string name="debug_logs_menu">Altre opzioni</string>
     <string name="debug_tools_enabled">Strumenti di debug attivati</string>
 
     <!-- Notifications -->
     <string name="pre_dnd_notification_title">DND sta per iniziare</string>
     <string name="pre_dnd_notification_body">DND inizierà per: %1$s</string>
     <string name="pre_dnd_notification_body_generic">DND si attiverà tra 5 minuti</string>
+    <string name="pre_dnd_notification_window">DND attivo %1$s\u2013%2$s</string>
     <string name="pre_dnd_notification_action">Attiva ora</string>
     <string name="pre_dnd_notification_setting_title">Notifica pre-DND</string>
     <string name="pre_dnd_notification_setting">Notifica 5 minuti prima dell\'avvio DND</string>
@@ -490,6 +492,7 @@
     <string name="meeting_overrun_extend_format">+%1$dm</string>
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="meeting_overrun_restore">Ripristina</string>
     <string name="settings_help">Help</string>
     <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
@@ -509,8 +512,24 @@
     <string name="signature_warning_title">Signature verification</string>
     <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
     <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="signature_warning_debug_note">This is expected for debug builds.</string>
+    <string name="pre_dnd_notification_timing_title">Tempistica avviso pre-DND</string>
+    <string name="pre_dnd_notification_timing_value">%d minuti prima</string>
+    <string name="pre_dnd_notification_timing_help">Imposta quanto prima dell’avvio di DND compare il promemoria.</string>
+    <string name="post_meeting_notification_title">Notifica dopo la riunione</string>
+    <string name="post_meeting_notification_subtitle">Chiede di estendere DND dopo la fine della riunione</string>
+    <string name="post_meeting_notification_timing_title">Tempistica post-riunione</string>
+    <string name="post_meeting_notification_timing_at_end">Alla fine della riunione</string>
+    <string name="post_meeting_notification_timing_before">%d minuti prima della fine</string>
+    <string name="post_meeting_notification_timing_after">%d minuti dopo la fine</string>
+    <string name="post_meeting_notification_timing_help">Regola quando appare il prompt per estendere DND intorno alla fine della riunione.</string>
+    <string name="post_meeting_notification_silent_title">Notifica post-riunione silenziosa</string>
+    <string name="post_meeting_notification_silent_subtitle">Canale a bassa importanza (senza suono). La vibrazione dipende dalle impostazioni di sistema.</string>
+    <string name="notifications_advanced_title">Notifiche avanzate</string>
+    <string name="notifications_advanced_subtitle">Tempistiche e opzioni silenziose</string>
     <string name="external_link_prompt_title">Open external link?</string>
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
+    <string name="meeting_overrun_channel_name_silent">Riunione in ritardo (silenzioso)</string>
 </resources>

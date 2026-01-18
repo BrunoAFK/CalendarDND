@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,6 +38,7 @@ import com.brunoafk.calendardnd.ui.components.SettingsDivider
 import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
+import com.brunoafk.calendardnd.ui.components.PersistentWarningBanner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,7 +50,11 @@ fun DebugToolsScreen(
     onNavigateBack: () -> Unit,
     onOpenLanguage: (String) -> Unit,
     onOpenDebugLogs: () -> Unit = {},
-    onOpenLogSettings: () -> Unit = {}
+    onOpenLogSettings: () -> Unit = {},
+    signatureStatus: ManualUpdateManager.SignatureStatus = ManualUpdateManager.SignatureStatus(
+        isAllowed = true,
+        isPinned = true
+    )
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -67,13 +73,14 @@ fun DebugToolsScreen(
         DND_PREVIEW_SECONDS
     )
     val languages = listOf(
-        "en" to stringResource(R.string.language_english),
-        "zh" to stringResource(R.string.language_chinese),
-        "hr" to stringResource(R.string.language_croatian),
-        "de" to stringResource(R.string.language_german),
-        "it" to stringResource(R.string.language_italian),
-        "ko" to stringResource(R.string.language_korean)
+        "en" to stringResource(R.string.language_english).ifBlank { "English" },
+        "zh" to stringResource(R.string.language_chinese).ifBlank { "中文" },
+        "hr" to stringResource(R.string.language_croatian).ifBlank { "Hrvatski" },
+        "de" to stringResource(R.string.language_german).ifBlank { "Deutsch" },
+        "it" to stringResource(R.string.language_italian).ifBlank { "Italiano" },
+        "ko" to stringResource(R.string.language_korean).ifBlank { "한국어" }
     )
+    val listState = rememberLazyListState()
 
     fun previewDnd(mode: DndMode) {
         scope.launch {
@@ -107,6 +114,7 @@ fun DebugToolsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            state = listState,
             contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -141,10 +149,13 @@ fun DebugToolsScreen(
                             title = testNotificationTitle,
                             subtitle = testNotificationSubtitle,
                             onClick = {
+                                val startMs = System.currentTimeMillis() + 5 * 60 * 1000
+                                val endMs = startMs + 30 * 60 * 1000
                                 DndNotificationHelper.showPreDndNotification(
                                     context = context,
                                     meetingTitle = testNotificationTitle,
-                                    dndWindowEndMs = System.currentTimeMillis() + 30 * 60 * 1000
+                                    dndWindowEndMs = endMs,
+                                    dndWindowStartMs = startMs
                                 )
                             }
                         )
@@ -218,6 +229,20 @@ fun DebugToolsScreen(
                 item {
                     SettingsSection(title = stringResource(R.string.debug_tools_updates_title)) {
                         Column {
+                            if (BuildConfig.DEBUG && !signatureStatus.isAllowed) {
+                                val messageRes = if (signatureStatus.isPinned) {
+                                    R.string.signature_warning_message
+                                } else {
+                                    R.string.signature_warning_unconfigured
+                                }
+                                val message = stringResource(messageRes) + " " +
+                                    stringResource(R.string.signature_warning_debug_note)
+                                PersistentWarningBanner(
+                                    title = stringResource(R.string.signature_warning_title),
+                                    message = message
+                                )
+                                SettingsDivider()
+                            }
                             SettingsNavigationRow(
                                 title = stringResource(R.string.debug_tools_force_update_title),
                                 subtitle = stringResource(R.string.debug_tools_force_update_subtitle),

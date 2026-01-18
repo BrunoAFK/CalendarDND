@@ -34,6 +34,9 @@ import com.brunoafk.calendardnd.ui.components.ManualUpdatePrompt
 import android.content.res.Configuration
 import android.os.LocaleList
 import android.net.Uri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import java.util.Locale
 import com.brunoafk.calendardnd.util.ExternalLinkPolicy
 
@@ -128,22 +131,24 @@ class MainActivity : AppCompatActivity() {
                         window.statusBarColor = backgroundColor.toArgb()
                         window.navigationBarColor = backgroundColor.toArgb()
                     }
-                    AppNavigation(
-                        showTileHint = showTileHint,
-                        onTileHintConsumed = { tileHintState.value = false },
-                        updateStatus = updateStatus,
-                        signatureStatus = signatureStatus,
-                        openUpdates = openUpdates,
-                        onOpenUpdatesConsumed = { openUpdatesState.value = false },
-                        openAbout = openAbout,
-                        onOpenAboutConsumed = { openAboutState.value = false },
-                        openSettings = openSettings,
-                        onOpenSettingsConsumed = { openSettingsState.value = false },
-                        openKeywords = openKeywords,
-                        onOpenKeywordsConsumed = { openKeywordsState.value = false },
-                        openHelp = openHelp,
-                        onOpenHelpConsumed = { openHelpState.value = false }
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AppNavigation(
+                            showTileHint = showTileHint,
+                            onTileHintConsumed = { tileHintState.value = false },
+                            updateStatus = updateStatus,
+                            signatureStatus = signatureStatus,
+                            openUpdates = openUpdates,
+                            onOpenUpdatesConsumed = { openUpdatesState.value = false },
+                            openAbout = openAbout,
+                            onOpenAboutConsumed = { openAboutState.value = false },
+                            openSettings = openSettings,
+                            onOpenSettingsConsumed = { openSettingsState.value = false },
+                            openKeywords = openKeywords,
+                            onOpenKeywordsConsumed = { openKeywordsState.value = false },
+                            openHelp = openHelp,
+                            onOpenHelpConsumed = { openHelpState.value = false }
+                        )
+                    }
                     updatePrompt?.let { prompt ->
                         ManualUpdatePrompt(
                             prompt = prompt,

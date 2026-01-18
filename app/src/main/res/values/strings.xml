@@ -70,11 +70,11 @@
     <string name="event_keyword_filter_mode_keywords">Keywords</string>
     <string name="event_keyword_filter_mode_regex">Regex</string>
     <string name="event_keyword_filter_keywords_label">Keywords</string>
-    <string name="event_keyword_filter_keywords_help">Comma-separated or one per line; case-insensitive.</string>
-    <string name="event_keyword_filter_keywords_examples">Example: focus, standup, 1:1</string>
+    <string name="event_keyword_filter_keywords_help">Use commas or new lines; case-insensitive. Multi-word phrases are allowed.</string>
+    <string name="event_keyword_filter_keywords_examples">Examples:\nfocus\nstandup\n1:1\nvideo call\nproject kickoff\ncustomer sync</string>
     <string name="event_keyword_filter_regex_label">Regex pattern</string>
-    <string name="event_keyword_filter_regex_help">Uses Kotlin regex; add (?i) for case-insensitive.</string>
-    <string name="event_keyword_filter_regex_examples">Example: (?i)focus|standup|1:1</string>
+    <string name="event_keyword_filter_regex_help">Uses Kotlin regex. Add (?i) for case-insensitive. You can match phrases and word boundaries.</string>
+    <string name="event_keyword_filter_regex_examples">Examples:\n(?i)focus|standup|1:1\n(?i)\\bvideo call\\b\n(?i)project\\s+kickoff\n(?i)customer\\s+(sync|update)</string>
     <string name="event_keyword_filter_regex_invalid">Invalid regex pattern.</string>
     <string name="busy_only_title">Busy Events Only</string>
     <string name="busy_only_description">Ignore free/tentative events</string>
@@ -107,12 +107,14 @@
     <string name="clear_logs">Clear Logs</string>
     <string name="copy_logs">Copy Logs</string>
     <string name="logs_copied">Logs copied</string>
+    <string name="debug_logs_menu">More options</string>
     <string name="debug_tools_enabled">Debug tools enabled</string>
 
     <!-- Notifications -->
     <string name="pre_dnd_notification_title">DND starts soon</string>
     <string name="pre_dnd_notification_body">DND will start for: %1$s</string>
     <string name="pre_dnd_notification_body_generic">DND will turn on in 5 minutes</string>
+    <string name="pre_dnd_notification_window">DND active %1$s\u2013%2$s</string>
     <string name="pre_dnd_notification_action">Enable now</string>
     <string name="pre_dnd_notification_setting_title">Pre-DND Notification</string>
     <string name="pre_dnd_notification_setting">Notify 5 minutes before DND starts</string>
@@ -418,9 +420,24 @@
     <string name="update_notification_body">Version %1$s is ready to download.</string>
     <string name="update_banner_title">Update available</string>
     <string name="update_banner_message">Version %1$s is ready to download.</string>
+    <string name="pre_dnd_notification_timing_title">Pre-DND warning timing</string>
+    <string name="pre_dnd_notification_timing_value">%d minutes before</string>
+    <string name="pre_dnd_notification_timing_help">Controls how long before DND starts the reminder appears.</string>
+    <string name="post_meeting_notification_title">Post-meeting notification</string>
+    <string name="post_meeting_notification_subtitle">Ask to extend DND after a meeting ends</string>
+    <string name="post_meeting_notification_timing_title">Post-meeting timing</string>
+    <string name="post_meeting_notification_timing_at_end">At meeting end</string>
+    <string name="post_meeting_notification_timing_before">%d minutes before end</string>
+    <string name="post_meeting_notification_timing_after">%d minutes after end</string>
+    <string name="post_meeting_notification_timing_help">Adjusts when the extend DND prompt appears around the meeting end.</string>
+    <string name="post_meeting_notification_silent_title">Silent post-meeting notification</string>
+    <string name="post_meeting_notification_silent_subtitle">Low-importance channel (no sound). Vibration depends on system settings.</string>
+    <string name="notifications_advanced_title">Notification advanced</string>
+    <string name="notifications_advanced_subtitle">Timing and silent options</string>
     <string name="signature_warning_title">Signature verification</string>
     <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
     <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="signature_warning_debug_note">This is expected for debug builds.</string>
     <string name="external_link_prompt_title">Open external link</string>
     <string name="external_link_prompt_message">Open link to %1$s in your browser?</string>
     <string name="external_link_open">Open</string>
@@ -448,7 +465,9 @@
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_extend_format">+%1$dm</string>
     <string name="meeting_overrun_channel_name">Meeting Overrun</string>
+    <string name="meeting_overrun_channel_name_silent">Meeting Overrun (Silent)</string>
     <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
+    <string name="meeting_overrun_restore">Restore</string>
 
     <!-- Debug tools -->
     <string name="debug_section_title">Debug</string>

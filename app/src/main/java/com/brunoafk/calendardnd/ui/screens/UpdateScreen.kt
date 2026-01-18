@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -33,6 +34,7 @@ import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogStore
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
+import com.brunoafk.calendardnd.ui.components.MarkdownText
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
 import kotlinx.coroutines.launch
@@ -47,6 +49,7 @@ fun UpdateScreen(
     val debugLogStore = remember { DebugLogStore(context) }
     var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         metadata = ManualUpdateManager.fetchUpdateMetadata(context)
@@ -72,6 +75,7 @@ fun UpdateScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            state = listState,
             contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -136,11 +140,7 @@ fun UpdateScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                         latest.releaseNotes?.let { notes ->
-                            Text(
-                                text = notes,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            MarkdownText(text = notes)
                         }
                         if (isNewer) {
                             Button(

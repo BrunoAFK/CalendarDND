@@ -10,12 +10,12 @@ Usage: scripts/release.sh
 
 This script:
 - Bumps versionName/versionCode
-- Runs ./gradlew assembleDebug, test, lint, assembleManualRelease
+- Runs ./gradlew assembleDebug, test, lint, assembleManualRelease, assembleFdroidRelease
 - Ensures release-notes/<version>.md exists (must be ready)
 - Creates a git tag v<version>
-- Generates update.json
+- Generates update.json (for manual flavor only)
 - Pushes commits + tags
-- Creates a GitHub release and uploads the APK + update.json
+- Creates a GitHub release and uploads APKs + update.json
 EOF
 }
 
@@ -109,7 +109,7 @@ require_signing_props() {
   local props_file="${repo_root}/local.properties"
   local store_file=""
   local store_password=""
-  local key_alias=""
+  val key_alias=""
   local key_password=""
 
   if [[ -f "${props_file}" ]]; then
@@ -328,22 +328,33 @@ if git rev-parse "${tag}" >/dev/null 2>&1; then
   exit 1
 fi
 
-apk_name="CalendarDND-${version}-manual.apk"
+# Build names
+manual_apk_name="CalendarDND-${version}-manual.apk"
+fdroid_apk_name="CalendarDND-${version}-fdroid.apk"
 
-./gradlew assembleDebug test lint assembleManualRelease
+# Build all flavors
+./gradlew assembleDebug test lint assembleManualRelease assembleFdroidRelease
 
-apk_path="$(ls "${repo_root}"/app/build/outputs/apk/manual/release/app-manual-release*.apk 2>/dev/null | head -n 1 || true)"
-
-if [[ ! -f "${apk_path}" ]]; then
-  echo "APK not found after build in app/build/outputs/apk/manual/release"
+# Handle Manual APK
+manual_apk_src="$(ls "${repo_root}"/app/build/outputs/apk/manual/release/app-manual-release*.apk 2>/dev/null | head -n 1 || true)"
+if [[ ! -f "${manual_apk_src}" ]]; then
+  echo "Manual APK not found after build."
   exit 1
 fi
+final_manual_apk_path="${generated_dir}/${manual_apk_name}"
+cp "${manual_apk_src}" "${final_manual_apk_path}"
+manual_sha="$(compute_sha256 "${final_manual_apk_path}")"
 
-final_apk_path="${generated_dir}/${apk_name}"
-cp "${apk_path}" "${final_apk_path}"
-apk_path="${final_apk_path}"
-current_sha="$(compute_sha256 "${apk_path}")"
+# Handle F-Droid APK
+fdroid_apk_src="$(ls "${repo_root}"/app/build/outputs/apk/fdroid/release/app-fdroid-release*.apk 2>/dev/null | head -n 1 || true)"
+if [[ ! -f "${fdroid_apk_src}" ]]; then
+  echo "F-Droid APK not found after build."
+  exit 1
+fi
+final_fdroid_apk_path="${generated_dir}/${fdroid_apk_name}"
+cp "${fdroid_apk_src}" "${final_fdroid_apk_path}"
 
+# Generate update.json (for Manual flavor only)
 mapfile -t release_files < <(ls "${repo_root}/release-notes/"*.md 2>/dev/null | grep -E '/[0-9]+\.[0-9]+(\.[0-9]+)?\.md$' | sort -V -r)
 if [[ ${#release_files[@]} -eq 0 ]]; then
   echo "No release notes found in release-notes/*.md"
@@ -359,7 +370,7 @@ for file in "${release_files[@]}"; do
   file_version_code="$(semver_to_code "${file_version}")"
   sha_value=""
   if [[ "${file_version}" == "${version}" ]]; then
-    sha_value="${current_sha}"
+    sha_value="${manual_sha}"
   fi
   if [[ -n "${sha_value}" ]]; then
     release_entries+=("$(jq -n --arg versionName "${file_version}" --arg apkUrl "${file_apk_url}" --arg releaseNotes "${file_notes}" --argjson versionCode "${file_version_code}" --arg sha256 "${sha_value}" '{versionName: $versionName, versionCode: $versionCode, apkUrl: $apkUrl, releaseNotes: $releaseNotes, sha256: $sha256}')")
@@ -370,9 +381,10 @@ done
 
 printf '%s\n' "${release_entries[@]}" | jq -s '{releases: .}' > "${update_json}"
 
+# Git operations
 git add -A
 if git diff --cached --quiet; then
-  echo "No changes to commit for version bump or release notes."
+  echo "No changes to commit."
 else
   git commit -m "Release ${version}"
 fi
@@ -380,10 +392,12 @@ git tag -a "${tag}" -m "Release ${version}"
 git push origin HEAD
 git push origin "${tag}"
 
+# Create GitHub Release with both APKs
 gh release create "${tag}" \
   --title "${tag}" \
   --notes-file "${notes_file}" \
-  "${apk_path}#${apk_name}" \
+  "${final_manual_apk_path}#${manual_apk_name}" \
+  "${final_fdroid_apk_path}#${fdroid_apk_name}" \
   "${update_json}#update.json"
 
 echo "Release created: ${tag}"

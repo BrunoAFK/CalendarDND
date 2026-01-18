@@ -16,20 +16,23 @@ import com.brunoafk.calendardnd.system.receivers.ExtendDndReceiver
 object MeetingOverrunNotificationHelper {
 
     private const val CHANNEL_ID = "meeting_overrun"
+    private const val CHANNEL_ID_SILENT = "meeting_overrun_silent"
     private const val NOTIFICATION_ID = 1002
 
-    fun showOverrunNotification(context: Context) {
-        createNotificationChannel(context)
+    fun showOverrunNotification(context: Context, silent: Boolean) {
+        val channelId = if (silent) CHANNEL_ID_SILENT else CHANNEL_ID
+        createNotificationChannel(context, silent)
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.meeting_overrun_title))
             .setContentText(context.getString(R.string.meeting_overrun_message))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(if (silent) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .addAction(createExtendAction(context, 5))
             .addAction(createExtendAction(context, 15))
             .addAction(createExtendAction(context, 30))
+            .addAction(createRestoreAction(context))
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -56,13 +59,47 @@ object MeetingOverrunNotificationHelper {
         ).build()
     }
 
-    private fun createNotificationChannel(context: Context) {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            context.getString(R.string.meeting_overrun_channel_name),
+    private fun createRestoreAction(context: Context): NotificationCompat.Action {
+        val intent = Intent(context, ExtendDndReceiver::class.java).apply {
+            action = ExtendDndReceiver.ACTION_STOP_DND
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        return NotificationCompat.Action.Builder(
+            R.drawable.ic_refresh,
+            context.getString(R.string.meeting_overrun_restore),
+            pendingIntent
+        ).build()
+    }
+
+    private fun createNotificationChannel(context: Context, silent: Boolean) {
+        val channelId = if (silent) CHANNEL_ID_SILENT else CHANNEL_ID
+        val channelNameRes = if (silent) {
+            R.string.meeting_overrun_channel_name_silent
+        } else {
+            R.string.meeting_overrun_channel_name
+        }
+        val importance = if (silent) {
+            NotificationManager.IMPORTANCE_LOW
+        } else {
             NotificationManager.IMPORTANCE_HIGH
+        }
+        val channel = NotificationChannel(
+            channelId,
+            context.getString(channelNameRes),
+            importance
         ).apply {
             description = context.getString(R.string.meeting_overrun_channel_description)
+            if (silent) {
+                setSound(null, null)
+                enableVibration(true)
+            }
         }
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

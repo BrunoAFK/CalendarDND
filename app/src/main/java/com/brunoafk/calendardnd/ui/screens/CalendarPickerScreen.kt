@@ -2,6 +2,7 @@ package com.brunoafk.calendardnd.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,6 +34,7 @@ fun CalendarPickerScreen(
     val scope = rememberCoroutineScope()
     val settingsStore = remember { SettingsStore(context) }
     val calendarRepository = remember { CalendarRepository(context) }
+    val listState = rememberLazyListState()
 
     var calendars by remember { mutableStateOf<List<CalendarInfo>>(emptyList()) }
     val selectedIds by settingsStore.selectedCalendarIds.collectAsState(initial = emptySet())
@@ -69,6 +71,7 @@ fun CalendarPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
+                state = listState,
                 contentPadding = PaddingValues(
                     start = 16.dp,
                     top = 0.dp,

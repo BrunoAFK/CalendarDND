@@ -67,11 +67,11 @@
     <string name="event_keyword_filter_mode_keywords">Ključne riječi</string>
     <string name="event_keyword_filter_mode_regex">Regex</string>
     <string name="event_keyword_filter_keywords_label">Ključne riječi</string>
-    <string name="event_keyword_filter_keywords_help">Odvojeno zarezom ili po retku; bez razlikovanja velikih/malih slova.</string>
-    <string name="event_keyword_filter_keywords_examples">Primjer: fokus, standup, 1:1</string>
+    <string name="event_keyword_filter_keywords_help">Odvojeno zarezima ili novim redovima; bez razlikovanja velikih/malih slova. Višerječne fraze su dopuštene.</string>
+    <string name="event_keyword_filter_keywords_examples">Primjeri:\nfocus\nstandup\n1:1\nvideo call\nproject kickoff\ncustomer sync</string>
     <string name="event_keyword_filter_regex_label">Regex uzorak</string>
-    <string name="event_keyword_filter_regex_help">Kotlin regex; dodaj (?i) za neosjetljivo.</string>
-    <string name="event_keyword_filter_regex_examples">Primjer: (?i)fokus|standup|1:1</string>
+    <string name="event_keyword_filter_regex_help">Kotlin regex. Dodaj (?i) za neosjetljivo na velika/mala slova. Možeš tražiti fraze i granice riječi.</string>
+    <string name="event_keyword_filter_regex_examples">Primjeri:\n(?i)focus|standup|1:1\n(?i)\\bvideo call\\b\n(?i)project\\s+kickoff\n(?i)customer\\s+(sync|update)</string>
     <string name="event_keyword_filter_regex_invalid">Neispravan regex uzorak.</string>
     <string name="busy_only_title">Samo zauzeti događaji</string>
     <string name="busy_only_description">Ignoriraj slobodne/privremene događaje</string>
@@ -101,12 +101,14 @@
     <string name="clear_logs">Obriši zapise</string>
     <string name="copy_logs">Kopiraj zapise</string>
     <string name="logs_copied">Zapisi kopirani</string>
+    <string name="debug_logs_menu">Više opcija</string>
     <string name="debug_tools_enabled">Debug alati omogućeni</string>
 
     <!-- Notifications -->
     <string name="pre_dnd_notification_title">DND uskoro počinje</string>
     <string name="pre_dnd_notification_body">DND će se uključiti za: %1$s</string>
     <string name="pre_dnd_notification_body_generic">DND će se uključiti za 5 minuta</string>
+    <string name="pre_dnd_notification_window">DND aktivan %1$s\u2013%2$s</string>
     <string name="pre_dnd_notification_action">Uključi odmah</string>
     <string name="pre_dnd_notification_setting_title">Obavijest prije DND-a</string>
     <string name="pre_dnd_notification_setting">Obavijesti 5 minuta prije početka DND-a</string>
@@ -490,6 +492,7 @@
     <string name="meeting_overrun_extend_format">+%1$dm</string>
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="meeting_overrun_restore">Vrati</string>
     <string name="settings_help">Help</string>
     <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
@@ -509,8 +512,24 @@
     <string name="signature_warning_title">Signature verification</string>
     <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
     <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="signature_warning_debug_note">This is expected for debug builds.</string>
+    <string name="pre_dnd_notification_timing_title">Vrijeme upozorenja prije DND-a</string>
+    <string name="pre_dnd_notification_timing_value">%d min prije</string>
+    <string name="pre_dnd_notification_timing_help">Određuje koliko prije početka DND-a se prikazuje podsjetnik.</string>
+    <string name="post_meeting_notification_title">Obavijest nakon sastanka</string>
+    <string name="post_meeting_notification_subtitle">Pitanje za produljenje DND-a nakon završetka sastanka</string>
+    <string name="post_meeting_notification_timing_title">Vrijeme nakon sastanka</string>
+    <string name="post_meeting_notification_timing_at_end">Na kraju sastanka</string>
+    <string name="post_meeting_notification_timing_before">%d min prije kraja</string>
+    <string name="post_meeting_notification_timing_after">%d min nakon kraja</string>
+    <string name="post_meeting_notification_timing_help">Podesite kada se prikazuje upit za produljenje DND-a oko završetka sastanka.</string>
+    <string name="post_meeting_notification_silent_title">Tiha obavijest nakon sastanka</string>
+    <string name="post_meeting_notification_silent_subtitle">Niska važnost (bez zvuka). Vibracija ovisi o postavkama sustava.</string>
+    <string name="notifications_advanced_title">Napredne obavijesti</string>
+    <string name="notifications_advanced_subtitle">Vrijeme i tihe opcije</string>
     <string name="external_link_prompt_title">Open external link?</string>
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
+    <string name="meeting_overrun_channel_name_silent">Sastanak se odužio (tiho)</string>
 </resources>

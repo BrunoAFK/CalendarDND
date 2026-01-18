@@ -2,12 +2,14 @@ package com.brunoafk.calendardnd.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import android.content.Intent
 import android.widget.Toast
 import com.brunoafk.calendardnd.data.prefs.DebugLogEntry
+import com.brunoafk.calendardnd.data.prefs.DebugLogFilterLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
@@ -43,11 +46,13 @@ fun DebugLogScreen(
     val scope = rememberCoroutineScope()
     val debugLogStore = remember { DebugLogStore(context) }
     val settingsStore = remember { SettingsStore(context) }
+    val listState = rememberLazyListState()
 
     val logEntries by debugLogStore.logEntries.collectAsState(initial = emptyList())
     var searchQuery by remember { mutableStateOf("") }
     var searchExpanded by remember { mutableStateOf(false) }
-    val logLevelFilter by settingsStore.logLevelFilter.collectAsState(initial = DebugLogLevel.ALL)
+    var menuExpanded by remember { mutableStateOf(false) }
+    val logLevelFilter by settingsStore.logLevelFilter.collectAsState(initial = DebugLogFilterLevel.ALL)
     val levelCounts = remember(logEntries) {
         val counts = mutableMapOf(
             DebugLogLevel.INFO to 0,
@@ -60,10 +65,11 @@ fun DebugLogScreen(
         counts
     }
     val filteredByLevel = remember(logEntries, logLevelFilter) {
-        if (logLevelFilter == DebugLogLevel.ALL) {
-            logEntries
-        } else {
-            logEntries.filter { it.level == logLevelFilter }
+        when (logLevelFilter) {
+            DebugLogFilterLevel.ALL -> logEntries
+            DebugLogFilterLevel.INFO -> logEntries.filter { it.level == DebugLogLevel.INFO }
+            DebugLogFilterLevel.WARNING -> logEntries.filter { it.level == DebugLogLevel.WARNING }
+            DebugLogFilterLevel.ERROR -> logEntries.filter { it.level == DebugLogLevel.ERROR }
         }
     }
     val filteredBySearch = remember(filteredByLevel, searchQuery) {
@@ -87,66 +93,99 @@ fun DebugLogScreen(
                 onNavigateBack = onNavigateBack,
                 title = stringResource(com.brunoafk.calendardnd.R.string.debug_logs),
                 actions = {
-                    if (searchExpanded) {
-                        IconButton(
-                            onClick = {
-                                searchQuery = ""
-                                searchExpanded = false
-                            }
-                        ) {
-                            Icon(Icons.Default.Close, stringResource(com.brunoafk.calendardnd.R.string.close_search))
-                        }
-                    } else {
-                        IconButton(
-                            onClick = { searchExpanded = true }
-                        ) {
-                            Icon(Icons.Default.Search, stringResource(com.brunoafk.calendardnd.R.string.search_logs))
-                        }
-                    }
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                val logs = debugLogStore.getLogsAsString()
-                                clipboardManager.setText(AnnotatedString(logs))
-                                Toast.makeText(
-                                    context,
-                                    context.getString(com.brunoafk.calendardnd.R.string.logs_copied),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    ) {
-                        Icon(Icons.Default.ContentCopy, stringResource(com.brunoafk.calendardnd.R.string.copy_logs))
-                    }
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                val summary = debugLogStore.getRedactedShareSummary()
-                                val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/plain"
-                                    putExtra(Intent.EXTRA_TEXT, summary)
-                                }
-                                val chooser = Intent.createChooser(
-                                    sendIntent,
-                                    context.getString(com.brunoafk.calendardnd.R.string.debug_logs_share)
-                                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(chooser)
-                            }
-                        }
-                    ) {
+                    IconButton(onClick = { menuExpanded = true }) {
                         Icon(
-                            Icons.Default.Share,
-                            stringResource(com.brunoafk.calendardnd.R.string.debug_logs_share)
+                            Icons.Default.MoreVert,
+                            stringResource(com.brunoafk.calendardnd.R.string.debug_logs_menu)
                         )
                     }
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                debugLogStore.clearLogs()
-                            }
-                        }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
                     ) {
-                        Icon(Icons.Default.Delete, stringResource(com.brunoafk.calendardnd.R.string.clear_logs))
+                        val searchLabel = if (searchExpanded) {
+                            com.brunoafk.calendardnd.R.string.close_search
+                        } else {
+                            com.brunoafk.calendardnd.R.string.search_logs
+                        }
+                        val searchIcon = if (searchExpanded) {
+                            Icons.Default.Close
+                        } else {
+                            Icons.Default.Search
+                        }
+                        DropdownMenuItem(
+                            text = { Text(stringResource(searchLabel)) },
+                            leadingIcon = {
+                                Icon(searchIcon, contentDescription = null)
+                            },
+                            onClick = {
+                                if (searchExpanded) {
+                                    searchQuery = ""
+                                }
+                                searchExpanded = !searchExpanded
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(com.brunoafk.calendardnd.R.string.copy_logs)) },
+                            leadingIcon = {
+                                Icon(Icons.Default.ContentCopy, contentDescription = null)
+                            },
+                            onClick = {
+                                scope.launch {
+                                    val logs = debugLogStore.getLogsAsString()
+                                    clipboardManager.setText(AnnotatedString(logs))
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(com.brunoafk.calendardnd.R.string.logs_copied),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(com.brunoafk.calendardnd.R.string.debug_logs_share)) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Share, contentDescription = null)
+                            },
+                            onClick = {
+                                scope.launch {
+                                    val summary = debugLogStore.getRedactedShareSummary()
+                                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "text/plain"
+                                        putExtra(Intent.EXTRA_TEXT, summary)
+                                    }
+                                    val chooser = Intent.createChooser(
+                                        sendIntent,
+                                        context.getString(com.brunoafk.calendardnd.R.string.debug_logs_share)
+                                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(chooser)
+                                }
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(com.brunoafk.calendardnd.R.string.clear_logs),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            onClick = {
+                                scope.launch {
+                                    debugLogStore.clearLogs()
+                                }
+                                menuExpanded = false
+                            }
+                        )
                     }
                 }
             )
@@ -156,6 +195,7 @@ fun DebugLogScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            state = listState,
             contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -289,16 +329,16 @@ private fun DebugLogEntry.toLogSummary(): LogSummary {
 
 @Composable
 private fun LogLevelFilters(
-    current: DebugLogLevel,
+    current: DebugLogFilterLevel,
     totals: Map<DebugLogLevel, Int>,
-    onSelect: (DebugLogLevel) -> Unit
+    onSelect: (DebugLogFilterLevel) -> Unit
 ) {
     val allCount = totals.values.sum()
     val levels = listOf(
-        DebugLogLevel.ALL to allCount,
-        DebugLogLevel.INFO to (totals[DebugLogLevel.INFO] ?: 0),
-        DebugLogLevel.WARNING to (totals[DebugLogLevel.WARNING] ?: 0),
-        DebugLogLevel.ERROR to (totals[DebugLogLevel.ERROR] ?: 0)
+        DebugLogFilterLevel.ALL to allCount,
+        DebugLogFilterLevel.INFO to (totals[DebugLogLevel.INFO] ?: 0),
+        DebugLogFilterLevel.WARNING to (totals[DebugLogLevel.WARNING] ?: 0),
+        DebugLogFilterLevel.ERROR to (totals[DebugLogLevel.ERROR] ?: 0)
     )
 
     LazyRow(
@@ -347,7 +387,6 @@ private fun LevelPill(level: DebugLogLevel) {
         DebugLogLevel.ERROR -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
         DebugLogLevel.WARNING -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
         DebugLogLevel.INFO -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-        DebugLogLevel.ALL -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
     }
     Surface(
         shape = MaterialTheme.shapes.small,

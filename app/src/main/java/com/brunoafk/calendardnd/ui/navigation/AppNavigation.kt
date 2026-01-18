@@ -50,6 +50,7 @@ import com.brunoafk.calendardnd.ui.screens.StartupScreen
 import com.brunoafk.calendardnd.ui.screens.StatusScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateHistoryScreen
+import com.brunoafk.calendardnd.ui.screens.NotificationAdvancedScreen
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.util.debugTapLog
@@ -81,6 +82,7 @@ object AppRoutes {
     const val UPDATES = "updates"
     const val UPDATE_HISTORY = "update_history"
     const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
+    const val NOTIFICATION_ADVANCED = "notification_advanced"
 }
 
 @Composable
@@ -470,6 +472,10 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.EVENT_KEYWORD_FILTER)
                         },
+                        onNavigateToNotificationAdvanced = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.NOTIFICATION_ADVANCED)
+                        },
                         highlightAutomation = highlight,
                         showUpdatesMenu = updateStatus != null
                     )
@@ -489,6 +495,27 @@ fun AppNavigation(
                     }
                 ) {
                     com.brunoafk.calendardnd.ui.screens.EventKeywordFilterScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.NOTIFICATION_ADVANCED) {
+                val route = AppRoutes.NOTIFICATION_ADVANCED
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    NotificationAdvancedScreen(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
@@ -734,7 +761,8 @@ fun AppNavigation(
                         onOpenLogSettings = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_LOG_SETTINGS)
-                        }
+                        },
+                        signatureStatus = signatureStatus
                     )
                 }
             }

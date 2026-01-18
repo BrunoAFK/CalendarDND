@@ -16,8 +16,10 @@ class AlarmScheduler(private val context: Context) {
     companion object {
         private const val REQUEST_CODE_BOUNDARY = 1001
         private const val REQUEST_CODE_PRE_DND_NOTIFICATION = 1002
+        private const val REQUEST_CODE_POST_MEETING_CHECK = 1003
         const val EXTRA_MEETING_TITLE = "extra_meeting_title"
         const val EXTRA_DND_WINDOW_END_MS = "extra_dnd_window_end_ms"
+        const val EXTRA_DND_WINDOW_START_MS = "extra_dnd_window_start_ms"
     }
 
     /**
@@ -92,13 +94,17 @@ class AlarmScheduler(private val context: Context) {
     fun schedulePreDndNotificationAlarm(
         triggerAtMs: Long,
         meetingTitle: String?,
-        dndWindowEndMs: Long?
+        dndWindowEndMs: Long?,
+        dndWindowStartMs: Long?
     ): Boolean {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmActions.ACTION_PRE_DND_NOTIFICATION
             putExtra(EXTRA_MEETING_TITLE, meetingTitle)
             if (dndWindowEndMs != null) {
                 putExtra(EXTRA_DND_WINDOW_END_MS, dndWindowEndMs)
+            }
+            if (dndWindowStartMs != null) {
+                putExtra(EXTRA_DND_WINDOW_START_MS, dndWindowStartMs)
             }
         }
 
@@ -152,6 +158,67 @@ class AlarmScheduler(private val context: Context) {
             pendingIntent.cancel()
         } catch (e: Exception) {
             ExceptionHandler.handleAlarmException(e, "cancelPreDndNotificationAlarm")
+        }
+    }
+
+    /**
+     * Schedule a post-meeting check to run the engine around the end offset.
+     */
+    fun schedulePostMeetingCheckAlarm(triggerAtMs: Long): Boolean {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            action = AlarmActions.ACTION_POST_MEETING_CHECK
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            REQUEST_CODE_POST_MEETING_CHECK,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return try {
+            if (canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMs,
+                    pendingIntent
+                )
+            } else {
+                val windowMs = 60_000L
+                alarmManager.setWindow(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMs,
+                    windowMs,
+                    pendingIntent
+                )
+            }
+            true
+        } catch (e: Exception) {
+            ExceptionHandler.handleAlarmException(e, "schedulePostMeetingCheckAlarm")
+            false
+        }
+    }
+
+    /**
+     * Cancel the post-meeting check alarm
+     */
+    fun cancelPostMeetingCheckAlarm() {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            action = AlarmActions.ACTION_POST_MEETING_CHECK
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            REQUEST_CODE_POST_MEETING_CHECK,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        try {
+            alarmManager.cancel(pendingIntent)
+            pendingIntent.cancel()
+        } catch (e: Exception) {
+            ExceptionHandler.handleAlarmException(e, "cancelPostMeetingCheckAlarm")
         }
     }
 

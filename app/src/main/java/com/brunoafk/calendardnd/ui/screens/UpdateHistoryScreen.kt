@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
+import com.brunoafk.calendardnd.ui.components.MarkdownText
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +39,9 @@ fun UpdateHistoryScreen(
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         metadata = ManualUpdateManager.fetchReleaseNotesMetadata()
@@ -58,6 +64,7 @@ fun UpdateHistoryScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            state = listState,
             contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -88,11 +95,7 @@ fun UpdateHistoryScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                         release.releaseNotes?.let { notes ->
-                            Text(
-                                text = notes,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            MarkdownText(text = notes)
                         }
                     }
                 }

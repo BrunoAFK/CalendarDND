@@ -178,16 +178,17 @@ class AutomationEngine(
     private fun detectMeetingOverrun(
         now: Long,
         activeWindowEnd: Long,
-        nextInstance: com.brunoafk.calendardnd.domain.model.EventInstance?
+        nextInstance: com.brunoafk.calendardnd.domain.model.EventInstance?,
+        offsetMinutes: Int
     ): Boolean {
-        // Meeting just ended if we're within 2 minutes past the active window end
-        val justEnded = now > activeWindowEnd && (now - activeWindowEnd) < MEETING_OVERRUN_THRESHOLD_MS
+        val triggerAt = activeWindowEnd + offsetMinutes.toLong() * 60 * 1000L
+        val withinWindow = now >= triggerAt && (now - triggerAt) < MEETING_OVERRUN_THRESHOLD_MS
 
         // Next meeting should be more than 5 minutes away (or no next meeting)
         val gapToNext = nextInstance?.begin?.let { it - now } ?: Long.MAX_VALUE
         val hasLargeGap = gapToNext > MEETING_GAP_THRESHOLD_MS
 
-        return justEnded && hasLargeGap && activeWindowEnd > 0
+        return withinWindow && hasLargeGap && activeWindowEnd > 0
     }
 
     private fun makeDecision(
@@ -202,6 +203,8 @@ class AutomationEngine(
 
         // RULE 3: Active DND window and NOT suppressed
         if (dndWindow.isActive && !isSuppressed) {
+            val meetingOverrun = input.postMeetingNotificationEnabled &&
+                detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
             return Decision(
                 shouldEnableDnd = !input.systemDndIsOn, // Turn on if not already on
                 shouldDisableDnd = false,
@@ -209,12 +212,18 @@ class AutomationEngine(
                 setUserSuppressedUntil = null,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
-                notificationNeeded = if (!input.hasExactAlarms) NotificationNeeded.DEGRADED_MODE else NotificationNeeded.NONE
+                notificationNeeded = when {
+                    meetingOverrun -> NotificationNeeded.MEETING_OVERRUN
+                    !input.hasExactAlarms -> NotificationNeeded.DEGRADED_MODE
+                    else -> NotificationNeeded.NONE
+                }
             )
         }
 
         // RULE 4: Active DND window but suppressed (user override)
         if (dndWindow.isActive && isSuppressed) {
+            val meetingOverrun = input.postMeetingNotificationEnabled &&
+                detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
             val newSuppressedUntil = if (userOverrideDetected) dndWindow.endMs else null
 
             return Decision(
@@ -224,14 +233,25 @@ class AutomationEngine(
                 setUserSuppressedUntil = newSuppressedUntil,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
-                notificationNeeded = NotificationNeeded.NONE
+                notificationNeeded = if (meetingOverrun) {
+                    NotificationNeeded.MEETING_OVERRUN
+                } else {
+                    NotificationNeeded.NONE
+                }
             )
         }
 
         // RULE 5: No active DND window
         // Check for meeting overrun (meeting just ended, might want to extend)
-        val meetingOverrun = detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance)
-        val notificationForOverrun = if (meetingOverrun && input.dndSetByApp) {
+        val meetingOverrun = input.postMeetingNotificationEnabled &&
+            detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
+        val keepActiveWindowEnd = input.postMeetingNotificationEnabled &&
+            input.postMeetingNotificationOffsetMinutes > 0 &&
+            input.activeWindowEndMs > 0 &&
+            input.now <= input.activeWindowEndMs +
+            input.postMeetingNotificationOffsetMinutes.toLong() * 60 * 1000L +
+            MEETING_OVERRUN_THRESHOLD_MS
+        val notificationForOverrun = if (meetingOverrun) {
             NotificationNeeded.MEETING_OVERRUN
         } else if (!input.hasExactAlarms) {
             NotificationNeeded.DEGRADED_MODE
@@ -244,7 +264,7 @@ class AutomationEngine(
             shouldDisableDnd = input.dndSetByApp, // Turn off only if we own it
             setDndSetByApp = if (input.dndSetByApp) false else null,
             setUserSuppressedUntil = null,
-            setActiveWindowEnd = 0L,
+            setActiveWindowEnd = if (keepActiveWindowEnd) input.activeWindowEndMs else 0L,
             setManualDndUntilMs = manualClearValue,
             notificationNeeded = notificationForOverrun
         )

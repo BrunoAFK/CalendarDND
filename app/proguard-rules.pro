@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep string resource field names for DebugLanguageScreen reflection.
+-keepclassmembers class **.R$string {
+    public static <fields>;
+}

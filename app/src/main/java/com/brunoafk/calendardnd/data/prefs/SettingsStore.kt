@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.brunoafk.calendardnd.data.prefs.DebugLogFilterLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
@@ -28,6 +29,7 @@ class SettingsStore(private val context: Context) {
         private val DND_START_OFFSET_MINUTES = intPreferencesKey("dnd_start_offset_minutes")
         private val PRE_DND_NOTIFICATION_ENABLED = booleanPreferencesKey("pre_dnd_notification_enabled")
         private val PRE_DND_NOTIFICATION_USER_SET = booleanPreferencesKey("pre_dnd_notification_user_set")
+        private val PRE_DND_NOTIFICATION_LEAD_MINUTES = intPreferencesKey("pre_dnd_notification_lead_minutes")
         private val PREFERRED_LANGUAGE_TAG = stringPreferencesKey("preferred_language_tag")
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val ANALYTICS_OPT_IN = booleanPreferencesKey("analytics_opt_in")
@@ -45,8 +47,13 @@ class SettingsStore(private val context: Context) {
         private val DND_MODE_BANNER_DISMISSED = booleanPreferencesKey("dnd_mode_banner_dismissed")
         private val REFRESH_BANNER_DISMISSED = booleanPreferencesKey("refresh_banner_dismissed")
         private val LOG_LEVEL_FILTER = stringPreferencesKey("log_level_filter")
+        private val LOG_LEVEL_CAPTURE = stringPreferencesKey("log_level_capture")
         private val DEBUG_LOG_INCLUDE_DETAILS = booleanPreferencesKey("debug_log_include_details")
         private val SIGNING_CERT_FINGERPRINT = stringPreferencesKey("signing_cert_fingerprint")
+        private val POST_MEETING_NOTIFICATION_ENABLED = booleanPreferencesKey("post_meeting_notification_enabled")
+        private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
+            intPreferencesKey("post_meeting_notification_offset_minutes")
+        private val POST_MEETING_NOTIFICATION_SILENT = booleanPreferencesKey("post_meeting_notification_silent")
     }
 
     data class SettingsSnapshot(
@@ -58,10 +65,14 @@ class SettingsStore(private val context: Context) {
         val dndMode: DndMode,
         val dndStartOffsetMinutes: Int,
         val preDndNotificationEnabled: Boolean,
+        val preDndNotificationLeadMinutes: Int,
         val requireTitleKeyword: Boolean,
         val titleKeyword: String,
         val titleKeywordMatchMode: KeywordMatchMode,
-        val crashlyticsOptIn: Boolean
+        val crashlyticsOptIn: Boolean,
+        val postMeetingNotificationEnabled: Boolean,
+        val postMeetingNotificationOffsetMinutes: Int,
+        val postMeetingNotificationSilent: Boolean
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -98,6 +109,10 @@ class SettingsStore(private val context: Context) {
 
     val preDndNotificationUserSet: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[PRE_DND_NOTIFICATION_USER_SET] ?: false
+    }
+
+    val preDndNotificationLeadMinutes: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[PRE_DND_NOTIFICATION_LEAD_MINUTES] ?: 5
     }
 
     val preferredLanguageTag: Flow<String> = dataStore.data.map { prefs ->
@@ -152,12 +167,28 @@ class SettingsStore(private val context: Context) {
         prefs[REFRESH_BANNER_DISMISSED] ?: false
     }
 
-    val logLevelFilter: Flow<DebugLogLevel> = dataStore.data.map { prefs ->
-        DebugLogLevel.fromString(prefs[LOG_LEVEL_FILTER])
+    val logLevelFilter: Flow<DebugLogFilterLevel> = dataStore.data.map { prefs ->
+        DebugLogFilterLevel.fromString(prefs[LOG_LEVEL_FILTER])
+    }
+
+    val logLevelCapture: Flow<DebugLogLevel> = dataStore.data.map { prefs ->
+        DebugLogLevel.fromString(prefs[LOG_LEVEL_CAPTURE])
     }
 
     val debugLogIncludeDetails: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_LOG_INCLUDE_DETAILS] ?: false
+    }
+
+    val postMeetingNotificationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: true
+    }
+
+    val postMeetingNotificationOffsetMinutes: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] ?: 0
+    }
+
+    val postMeetingNotificationSilent: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
     }
 
     val lastSeenUpdateVersion: Flow<String?> = dataStore.data.map { prefs ->
@@ -175,10 +206,14 @@ class SettingsStore(private val context: Context) {
             dndMode = DndMode.fromString(prefs[DND_MODE] ?: "PRIORITY"),
             dndStartOffsetMinutes = prefs[DND_START_OFFSET_MINUTES] ?: 0,
             preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false,
+            preDndNotificationLeadMinutes = prefs[PRE_DND_NOTIFICATION_LEAD_MINUTES] ?: 5,
             requireTitleKeyword = prefs[REQUIRE_TITLE_KEYWORD] ?: false,
             titleKeyword = prefs[TITLE_KEYWORD] ?: "",
             titleKeywordMatchMode = KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE]),
-            crashlyticsOptIn = prefs[CRASHLYTICS_OPT_IN] ?: true
+            crashlyticsOptIn = prefs[CRASHLYTICS_OPT_IN] ?: true,
+            postMeetingNotificationEnabled = prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: true,
+            postMeetingNotificationOffsetMinutes = prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] ?: 0,
+            postMeetingNotificationSilent = prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
         )
     }
 
@@ -274,6 +309,34 @@ class SettingsStore(private val context: Context) {
         }
     }
 
+    suspend fun setPreDndNotificationLeadMinutes(minutes: Int) {
+        dataStore.edit { prefs ->
+            prefs[PRE_DND_NOTIFICATION_LEAD_MINUTES] = minutes
+        }
+        logSettingChange("Pre-DND notification timing", "${minutes}m")
+    }
+
+    suspend fun setPostMeetingNotificationEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[POST_MEETING_NOTIFICATION_ENABLED] = enabled
+        }
+        logSettingChange("Post-meeting notification", if (enabled) "enabled" else "disabled")
+    }
+
+    suspend fun setPostMeetingNotificationOffsetMinutes(minutes: Int) {
+        dataStore.edit { prefs ->
+            prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] = minutes
+        }
+        logSettingChange("Post-meeting notification timing", "${minutes}m")
+    }
+
+    suspend fun setPostMeetingNotificationSilent(silent: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[POST_MEETING_NOTIFICATION_SILENT] = silent
+        }
+        logSettingChange("Post-meeting notification silent", silent.toString())
+    }
+
     suspend fun setPreferredLanguageTag(tag: String) {
         dataStore.edit { prefs ->
             prefs[PREFERRED_LANGUAGE_TAG] = tag
@@ -362,11 +425,18 @@ class SettingsStore(private val context: Context) {
         }
     }
 
-    suspend fun setLogLevelFilter(level: DebugLogLevel) {
+    suspend fun setLogLevelFilter(level: DebugLogFilterLevel) {
         dataStore.edit { prefs ->
             prefs[LOG_LEVEL_FILTER] = level.name
         }
         logSettingChange("Log level filter", level.displayName)
+    }
+
+    suspend fun setLogLevelCapture(level: DebugLogLevel) {
+        dataStore.edit { prefs ->
+            prefs[LOG_LEVEL_CAPTURE] = level.name
+        }
+        logSettingChange("Log level capture", level.displayName)
     }
 
     suspend fun setDebugLogIncludeDetails(enabled: Boolean) {

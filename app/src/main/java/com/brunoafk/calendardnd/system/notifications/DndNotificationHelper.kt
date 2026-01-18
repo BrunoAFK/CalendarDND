@@ -26,7 +26,8 @@ object DndNotificationHelper {
     fun showPreDndNotification(
         context: Context,
         meetingTitle: String?,
-        dndWindowEndMs: Long?
+        dndWindowEndMs: Long?,
+        dndWindowStartMs: Long?
     ) {
         if (!PermissionUtils.hasNotificationPermission(context)) {
             return
@@ -36,11 +37,19 @@ object DndNotificationHelper {
 
         val stringsContext = LocaleUtils.localizedContext(context)
         val title = stringsContext.getString(R.string.pre_dnd_notification_title)
-        val text = if (meetingTitle.isNullOrBlank()) {
+        val baseText = if (meetingTitle.isNullOrBlank()) {
             stringsContext.getString(R.string.pre_dnd_notification_body_generic)
         } else {
             stringsContext.getString(R.string.pre_dnd_notification_body, meetingTitle)
         }
+        val windowText = if (dndWindowStartMs != null && dndWindowEndMs != null) {
+            val startTime = com.brunoafk.calendardnd.util.TimeUtils.formatTime(stringsContext, dndWindowStartMs)
+            val endTime = com.brunoafk.calendardnd.util.TimeUtils.formatTime(stringsContext, dndWindowEndMs)
+            stringsContext.getString(R.string.pre_dnd_notification_window, startTime, endTime)
+        } else {
+            null
+        }
+        val text = windowText ?: baseText
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
@@ -50,7 +59,18 @@ object DndNotificationHelper {
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        val publicText = stringsContext.getString(R.string.pre_dnd_notification_body_generic)
+        if (windowText != null) {
+            builder.setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText("$baseText\n$windowText")
+            )
+        }
+
+        val publicText = if (windowText != null) {
+            windowText
+        } else {
+            stringsContext.getString(R.string.pre_dnd_notification_body_generic)
+        }
         val publicVersion = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)

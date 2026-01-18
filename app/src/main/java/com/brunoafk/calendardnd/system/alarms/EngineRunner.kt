@@ -21,7 +21,6 @@ import com.brunoafk.calendardnd.util.AndroidTimeFormatter
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.AppConfig
 import com.brunoafk.calendardnd.util.DebugLogger
-import com.brunoafk.calendardnd.util.EngineConstants.PRE_DND_NOTIFICATION_LEAD_MS
 import com.brunoafk.calendardnd.util.EngineConstants.PRE_DND_NOTIFICATION_MIN_DELAY_MS
 import com.brunoafk.calendardnd.util.PermissionUtils
 import com.brunoafk.calendardnd.util.PerformanceTrace
@@ -69,9 +68,12 @@ object EngineRunner {
                 dndMode = settingsSnapshot.dndMode,
                 dndStartOffsetMinutes = settingsSnapshot.dndStartOffsetMinutes,
                 preDndNotificationEnabled = settingsSnapshot.preDndNotificationEnabled,
+                preDndNotificationLeadMinutes = settingsSnapshot.preDndNotificationLeadMinutes,
                 requireTitleKeyword = settingsSnapshot.requireTitleKeyword,
                 titleKeyword = settingsSnapshot.titleKeyword,
                 titleKeywordMatchMode = settingsSnapshot.titleKeywordMatchMode,
+                postMeetingNotificationEnabled = settingsSnapshot.postMeetingNotificationEnabled,
+                postMeetingNotificationOffsetMinutes = settingsSnapshot.postMeetingNotificationOffsetMinutes,
                 dndSetByApp = runtimeSnapshot.dndSetByApp,
                 activeWindowEndMs = runtimeSnapshot.activeWindowEndMs,
                 userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs,
@@ -176,7 +178,10 @@ object EngineRunner {
             // Check for meeting overrun notification
             if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.MEETING_OVERRUN) {
                 if (PermissionUtils.hasNotificationPermission(context)) {
-                    MeetingOverrunNotificationHelper.showOverrunNotification(context)
+                    MeetingOverrunNotificationHelper.showOverrunNotification(
+                        context,
+                        silent = settingsSnapshot.postMeetingNotificationSilent
+                    )
                 }
             }
 
@@ -226,12 +231,16 @@ object EngineRunner {
             ) {
                 val nextDndStartMs = output.nextDndStartMs
                 if (nextDndStartMs != null) {
-                    val notifyAtMs = nextDndStartMs - PRE_DND_NOTIFICATION_LEAD_MS
+                    val leadMs = input.preDndNotificationLeadMinutes
+                        .coerceIn(0, 10)
+                        .toLong() * 60 * 1000L
+                    val notifyAtMs = nextDndStartMs - leadMs
                     if (notifyAtMs > System.currentTimeMillis() + PRE_DND_NOTIFICATION_MIN_DELAY_MS) {
                         alarmScheduler.schedulePreDndNotificationAlarm(
                             triggerAtMs = notifyAtMs,
                             meetingTitle = output.nextInstance?.title,
-                            dndWindowEndMs = output.dndWindowEndMs
+                            dndWindowEndMs = output.dndWindowEndMs,
+                            dndWindowStartMs = output.nextDndStartMs
                         )
                     } else {
                         alarmScheduler.cancelPreDndNotificationAlarm()
@@ -241,6 +250,28 @@ object EngineRunner {
                 }
             } else {
                 alarmScheduler.cancelPreDndNotificationAlarm()
+            }
+
+            // Post-meeting notification check scheduling
+            val postMeetingOffsetMinutes = settingsSnapshot.postMeetingNotificationOffsetMinutes
+            val postMeetingEnabled = input.automationEnabled &&
+                settingsSnapshot.postMeetingNotificationEnabled
+            val shouldSchedulePostMeetingCheck = postMeetingEnabled &&
+                postMeetingOffsetMinutes != 0 &&
+                output.activeWindow != null &&
+                output.dndWindowEndMs != null &&
+                output.dndWindowEndMs > 0L
+
+            if (shouldSchedulePostMeetingCheck) {
+                val triggerAtMs = output.dndWindowEndMs +
+                    postMeetingOffsetMinutes.toLong() * 60 * 1000L
+                if (triggerAtMs > System.currentTimeMillis() + PRE_DND_NOTIFICATION_MIN_DELAY_MS) {
+                    alarmScheduler.schedulePostMeetingCheckAlarm(triggerAtMs)
+                } else {
+                    alarmScheduler.cancelPostMeetingCheckAlarm()
+                }
+            } else if (!postMeetingEnabled || postMeetingOffsetMinutes == 0 || postMeetingOffsetMinutes < 0) {
+                alarmScheduler.cancelPostMeetingCheckAlarm()
             }
 
             // Ensure sanity worker if automation enabled

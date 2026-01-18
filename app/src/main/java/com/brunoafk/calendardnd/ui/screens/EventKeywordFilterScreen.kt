@@ -1,19 +1,15 @@
 package com.brunoafk.calendardnd.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -94,7 +90,7 @@ fun EventKeywordFilterScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             SettingsSection(title = stringResource(R.string.event_keyword_filter_title)) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column {
                     SettingsSwitchRow(
                         title = stringResource(R.string.event_keyword_filter_toggle_title),
                         subtitle = stringResource(R.string.event_keyword_filter_toggle_subtitle),
@@ -106,89 +102,92 @@ fun EventKeywordFilterScreen(
                         }
                     )
                     Spacer(modifier = Modifier.padding(top = 12.dp))
-                    Box {
-                        OutlinedTextField(
-                            value = when (titleKeywordMatchMode) {
-                                KeywordMatchMode.KEYWORDS -> stringResource(
-                                    R.string.event_keyword_filter_mode_keywords
-                                )
-                                KeywordMatchMode.REGEX -> stringResource(
-                                    R.string.event_keyword_filter_mode_regex
-                                )
-                            },
-                            onValueChange = {},
-                            readOnly = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { modeMenuExpanded = true },
-                            label = { Text(stringResource(R.string.event_keyword_filter_mode_label)) },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                        DropdownMenu(
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        ExposedDropdownMenuBox(
                             expanded = modeMenuExpanded,
-                            onDismissRequest = { modeMenuExpanded = false },
-                            modifier = Modifier.fillMaxWidth()
+                            onExpandedChange = { modeMenuExpanded = !modeMenuExpanded }
                         ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    scope.launch {
-                                        settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.KEYWORDS)
-                                    }
-                                    modeMenuExpanded = false
+                            OutlinedTextField(
+                                value = when (titleKeywordMatchMode) {
+                                    KeywordMatchMode.KEYWORDS -> stringResource(
+                                        R.string.event_keyword_filter_mode_keywords
+                                    )
+                                    KeywordMatchMode.REGEX -> stringResource(
+                                        R.string.event_keyword_filter_mode_regex
+                                    )
                                 },
-                                text = { Text(stringResource(R.string.event_keyword_filter_mode_keywords)) }
+                                onValueChange = {},
+                                readOnly = true,
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth(),
+                                label = { Text(stringResource(R.string.event_keyword_filter_mode_label)) },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = modeMenuExpanded
+                                    )
+                                }
                             )
-                            DropdownMenuItem(
-                                onClick = {
-                                    scope.launch {
-                                        settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.REGEX)
-                                    }
-                                    modeMenuExpanded = false
-                                },
-                                text = { Text(stringResource(R.string.event_keyword_filter_mode_regex)) }
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.padding(top = 12.dp))
-                    OutlinedTextField(
-                        value = keywordInput,
-                        onValueChange = { value ->
-                            keywordInput = value
-                            scope.launch {
-                                settingsStore.setTitleKeyword(value)
+                            ExposedDropdownMenu(
+                                expanded = modeMenuExpanded,
+                                onDismissRequest = { modeMenuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.KEYWORDS)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_keywords)) }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.REGEX)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_regex)) }
+                                )
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(inputLabel) }
-                    )
-                    Spacer(modifier = Modifier.padding(top = 8.dp))
-                    Text(
-                        text = inputHelp,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.padding(top = 6.dp))
-                    Text(
-                        text = if (titleKeywordMatchMode == KeywordMatchMode.REGEX) {
-                            stringResource(R.string.event_keyword_filter_regex_examples)
-                        } else {
-                            stringResource(R.string.event_keyword_filter_keywords_examples)
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    if (regexInvalid) {
+                        }
+                        Spacer(modifier = Modifier.padding(top = 12.dp))
+                        OutlinedTextField(
+                            value = keywordInput,
+                            onValueChange = { value ->
+                                keywordInput = value
+                                scope.launch {
+                                    settingsStore.setTitleKeyword(value)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text(inputLabel) }
+                        )
                         Spacer(modifier = Modifier.padding(top = 8.dp))
                         Text(
-                            text = stringResource(R.string.event_keyword_filter_regex_invalid),
+                            text = inputHelp,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(modifier = Modifier.padding(top = 6.dp))
+                        Text(
+                            text = if (titleKeywordMatchMode == KeywordMatchMode.REGEX) {
+                                stringResource(R.string.event_keyword_filter_regex_examples)
+                            } else {
+                                stringResource(R.string.event_keyword_filter_keywords_examples)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        if (regexInvalid) {
+                            Spacer(modifier = Modifier.padding(top = 8.dp))
+                            Text(
+                                text = stringResource(R.string.event_keyword_filter_regex_invalid),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             }

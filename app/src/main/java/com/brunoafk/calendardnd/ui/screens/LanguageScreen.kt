@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +54,7 @@ fun LanguageScreen(
     val settingsStore = remember { SettingsStore(context) }
     val selectedTag by settingsStore.preferredLanguageTag.collectAsState(initial = "")
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     val options = listOf(
         LanguageOption("en", stringResource(R.string.language_english).ifBlank { "English" }),
@@ -64,7 +66,7 @@ fun LanguageScreen(
     )
     val continueLabel = stringResource(R.string.continue_button).ifBlank { "Continue" }
     val buttonBottomPadding = 16.dp
-    val contentBottomPadding = 88.dp
+    val contentBottomPadding = if (showContinue) 88.dp else 0.dp
 
     Scaffold(
         topBar = {
@@ -98,6 +100,7 @@ fun LanguageScreen(
                     }
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
+                        state = listState,
                         contentPadding = PaddingValues(bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {

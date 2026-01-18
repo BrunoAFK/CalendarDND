@@ -3,15 +3,15 @@ package com.brunoafk.calendardnd.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,8 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
@@ -48,7 +46,7 @@ fun DebugLogSettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settingsStore = remember { SettingsStore(context) }
-    val logLevelFilter by settingsStore.logLevelFilter.collectAsState(initial = DebugLogLevel.ALL)
+    val logLevelCapture by settingsStore.logLevelCapture.collectAsState(initial = DebugLogLevel.WARNING)
     val includeDetails by settingsStore.debugLogIncludeDetails.collectAsState(initial = false)
     var levelMenuExpanded by remember { mutableStateOf(false) }
 
@@ -78,32 +76,37 @@ fun DebugLogSettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.padding(top = 12.dp))
-                    Box {
+                    ExposedDropdownMenuBox(
+                        expanded = levelMenuExpanded,
+                        onExpandedChange = { levelMenuExpanded = !levelMenuExpanded }
+                    ) {
                         OutlinedTextField(
-                            value = logLevelFilter.displayName,
+                            value = logLevelCapture.displayName,
                             onValueChange = {},
                             readOnly = true,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { levelMenuExpanded = true },
+                                .menuAnchor()
+                                .fillMaxWidth(),
                             label = { Text(stringResource(R.string.debug_log_settings_level_label)) },
                             trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = levelMenuExpanded
                                 )
                             }
                         )
-                        DropdownMenu(
+                        ExposedDropdownMenu(
                             expanded = levelMenuExpanded,
-                            onDismissRequest = { levelMenuExpanded = false },
-                            modifier = Modifier.fillMaxWidth()
+                            onDismissRequest = { levelMenuExpanded = false }
                         ) {
-                            DebugLogLevel.values().forEach { level ->
+                            listOf(
+                                DebugLogLevel.INFO,
+                                DebugLogLevel.WARNING,
+                                DebugLogLevel.ERROR
+                            ).forEach { level ->
                                 DropdownMenuItem(
                                     onClick = {
                                         scope.launch {
-                                            settingsStore.setLogLevelFilter(level)
+                                            settingsStore.setLogLevelCapture(level)
                                         }
                                         levelMenuExpanded = false
                                     },

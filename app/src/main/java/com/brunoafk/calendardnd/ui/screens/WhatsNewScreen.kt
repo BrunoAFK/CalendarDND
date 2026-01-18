@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,6 +29,8 @@ import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
+import com.brunoafk.calendardnd.ui.components.MarkdownText
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,8 +39,11 @@ fun WhatsNewScreen(
     onNavigateToUpdates: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val latestReleaseUrl = stringResource(R.string.github_latest_release_url)
     var metadata by remember { mutableStateOf<ManualUpdateManager.UpdateMetadata?>(null) }
+    val listState = rememberLazyListState()
+    val buildVersionName = BuildConfig.VERSION_NAME.removeSuffix("-debug")
 
     LaunchedEffect(Unit) {
         metadata = ManualUpdateManager.fetchReleaseNotesMetadata()
@@ -44,7 +51,7 @@ fun WhatsNewScreen(
 
     val releases = metadata?.releases.orEmpty()
     val latestRelease = releases.firstOrNull()
-    val currentRelease = releases.firstOrNull { it.versionName == BuildConfig.VERSION_NAME }
+    val currentRelease = releases.firstOrNull { it.versionName == buildVersionName }
     val highlightsText = currentRelease?.releaseNotes
 
     fun openUrl(url: String) {
@@ -75,6 +82,7 @@ fun WhatsNewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            state = listState,
             contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -97,10 +105,8 @@ fun WhatsNewScreen(
             }
             item {
                 SettingsSection(title = stringResource(R.string.whats_new_features_title)) {
-                    Text(
+                    MarkdownText(
                         text = highlightsText ?: stringResource(R.string.whats_new_features_body),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp)
                     )
                 }

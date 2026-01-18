@@ -36,11 +36,12 @@ fun DebugLanguageScreen(
 ) {
     val baseContext = LocalContext.current
     val languageLabel = when (languageTag) {
-        "en" -> stringResource(R.string.language_english)
-        "de" -> stringResource(R.string.language_german)
-        "hr" -> stringResource(R.string.language_croatian)
-        "it" -> stringResource(R.string.language_italian)
-        "ko" -> stringResource(R.string.language_korean)
+        "en" -> stringResource(R.string.language_english).ifBlank { "English" }
+        "zh" -> stringResource(R.string.language_chinese).ifBlank { "中文" }
+        "de" -> stringResource(R.string.language_german).ifBlank { "Deutsch" }
+        "hr" -> stringResource(R.string.language_croatian).ifBlank { "Hrvatski" }
+        "it" -> stringResource(R.string.language_italian).ifBlank { "Italiano" }
+        "ko" -> stringResource(R.string.language_korean).ifBlank { "한국어" }
         else -> languageTag
     }
 

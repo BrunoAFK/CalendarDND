@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.brunoafk.calendardnd.R
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.calendar.CalendarRepository
 import com.brunoafk.calendardnd.data.dnd.DndController
 import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
@@ -465,7 +466,9 @@ fun StatusScreen(
                     compact = true,
                     modifier = Modifier.padding(top = 0.dp)
                 )
-                if (!signatureStatus.isAllowed) {
+                if (!signatureStatus.isAllowed &&
+                    !(BuildConfig.DEBUG && BuildConfig.MANUAL_UPDATE_ENABLED)
+                ) {
                     val messageRes = if (signatureStatus.isPinned) {
                         R.string.signature_warning_message
                     } else {

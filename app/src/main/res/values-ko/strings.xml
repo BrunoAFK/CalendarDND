@@ -67,11 +67,11 @@
     <string name="event_keyword_filter_mode_keywords">키워드</string>
     <string name="event_keyword_filter_mode_regex">정규식</string>
     <string name="event_keyword_filter_keywords_label">키워드</string>
-    <string name="event_keyword_filter_keywords_help">쉼표 또는 줄바꿈으로 구분, 대소문자 무시.</string>
-    <string name="event_keyword_filter_keywords_examples">예: focus, standup, 1:1</string>
+    <string name="event_keyword_filter_keywords_help">쉼표 또는 줄바꿈으로 구분, 대소문자 무시. 여러 단어 문구도 허용됩니다.</string>
+    <string name="event_keyword_filter_keywords_examples">예시:\nfocus\nstandup\n1:1\nvideo call\nproject kickoff\ncustomer sync</string>
     <string name="event_keyword_filter_regex_label">정규식 패턴</string>
-    <string name="event_keyword_filter_regex_help">Kotlin 정규식; 대소문자 무시는 (?i).</string>
-    <string name="event_keyword_filter_regex_examples">예: (?i)focus|standup|1:1</string>
+    <string name="event_keyword_filter_regex_help">Kotlin 정규식. 대소문자 무시는 (?i). 문구 및 단어 경계를 매칭할 수 있습니다.</string>
+    <string name="event_keyword_filter_regex_examples">예시:\n(?i)focus|standup|1:1\n(?i)\\bvideo call\\b\n(?i)project\\s+kickoff\n(?i)customer\\s+(sync|update)</string>
     <string name="event_keyword_filter_regex_invalid">잘못된 정규식 패턴입니다.</string>
     <string name="busy_only_title">바쁨 이벤트만</string>
     <string name="busy_only_description">비어 있음/임시 이벤트 무시</string>
@@ -101,12 +101,14 @@
     <string name="clear_logs">로그 지우기</string>
     <string name="copy_logs">로그 복사</string>
     <string name="logs_copied">로그가 복사됨</string>
+    <string name="debug_logs_menu">추가 옵션</string>
     <string name="debug_tools_enabled">디버그 도구 활성화됨</string>
 
     <!-- Notifications -->
     <string name="pre_dnd_notification_title">곧 DND가 시작됩니다</string>
     <string name="pre_dnd_notification_body">DND가 다음 일정에 대해 시작됩니다: %1$s</string>
     <string name="pre_dnd_notification_body_generic">5분 후 DND가 켜집니다</string>
+    <string name="pre_dnd_notification_window">DND 활성 %1$s\u2013%2$s</string>
     <string name="pre_dnd_notification_action">지금 켜기</string>
     <string name="pre_dnd_notification_setting_title">사전 DND 알림</string>
     <string name="pre_dnd_notification_setting">DND 시작 5분 전 알림</string>
@@ -490,6 +492,7 @@
     <string name="meeting_overrun_extend_format">+%1$dm</string>
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_title">Meeting running over?</string>
+    <string name="meeting_overrun_restore">복원</string>
     <string name="settings_help">Help</string>
     <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
@@ -509,8 +512,24 @@
     <string name="signature_warning_title">Signature verification</string>
     <string name="signature_warning_message">This build\'s signature doesn\'t match the manual update pin. Manual updates are disabled.</string>
     <string name="signature_warning_unconfigured">Manual update pinning is not configured for this build. Manual updates are disabled.</string>
+    <string name="signature_warning_debug_note">This is expected for debug builds.</string>
+    <string name="pre_dnd_notification_timing_title">사전 알림 시간</string>
+    <string name="pre_dnd_notification_timing_value">%d분 전</string>
+    <string name="pre_dnd_notification_timing_help">DND 시작 전 알림이 표시되는 시간을 설정합니다.</string>
+    <string name="post_meeting_notification_title">회의 종료 알림</string>
+    <string name="post_meeting_notification_subtitle">회의 종료 후 DND 연장을 묻습니다</string>
+    <string name="post_meeting_notification_timing_title">종료 알림 시간</string>
+    <string name="post_meeting_notification_timing_at_end">회의 종료 시점</string>
+    <string name="post_meeting_notification_timing_before">종료 %d분 전</string>
+    <string name="post_meeting_notification_timing_after">종료 %d분 후</string>
+    <string name="post_meeting_notification_timing_help">회의 종료 전후에 연장 안내가 표시되는 시간을 조정합니다.</string>
+    <string name="post_meeting_notification_silent_title">종료 알림 무음</string>
+    <string name="post_meeting_notification_silent_subtitle">낮은 중요도(무음). 진동은 시스템 설정에 따라 다릅니다.</string>
+    <string name="notifications_advanced_title">알림 고급 설정</string>
+    <string name="notifications_advanced_subtitle">시간 및 무음 옵션</string>
     <string name="external_link_prompt_title">Open external link?</string>
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
+    <string name="meeting_overrun_channel_name_silent">회의 지연(무음)</string>
 </resources>

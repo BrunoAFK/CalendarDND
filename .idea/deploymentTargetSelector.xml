@@ -2,10 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="f-Droid">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="manual">
+      <SelectionState runConfigName="llama">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

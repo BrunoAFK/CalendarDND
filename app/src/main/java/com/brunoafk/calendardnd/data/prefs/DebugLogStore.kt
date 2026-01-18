@@ -49,6 +49,10 @@ class DebugLogStore(private val context: Context) {
         if (!debugEnabled) {
             return
         }
+        val captureLevel = settingsStore.logLevelCapture.first()
+        if (!DebugLogLevel.allows(level, captureLevel)) {
+            return
+        }
         dataStore.edit { prefs ->
             val existing = prefs[LOG_ENTRIES] ?: ""
             val entries = if (existing.isEmpty()) {
@@ -92,6 +96,7 @@ class DebugLogStore(private val context: Context) {
         val analyticsOptIn = settingsStore.analyticsOptIn.first()
         val crashlyticsOptIn = settingsStore.crashlyticsOptIn.first()
         val logLevelFilter = settingsStore.logLevelFilter.first()
+        val logLevelCapture = settingsStore.logLevelCapture.first()
         val includeDetails = settingsStore.debugLogIncludeDetails.first()
 
         val languageLabel = if (preferredLanguageTag.isBlank()) "system" else preferredLanguageTag
@@ -112,6 +117,10 @@ class DebugLogStore(private val context: Context) {
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
+            appendLine("Pre-DND timing: ${settingsSnapshot.preDndNotificationLeadMinutes}m")
+            appendLine("Post-meeting notification: ${settingsSnapshot.postMeetingNotificationEnabled}")
+            appendLine("Post-meeting timing: ${settingsSnapshot.postMeetingNotificationOffsetMinutes}m")
+            appendLine("Post-meeting silent: ${settingsSnapshot.postMeetingNotificationSilent}")
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
@@ -119,7 +128,8 @@ class DebugLogStore(private val context: Context) {
             }
             appendLine("Analytics opt-in: $analyticsOptIn")
             appendLine("Crashlytics opt-in: $crashlyticsOptIn")
-            appendLine("Log level: ${logLevelFilter.displayName}")
+            appendLine("Log capture: ${logLevelCapture.displayName}")
+            appendLine("Log filter: ${logLevelFilter.displayName}")
             appendLine("Detailed logs: $includeDetails")
             appendLine("---")
         }
@@ -136,6 +146,7 @@ class DebugLogStore(private val context: Context) {
         val analyticsOptIn = settingsStore.analyticsOptIn.first()
         val crashlyticsOptIn = settingsStore.crashlyticsOptIn.first()
         val logLevelFilter = settingsStore.logLevelFilter.first()
+        val logLevelCapture = settingsStore.logLevelCapture.first()
         val includeDetails = settingsStore.debugLogIncludeDetails.first()
 
         val languageLabel = if (preferredLanguageTag.isBlank()) "system" else preferredLanguageTag
@@ -158,6 +169,10 @@ class DebugLogStore(private val context: Context) {
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
+            appendLine("Pre-DND timing: ${settingsSnapshot.preDndNotificationLeadMinutes}m")
+            appendLine("Post-meeting notification: ${settingsSnapshot.postMeetingNotificationEnabled}")
+            appendLine("Post-meeting timing: ${settingsSnapshot.postMeetingNotificationOffsetMinutes}m")
+            appendLine("Post-meeting silent: ${settingsSnapshot.postMeetingNotificationSilent}")
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
@@ -165,7 +180,8 @@ class DebugLogStore(private val context: Context) {
             }
             appendLine("Analytics opt-in: $analyticsOptIn")
             appendLine("Crashlytics opt-in: $crashlyticsOptIn")
-            appendLine("Log level: ${logLevelFilter.displayName}")
+            appendLine("Log capture: ${logLevelCapture.displayName}")
+            appendLine("Log filter: ${logLevelFilter.displayName}")
             appendLine("Detailed logs: $includeDetails")
             appendLine("---")
         }

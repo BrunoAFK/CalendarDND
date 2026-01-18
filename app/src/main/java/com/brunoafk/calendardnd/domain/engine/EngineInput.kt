@@ -20,9 +20,12 @@ data class EngineInput(
     val dndMode: DndMode,
     val dndStartOffsetMinutes: Int,
     val preDndNotificationEnabled: Boolean,
+    val preDndNotificationLeadMinutes: Int,
     val requireTitleKeyword: Boolean,
     val titleKeyword: String,
     val titleKeywordMatchMode: KeywordMatchMode,
+    val postMeetingNotificationEnabled: Boolean,
+    val postMeetingNotificationOffsetMinutes: Int,
 
     // Runtime state
     val dndSetByApp: Boolean,

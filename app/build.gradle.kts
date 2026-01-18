@@ -109,6 +109,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "app_name", "Calendar DND (Debug)")
+        }
         release {
             isMinifyEnabled = true
             signingConfigs.findByName("release")?.let { signingConfig = it }

@@ -142,6 +142,8 @@ android {
                 .configureEach { enabled = false }
             tasks.matching { it.name == "injectCrashlyticsMappingFileId${variantName}" }
                 .configureEach { enabled = false }
+            tasks.matching { it.name == "uploadCrashlyticsMappingFile${variantName}" }
+                .configureEach { enabled = false }
         }
     }
 }

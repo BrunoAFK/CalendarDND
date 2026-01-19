@@ -331,9 +331,10 @@ fi
 # Build names
 manual_apk_name="CalendarDND-${version}-manual.apk"
 fdroid_apk_name="CalendarDND-${version}-fdroid.apk"
+play_aab_name="CalendarDND-${version}-play.aab"
 
-# Build all flavors
-./gradlew assembleDebug test lint assembleManualRelease assembleFdroidRelease
+# Build all flavors + Play Store AAB
+./gradlew assembleDebug test lint assembleManualRelease assembleFdroidRelease bundlePlayRelease
 
 # Handle Manual APK
 manual_apk_src="$(ls "${repo_root}"/app/build/outputs/apk/manual/release/app-manual-release*.apk 2>/dev/null | head -n 1 || true)"
@@ -353,6 +354,15 @@ if [[ ! -f "${fdroid_apk_src}" ]]; then
 fi
 final_fdroid_apk_path="${generated_dir}/${fdroid_apk_name}"
 cp "${fdroid_apk_src}" "${final_fdroid_apk_path}"
+
+# Handle Play Store AAB (not uploaded)
+play_aab_src="$(ls "${repo_root}"/app/build/outputs/bundle/playRelease/app-play-release*.aab 2>/dev/null | head -n 1 || true)"
+if [[ ! -f "${play_aab_src}" ]]; then
+  echo "Play Store AAB not found after build."
+  exit 1
+fi
+final_play_aab_path="${generated_dir}/${play_aab_name}"
+cp "${play_aab_src}" "${final_play_aab_path}"
 
 # Generate update.json (for Manual flavor only)
 mapfile -t release_files < <(ls "${repo_root}/release-notes/"*.md 2>/dev/null | grep -E '/[0-9]+\.[0-9]+(\.[0-9]+)?\.md$' | sort -V -r)

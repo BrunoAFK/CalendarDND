@@ -452,10 +452,10 @@
     <string name="about_version_label">Version</string>
     <string name="about_version_section_title">Version</string>
     <string name="debug_logs_share">Share debug summary</string>
-    <string name="debug_tools_dnd_preview_priority_title">Preview Priority Only</string>
-    <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
-    <string name="debug_tools_dnd_preview_title">DND Preview</string>
-    <string name="debug_tools_dnd_preview_total_title">Preview Total Silence</string>
+    <string name="debug_tools_dnd_preview_priority_title">Nur Priorität testen</string>
+    <string name="debug_tools_dnd_preview_subtitle">DND vorübergehend für %1$d Sekunden aktivieren</string>
+    <string name="debug_tools_dnd_preview_title">DND-Vorschau</string>
+    <string name="debug_tools_dnd_preview_total_title">Komplett stumm testen</string>
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
@@ -463,8 +463,8 @@
     <string name="debug_tools_force_update_title">Update erzwingen</string>
     <string name="debug_tools_force_update_subtitle">Installer der neuesten Version herunterladen und starten</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
-    <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
-    <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
+    <string name="debug_tools_nav_overlay_subtitle">Zeigt aktuelle Route und Tipp-Protokollierung</string>
+    <string name="debug_tools_nav_overlay_title">Navigations-Debug-Overlay anzeigen</string>
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
     <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>

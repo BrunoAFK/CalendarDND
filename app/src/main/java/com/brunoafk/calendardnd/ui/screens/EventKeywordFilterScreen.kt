@@ -102,7 +102,7 @@ fun EventKeywordFilterScreen(
                         }
                     )
                     Spacer(modifier = Modifier.padding(top = 12.dp))
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
                         ExposedDropdownMenuBox(
                             expanded = modeMenuExpanded,
                             onExpandedChange = { modeMenuExpanded = !modeMenuExpanded }

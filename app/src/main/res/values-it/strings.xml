@@ -452,10 +452,10 @@
     <string name="debug_logs_share">Share debug summary</string>
     <string name="debug_tools_app_info_title">Application info</string>
     <string name="debug_tools_description">Inspect automation decisions, preview notifications, and control debug helpers.</string>
-    <string name="debug_tools_dnd_preview_priority_title">Preview Priority Only</string>
-    <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
-    <string name="debug_tools_dnd_preview_title">DND Preview</string>
-    <string name="debug_tools_dnd_preview_total_title">Preview Total Silence</string>
+    <string name="debug_tools_dnd_preview_priority_title">Anteprima Solo priorità</string>
+    <string name="debug_tools_dnd_preview_subtitle">Applica temporaneamente DND per %1$d secondi</string>
+    <string name="debug_tools_dnd_preview_title">Anteprima DND</string>
+    <string name="debug_tools_dnd_preview_total_title">Anteprima Silenzio totale</string>
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>
@@ -463,8 +463,8 @@
     <string name="debug_tools_force_update_title">Forza aggiornamento</string>
     <string name="debug_tools_force_update_subtitle">Scarica e avvia l\'installer per l\'ultima release</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
-    <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
-    <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
+    <string name="debug_tools_nav_overlay_subtitle">Mostra il percorso corrente e la registrazione dei tocchi</string>
+    <string name="debug_tools_nav_overlay_title">Mostra overlay debug navigazione</string>
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
     <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>

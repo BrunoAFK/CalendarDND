@@ -2,6 +2,20 @@
 
 Automatic Do Not Disturb for Android based on your calendar events.
 
+> [!IMPORTANT]
+> ## Need 12 Testers to Reach Play Store
+>
+> Google Play requires a **14-day closed testing period** with at least 12 testers before an app can go public. I'd appreciate your help getting Calendar DND across the finish line.
+>
+> **How to join:**
+> 1. Join the [Google Group](https://groups.google.com/g/calendardnd-testers) (required by Play Store)
+> 2. Install from [Google Play](https://play.google.com/store/apps/details?id=com.brunoafk.calendardnd)
+> 3. Leave feedback via [GitHub Issues](https://github.com/BrunoAFK/CalendarDND/issues), the Google Group, or Play Store reviews
+>
+> The code is fully open source if you want to review it first. **Happy to return the favor** if you have an app that needs testers!
+
+---
+
 ## What It Does
 
 Calendar DND silences your phone during calendar meetings automatically. No more interruptions during important calls or presentations.

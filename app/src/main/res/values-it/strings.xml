@@ -366,6 +366,7 @@
     <string name="debug_tools_test_notification_title">Notifica di test</string>
     <string name="debug_tools_test_notification_subtitle">Invia un promemoria pre-DND</string>
     <string name="debug_tools_logs_section_title">Log</string>
+    <string name="debug_tools_telemetry_section_title">Telemetria tester</string>
     <string name="debug_tools_logs_subtitle">Visualizza i log del motore di automazione per capire cosa sta succedendo</string>
     <string name="debug_log_settings_title">Impostazioni log</string>
     <string name="debug_log_settings_subtitle">Scegli quanto dettagliati devono essere i log di debug</string>

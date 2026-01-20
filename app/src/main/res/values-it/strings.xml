@@ -368,6 +368,7 @@
     <string name="debug_tools_logs_section_title">Log</string>
     <string name="debug_tools_telemetry_section_title">Telemetria tester</string>
     <string name="debug_tools_tester_telemetry_title">Ping di utilizzo</string>
+    <string name="debug_tools_tester_telemetry_subtitle">Invia ping di installazione anonimi per verificare l\'attivita dei test a numero chiuso.</string>
     <string name="debug_tools_logs_subtitle">Visualizza i log del motore di automazione per capire cosa sta succedendo</string>
     <string name="debug_log_settings_title">Impostazioni log</string>
     <string name="debug_log_settings_subtitle">Scegli quanto dettagliati devono essere i log di debug</string>

@@ -370,6 +370,7 @@
     <string name="debug_tools_logs_section_title">Protokolle</string>
     <string name="debug_tools_telemetry_section_title">Tester-Telemetrie</string>
     <string name="debug_tools_tester_telemetry_title">Nutzungs-Ping</string>
+    <string name="debug_tools_tester_telemetry_subtitle">Anonyme Installations-Pings senden, um die Aktivität des geschlossenen Tests zu bestätigen.</string>
     <string name="debug_tools_logs_subtitle">Automationsprotokolle anzeigen, um zu sehen, was passiert</string>
     <string name="debug_log_settings_title">Protokolleinstellungen</string>
     <string name="debug_log_settings_subtitle">Wähle, wie detailliert die Debug-Einträge sein sollen</string>

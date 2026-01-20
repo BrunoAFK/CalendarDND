@@ -246,13 +246,28 @@
 
     <!-- Onboarding Flow -->
     <string name="intro_title">Willkommen bei Calendar DND</string>
-    <string name="intro_body">Dein Handy wird während Meetings automatisch stummgeschaltet. Wir führen dich in wenigen Schritten durch die Einrichtung.</string>
-    <string name="intro_notice">Diese App ist „vibe-coded“, also einfach, aber sie funktioniert. :)</string>
+    <string name="intro_body">Automatische Ruhe für deine Meetings – die Einrichtung dauert nur ein paar Minuten.</string>
+    <string name="intro_feature_auto">Automatischer DND aus deinem Kalender</string>
+    <string name="intro_feature_merge">Intelligentes Zusammenführen bei direkt aufeinanderfolgenden Meetings</string>
+    <string name="intro_feature_override">Respektiert manuelle DND-Änderungen</string>
+    <string name="intro_feature_privacy">Datenschutzfreundlich: bleibt auf dem Gerät</string>
+    <string name="intro_feature_keywords">Optionaler Stichwortfilter (experimentell)</string>
+    <string name="intro_notice">Datenschutz zuerst: Kalenderdaten bleiben auf dem Gerät. Optionale Firebase-Analysen und Crash-Berichte lassen sich jederzeit deaktivieren.</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Los geht\'s</string>
 
     <string name="language_title">Sprache auswählen</string>
     <string name="language_description">Du kannst dies später in den Einstellungen ändern.</string>
     <string name="step_indicator">Schritt %1$d von %2$d</string>
+
+    <string name="theme_title">Design</string>
+    <string name="theme_description">Wähle das Aussehen von Calendar DND.</string>
+    <string name="theme_option_system">System</string>
+    <string name="theme_option_light">Hell</string>
+    <string name="theme_option_dark">Dunkel</string>
+    <string name="theme_option_system_subtitle">Wie auf deinem Gerät eingestellt.</string>
+    <string name="theme_option_light_subtitle">Immer helle Farben verwenden.</string>
+    <string name="theme_option_dark_subtitle">Immer dunkle Farben verwenden.</string>
 
     <string name="calendar_scope_title">Zu überwachende Kalender</string>
     <string name="calendar_scope_description">Wähle alle Kalender oder bestimmte Kalender aus.</string>

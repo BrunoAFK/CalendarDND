@@ -246,13 +246,28 @@
 
     <!-- Onboarding Flow -->
     <string name="intro_title">Dobrodošli u Calendar DND</string>
-    <string name="intro_body">Automatski utišajte telefon tijekom sastanaka. Vodit ćemo vas kroz kratko postavljanje.</string>
-    <string name="intro_notice">Ova aplikacija je “vibe-coded”, pa je jednostavna, ali radi. :)</string>
+    <string name="intro_body">Automatska tišina za sastanke, uz postavljanje koje traje par minuta.</string>
+    <string name="intro_feature_auto">Automatski DND iz vašeg kalendara</string>
+    <string name="intro_feature_merge">Pametno spajanje uzastopnih sastanaka</string>
+    <string name="intro_feature_override">Poštuje ručne promjene DND-a</string>
+    <string name="intro_feature_privacy">Privatnost na prvom mjestu, ostaje na uređaju</string>
+    <string name="intro_feature_keywords">Opcionalni filtar ključnih riječi (eksperimentalno)</string>
+    <string name="intro_notice">Privatnost prije svega: podaci iz kalendara ostaju na uređaju. Opcionalne Firebase analitike i izvješća o rušenjima mogu se isključiti u bilo kojem trenutku.</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Započni</string>
 
     <string name="language_title">Odaberi jezik</string>
     <string name="language_description">Kasnije to možete promijeniti u Postavkama.</string>
     <string name="step_indicator">Korak %1$d od %2$d</string>
+
+    <string name="theme_title">Tema</string>
+    <string name="theme_description">Odaberite izgled aplikacije Calendar DND.</string>
+    <string name="theme_option_system">Sustav</string>
+    <string name="theme_option_light">Svijetla</string>
+    <string name="theme_option_dark">Tamna</string>
+    <string name="theme_option_system_subtitle">Prati postavke uređaja.</string>
+    <string name="theme_option_light_subtitle">Uvijek koristi svijetle boje.</string>
+    <string name="theme_option_dark_subtitle">Uvijek koristi tamne boje.</string>
 
     <string name="calendar_scope_title">Kalendari za praćenje</string>
     <string name="calendar_scope_description">Odaberite sve kalendare ili samo određene.</string>

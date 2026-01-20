@@ -8,6 +8,7 @@ import com.brunoafk.calendardnd.data.prefs.DebugLogFilterLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.domain.model.ThemeMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -31,6 +32,7 @@ class SettingsStore(private val context: Context) {
         private val PRE_DND_NOTIFICATION_USER_SET = booleanPreferencesKey("pre_dnd_notification_user_set")
         private val PRE_DND_NOTIFICATION_LEAD_MINUTES = intPreferencesKey("pre_dnd_notification_lead_minutes")
         private val PREFERRED_LANGUAGE_TAG = stringPreferencesKey("preferred_language_tag")
+        private val THEME_MODE = stringPreferencesKey("theme_mode")
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val ANALYTICS_OPT_IN = booleanPreferencesKey("analytics_opt_in")
         private val CRASHLYTICS_OPT_IN = booleanPreferencesKey("crashlytics_opt_in")
@@ -54,6 +56,10 @@ class SettingsStore(private val context: Context) {
         private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
             intPreferencesKey("post_meeting_notification_offset_minutes")
         private val POST_MEETING_NOTIFICATION_SILENT = booleanPreferencesKey("post_meeting_notification_silent")
+        private val TESTER_TELEMETRY_ENABLED = booleanPreferencesKey("tester_telemetry_enabled")
+        private val INSTALL_ID = stringPreferencesKey("install_id")
+        private val INSTALL_PING_SENT = booleanPreferencesKey("install_ping_sent")
+        private val LAST_DAILY_PING_DATE = stringPreferencesKey("last_daily_ping_date")
     }
 
     data class SettingsSnapshot(
@@ -117,6 +123,10 @@ class SettingsStore(private val context: Context) {
 
     val preferredLanguageTag: Flow<String> = dataStore.data.map { prefs ->
         prefs[PREFERRED_LANGUAGE_TAG] ?: ""
+    }
+
+    val themeMode: Flow<ThemeMode> = dataStore.data.map { prefs ->
+        ThemeMode.fromString(prefs[THEME_MODE])
     }
 
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -189,6 +199,10 @@ class SettingsStore(private val context: Context) {
 
     val postMeetingNotificationSilent: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
+    }
+
+    val testerTelemetryEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[TESTER_TELEMETRY_ENABLED] ?: com.brunoafk.calendardnd.util.AppConfig.testerTelemetryDefault
     }
 
     val lastSeenUpdateVersion: Flow<String?> = dataStore.data.map { prefs ->
@@ -337,10 +351,51 @@ class SettingsStore(private val context: Context) {
         logSettingChange("Post-meeting notification silent", silent.toString())
     }
 
+    suspend fun setTesterTelemetryEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[TESTER_TELEMETRY_ENABLED] = enabled
+        }
+        logSettingChange("Tester telemetry", if (enabled) "enabled" else "disabled")
+    }
+
+    suspend fun getOrCreateInstallId(): String {
+        val prefs = dataStore.data.first()
+        val existing = prefs[INSTALL_ID]
+        if (!existing.isNullOrBlank()) {
+            return existing
+        }
+        val generated = java.util.UUID.randomUUID().toString()
+        dataStore.edit { it[INSTALL_ID] = generated }
+        return generated
+    }
+
+    suspend fun getInstallPingSent(): Boolean {
+        return dataStore.data.first()[INSTALL_PING_SENT] ?: false
+    }
+
+    suspend fun setInstallPingSent(sent: Boolean) {
+        dataStore.edit { it[INSTALL_PING_SENT] = sent }
+    }
+
+    suspend fun getLastDailyPingDate(): String? {
+        return dataStore.data.first()[LAST_DAILY_PING_DATE]
+    }
+
+    suspend fun setLastDailyPingDate(date: String) {
+        dataStore.edit { it[LAST_DAILY_PING_DATE] = date }
+    }
+
     suspend fun setPreferredLanguageTag(tag: String) {
         dataStore.edit { prefs ->
             prefs[PREFERRED_LANGUAGE_TAG] = tag
         }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        dataStore.edit { prefs ->
+            prefs[THEME_MODE] = mode.name
+        }
+        logSettingChange("Theme mode", mode.name)
     }
 
     suspend fun setOnboardingCompleted(completed: Boolean) {

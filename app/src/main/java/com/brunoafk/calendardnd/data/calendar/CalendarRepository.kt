@@ -187,7 +187,12 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             return false
         }
 
-        return matchesTitleKeyword(title, requireTitleKeyword, pattern, matchMode)
+        return com.brunoafk.calendardnd.data.calendar.matchesTitleKeyword(
+            title,
+            requireTitleKeyword,
+            pattern,
+            matchMode
+        )
     }
 }
 

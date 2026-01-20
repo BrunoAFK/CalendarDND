@@ -246,13 +246,28 @@
 
     <!-- Onboarding Flow -->
     <string name="intro_title">Benvenuto in Calendar DND</string>
-    <string name="intro_body">Silenzia il telefono automaticamente durante le riunioni. Ti guideremo in pochi passaggi.</string>
-    <string name="intro_notice">Questa app è “vibe-coded”, quindi è semplice ma funziona. :)</string>
+    <string name="intro_body">Silenzio automatico per i tuoi meeting, con una configurazione che richiede pochi minuti.</string>
+    <string name="intro_feature_auto">DND automatico dal calendario</string>
+    <string name="intro_feature_merge">Unione intelligente dei meeting consecutivi</string>
+    <string name="intro_feature_override">Rispetta le modifiche manuali al DND</string>
+    <string name="intro_feature_privacy">Privacy by design, resta sul dispositivo</string>
+    <string name="intro_feature_keywords">Filtro parole chiave opzionale (sperimentale)</string>
+    <string name="intro_notice">Privacy prima di tutto: i dati del calendario restano sul dispositivo. Analisi Firebase e report crash opzionali possono essere disattivati in qualsiasi momento.</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Inizia</string>
 
     <string name="language_title">Scegli lingua</string>
     <string name="language_description">Puoi cambiarla in seguito nelle Impostazioni.</string>
     <string name="step_indicator">Passo %1$d di %2$d</string>
+
+    <string name="theme_title">Tema</string>
+    <string name="theme_description">Scegli l\'aspetto di Calendar DND.</string>
+    <string name="theme_option_system">Sistema</string>
+    <string name="theme_option_light">Chiaro</string>
+    <string name="theme_option_dark">Scuro</string>
+    <string name="theme_option_system_subtitle">Segue le impostazioni del dispositivo.</string>
+    <string name="theme_option_light_subtitle">Usa sempre colori chiari.</string>
+    <string name="theme_option_dark_subtitle">Usa sempre colori scuri.</string>
 
     <string name="calendar_scope_title">Calendari da monitorare</string>
     <string name="calendar_scope_description">Scegli se usare tutti i calendari o solo alcuni.</string>

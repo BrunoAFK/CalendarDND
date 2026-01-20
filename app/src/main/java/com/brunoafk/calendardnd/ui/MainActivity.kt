@@ -39,6 +39,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import java.util.Locale
 import com.brunoafk.calendardnd.util.ExternalLinkPolicy
+import com.brunoafk.calendardnd.domain.model.ThemeMode
+import androidx.lifecycle.lifecycleScope
+import com.brunoafk.calendardnd.util.UmamiTelemetry
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,10 +75,15 @@ class MainActivity : AppCompatActivity() {
         openHelpState.value = shouldOpenHelp(intent)
         extractExternalUrl(intent)?.let { pendingExternalUrlState.value = it }
 
+        lifecycleScope.launch(Dispatchers.IO) {
+            UmamiTelemetry.trackAppOpenIfEnabled(this@MainActivity)
+        }
+
         setContent {
             val baseContext = LocalContext.current
             val settingsStore = remember { SettingsStore(baseContext) }
             val preferredTag by settingsStore.preferredLanguageTag.collectAsState(initial = "")
+            val themeMode by settingsStore.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
             val supportedFallback = remember { resolveSupportedLanguage(Locale.getDefault().language) }
             val effectiveTag = if (preferredTag.isBlank()) supportedFallback else preferredTag
             val localizedContext = remember(baseContext, effectiveTag) {
@@ -117,10 +127,15 @@ class MainActivity : AppCompatActivity() {
                 LocalContext provides localizedContext,
                 LocalActivityResultRegistryOwner provides this
             ) {
-                CalendarDndTheme {
+                CalendarDndTheme(themeMode = themeMode) {
                     val showTileHint by tileHintState
                     val view = LocalView.current
-                    val useDarkIcons = !isSystemInDarkTheme()
+                    val isDarkTheme = when (themeMode) {
+                        ThemeMode.DARK -> true
+                        ThemeMode.LIGHT -> false
+                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                    }
+                    val useDarkIcons = !isDarkTheme
                     val backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.background
                     @Suppress("DEPRECATION")
                     SideEffect {

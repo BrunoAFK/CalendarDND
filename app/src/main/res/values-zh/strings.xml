@@ -212,6 +212,15 @@
     <string name="language_italian" translatable="false">Italiano</string>
     <string name="language_korean" translatable="false">한국어</string>
 
+    <string name="theme_title">主题</string>
+    <string name="theme_description">选择 Calendar DND 的外观。</string>
+    <string name="theme_option_system">系统</string>
+    <string name="theme_option_light">浅色</string>
+    <string name="theme_option_dark">深色</string>
+    <string name="theme_option_system_subtitle">跟随设备设置。</string>
+    <string name="theme_option_light_subtitle">始终使用浅色主题。</string>
+    <string name="theme_option_dark_subtitle">始终使用深色主题。</string>
+
     <!-- Calendar Picker -->
     <string name="select_calendars">选择日历</string>
 
@@ -335,8 +344,14 @@
 
     <!-- Onboarding Flow -->
     <string name="intro_title">欢迎使用 Calendar DND</string>
-    <string name="intro_body">在会议期间自动静音你的手机。我们将通过几个快速步骤引导你完成设置。</string>
-    <string name="intro_notice">此应用是基于氛围编码的，所以很基础但它能用。:)</string>
+    <string name="intro_body">会议自动静音，几分钟即可完成设置。</string>
+    <string name="intro_feature_auto">基于日历自动开启勿扰</string>
+    <string name="intro_feature_merge">智能合并连续会议</string>
+    <string name="intro_feature_override">尊重手动更改勿扰状态</string>
+    <string name="intro_feature_privacy">隐私优先，数据留在本机</string>
+    <string name="intro_feature_keywords">可选关键词过滤（实验性）</string>
+    <string name="intro_notice">隐私优先：日历数据仅保存在设备上。可选的 Firebase 分析与崩溃报告可随时关闭。</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">开始使用</string>
     <string name="step_indicator">第 %1$d 步，共 %2$d 步</string>
 

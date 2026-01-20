@@ -253,8 +253,14 @@
 
     <!-- Onboarding Flow -->
     <string name="intro_title">Welcome to Calendar DND</string>
-    <string name="intro_body">Silence your phone automatically during meetings. We will guide you through setup in a few quick steps.</string>
-    <string name="intro_notice">This app is vibe-coded, so it is basic but it works. :)</string>
+    <string name="intro_body">Automatic quiet for your meetings, with setup that takes minutes.</string>
+    <string name="intro_feature_auto">Automatic DND from your calendar</string>
+    <string name="intro_feature_merge">Smart merging for back-to-back meetings</string>
+    <string name="intro_feature_override">Respects manual DND changes</string>
+    <string name="intro_feature_privacy">Private by design, stays on-device</string>
+    <string name="intro_feature_keywords">Optional keyword filter (experimental)</string>
+    <string name="intro_notice">Privacy-first: calendar data stays on-device. Optional Firebase analytics and crash reports can be turned off anytime.</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Get Started</string>
     <string name="step_indicator">Step %1$d of %2$d</string>
 
@@ -265,7 +271,17 @@
     <string name="language_german" translatable="false">Deutsch</string>
     <string name="language_croatian" translatable="false">Hrvatski</string>
     <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_korean" translatable="false">한국어</string>
+
+    <string name="theme_title">Theme</string>
+    <string name="theme_description">Choose how Calendar DND looks.</string>
+    <string name="theme_option_system">System</string>
+    <string name="theme_option_light">Light</string>
+    <string name="theme_option_dark">Dark</string>
+    <string name="theme_option_system_subtitle">Match your device setting.</string>
+    <string name="theme_option_light_subtitle">Always use light colors.</string>
+    <string name="theme_option_dark_subtitle">Always use dark colors.</string>
 
     <string name="calendar_scope_title">Calendars to Monitor</string>
     <string name="calendar_scope_description">Choose whether to use all calendars or select specific ones.</string>
@@ -360,6 +376,9 @@
     <string name="debug_tools_dnd_preview_subtitle">Temporarily apply DND for %1$d seconds</string>
     <string name="debug_tools_logs_section_title">Logs</string>
     <string name="debug_tools_logs_subtitle">View automation engine logs to see what is happening</string>
+    <string name="debug_tools_telemetry_section_title">Tester telemetry</string>
+    <string name="debug_tools_tester_telemetry_title">Usage ping</string>
+    <string name="debug_tools_tester_telemetry_subtitle">Send anonymous install pings to verify closed testing activity.</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>

@@ -35,6 +35,7 @@ import com.brunoafk.calendardnd.ui.screens.CalendarPickerScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLogScreen
 import com.brunoafk.calendardnd.ui.screens.IntroScreen
 import com.brunoafk.calendardnd.ui.screens.LanguageScreen
+import com.brunoafk.calendardnd.ui.screens.ThemeScreen
 import com.brunoafk.calendardnd.ui.screens.OnboardingScreen
 import com.brunoafk.calendardnd.ui.screens.PrivacyScreen
 import com.brunoafk.calendardnd.ui.screens.DndModeScreen
@@ -83,6 +84,7 @@ object AppRoutes {
     const val UPDATE_HISTORY = "update_history"
     const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
     const val NOTIFICATION_ADVANCED = "notification_advanced"
+    const val THEMES = "themes"
 }
 
 @Composable
@@ -447,6 +449,10 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.LANGUAGE_SETTINGS)
                         },
+                        onNavigateToThemes = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.THEMES)
+                        },
                         onNavigateToDebugTools = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_TOOLS)
@@ -516,6 +522,27 @@ fun AppNavigation(
                     }
                 ) {
                     NotificationAdvancedScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.THEMES) {
+                val route = AppRoutes.THEMES
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    ThemeScreen(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()

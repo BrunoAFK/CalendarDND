@@ -63,6 +63,9 @@ fun DebugToolsScreen(
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
     )
+    val testerTelemetryEnabled by settingsStore.testerTelemetryEnabled.collectAsState(
+        initial = com.brunoafk.calendardnd.util.AppConfig.testerTelemetryDefault
+    )
     val totalSilenceDialogEnabled by settingsStore.totalSilenceDialogEnabled.collectAsState(
         initial = true
     )
@@ -78,6 +81,7 @@ fun DebugToolsScreen(
         "hr" to stringResource(R.string.language_croatian).ifBlank { "Hrvatski" },
         "de" to stringResource(R.string.language_german).ifBlank { "Deutsch" },
         "it" to stringResource(R.string.language_italian).ifBlank { "Italiano" },
+        "tr" to stringResource(R.string.language_turkish).ifBlank { "Türkçe" },
         "ko" to stringResource(R.string.language_korean).ifBlank { "한국어" }
     )
     val listState = rememberLazyListState()
@@ -138,6 +142,21 @@ fun DebugToolsScreen(
                         title = stringResource(R.string.debug_log_settings_title),
                         subtitle = stringResource(R.string.debug_log_settings_subtitle),
                         onClick = onOpenLogSettings
+                    )
+                }
+            }
+
+            item {
+                SettingsSection(title = stringResource(R.string.debug_tools_telemetry_section_title)) {
+                    SettingsSwitchRow(
+                        title = stringResource(R.string.debug_tools_tester_telemetry_title),
+                        subtitle = stringResource(R.string.debug_tools_tester_telemetry_subtitle),
+                        checked = testerTelemetryEnabled,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setTesterTelemetryEnabled(enabled)
+                            }
+                        }
                     )
                 }
             }

@@ -41,6 +41,7 @@ fun DebugLanguageScreen(
         "de" -> stringResource(R.string.language_german).ifBlank { "Deutsch" }
         "hr" -> stringResource(R.string.language_croatian).ifBlank { "Hrvatski" }
         "it" -> stringResource(R.string.language_italian).ifBlank { "Italiano" }
+        "tr" -> stringResource(R.string.language_turkish).ifBlank { "Türkçe" }
         "ko" -> stringResource(R.string.language_korean).ifBlank { "한국어" }
         else -> languageTag
     }

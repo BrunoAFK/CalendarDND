@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calendar DND</string>
+    <string name="tile_label">Calendar DND</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Kurulum gerekli</string>
+    <string name="onboarding_description">Calendar DND’nin çalışması için birkaç izne ihtiyacı var:</string>
+    <string name="onboarding_description_short">Calendar DND bu izinlere ihtiyaç duyar:</string>
+    <string name="calendar_permission_title">Takvim erişimi</string>
+    <string name="calendar_permission_description">Toplantıları ve yaklaşan yoğun zamanı algılamak için kullanılır.</string>
+    <string name="calendar_permission_description_short">Toplantıları algılamak için takvimi oku</string>
+    <string name="dnd_permission_title">Rahatsız Etmeyin erişimi</string>
+    <string name="dnd_permission_description">Toplantı başladığında Rahatsız Etmeyin’i açmak için gerekli.</string>
+    <string name="dnd_permission_description_short">Toplantılarda DND’yi kontrol eder</string>
+    <string name="notification_permission_title">Bildirimler</string>
+    <string name="notification_permission_description">DND açılmadan önce uyarı verir.</string>
+    <string name="notification_permission_description_short">DND öncesi uyarı</string>
+    <string name="exact_alarm_title">Kesin alarmlar (önerilir)</string>
+    <string name="exact_alarm_description">Sistem arka plan işleri geciktirse bile DND zamanlamasını hassas tutar.</string>
+    <string name="exact_alarm_description_short">Zamanlamayı hassas tutar</string>
+    <string name="battery_title">Pil optimizasyonu (önerilir)</string>
+    <string name="battery_description">Pil kısıtları agresif olduğunda güvenilirliği artırır.</string>
+    <string name="battery_description_short">Pil kısıtlarını önler</string>
+    <string name="permission_required_label">Gerekli</string>
+    <string name="why_we_need_this">Neden gerekli</string>
+    <string name="calendar_permission_rationale">DND planlamak için yalnızca etkinlik saatlerini ve başlıklarını okuruz, asla düzenlemeyiz.</string>
+    <string name="dnd_permission_rationale">Bu izin olmadan uygulama DND’yi değiştirmek yerine yalnızca hatırlatır.</string>
+    <string name="notification_permission_rationale">Takvime göre DND yine çalışır, ancak uyarı olmaz.</string>
+    <string name="exact_alarm_rationale">Bu izin olmadan başlangıç ve bitiş saatleri birkaç dakika kayabilir.</string>
+    <string name="battery_rationale">Bu ayar olmadan alarmlar gecikebilir veya atlanabilir.</string>
+    <string name="open_app_settings">Uygulama ayarlarını aç</string>
+    <string name="ok">Tamam</string>
+
+    <!-- Status Screen -->
+    <string name="automation">Otomatik DND</string>
+    <string name="automation_description">Takviminize göre DND’yi açar ve kapatır</string>
+    <string name="active">Etkin</string>
+    <string name="inactive">Kapalı</string>
+    <string name="setup_required">⚠️ Kurulum gerekli - eksik izinler</string>
+    <string name="complete_setup">Kurulumu tamamla</string>
+    <string name="current_meeting">Mevcut toplantı</string>
+    <string name="next_meeting">Sıradaki toplantı</string>
+    <string name="none">Yok</string>
+    <string name="none_scheduled">Plan yok</string>
+    <string name="dnd_status">DND durumu</string>
+    <string name="system_dnd">Sistem DND:</string>
+    <string name="app_controls_dnd">Uygulama DND’yi yönetiyor:</string>
+    <string name="run_engine_now">DND’yi şimdi kontrol et</string>
+    <string name="manual_check_subtitle">Ayarlar’dan manuel DND kontrolü yap</string>
+    <string name="check_dnd_complete">DND kontrolü tamamlandı</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Ayarlar</string>
+    <string name="selected_calendars">Seçili takvimler</string>
+    <string name="all_calendars">Tüm takvimler</string>
+    <string name="calendars_selected">%d takvim seçili</string>
+    <string name="event_filters">Etkinlik filtreleri</string>
+    <string name="event_keyword_filter_title">Etkinlik anahtar kelime filtresi</string>
+    <string name="event_keyword_filter_menu_title">Etkinlik anahtar kelimeleri</string>
+    <string name="experimental_label">Deneysel</string>
+    <string name="event_keyword_filter_menu_subtitle">Yalnızca başlığı anahtar kelimelerinizle eşleşen etkinliklere tepki ver</string>
+    <string name="event_keyword_filter_value_off">Kapalı</string>
+    <string name="event_keyword_filter_value_keywords">Anahtar kelimeler</string>
+    <string name="event_keyword_filter_value_regex">Regex</string>
+    <string name="event_keyword_filter_warning">Deneysel: bu filtre tamamen test edilmedi.</string>
+    <string name="event_keyword_filter_toggle_title">Anahtar kelime eşleşmesi gerektir</string>
+    <string name="event_keyword_filter_toggle_subtitle">Yalnızca başlık eşleşirse tepki ver.</string>
+    <string name="event_keyword_filter_mode_label">Eşleşme modu</string>
+    <string name="event_keyword_filter_mode_keywords">Anahtar kelimeler</string>
+    <string name="event_keyword_filter_mode_regex">Regex</string>
+    <string name="event_keyword_filter_keywords_label">Anahtar kelimeler</string>
+    <string name="event_keyword_filter_keywords_help">Virgül veya yeni satır kullanın; büyük/küçük harf duyarsız. Çok sözcüklü ifadeler olabilir.</string>
+    <string name="event_keyword_filter_keywords_examples">Örnekler:\nodak\nstandup\n1:1\nvideo görüşme\nproje başlangıcı\nmüşteri sync</string>
+    <string name="event_keyword_filter_regex_label">Regex deseni</string>
+    <string name="event_keyword_filter_regex_help">Kotlin regex kullanır. Büyük/küçük harf için (?i) ekleyin. İfadeleri ve kelime sınırlarını eşleştirebilirsiniz.</string>
+    <string name="event_keyword_filter_regex_examples">Örnekler:\n(?i)odak|standup|1:1\n(?i)\\bvideo görüşme\\b\n(?i)proje\\s+başlangıcı\n(?i)müşteri\\s+(sync|güncelleme)</string>
+    <string name="event_keyword_filter_regex_invalid">Geçersiz regex deseni.</string>
+    <string name="busy_only_title">Yalnızca meşgul etkinlikler</string>
+    <string name="busy_only_description">Boş/kararsız etkinlikleri yok say</string>
+    <string name="ignore_allday_title">Tüm gün etkinliklerini yok say</string>
+    <string name="ignore_allday_description">Tüm gün etkinlikleri için DND tetikleme</string>
+    <string name="min_duration_title">Minimum etkinlik süresi</string>
+    <string name="min_duration_description">%d dakikadan kısa etkinlikler yok sayılır</string>
+    <string name="min_duration_value">%d dakika</string>
+    <string name="dnd_mode">DND modu</string>
+    <string name="dnd_mode_screen_subtitle">Toplantılarda Rahatsız Etmeyin’in ne kadar katı olacağını seçin.</string>
+    <string name="dnd_mode_summary">Yalnızca Öncelikli veya Tam Sessizlik seçin.</string>
+    <string name="dnd_mode_description">Toplantılarda Rahatsız Etmeyin davranışını kontrol edin.</string>
+    <string name="priority_mode_title">Yalnızca Öncelikli</string>
+    <string name="priority_mode_description">Öncelikli bildirimlere izin ver</string>
+    <string name="priority_mode_details">Favorilerden gelen aramalar ve tekrar arayanlar çalabilir. Öncelikli işaretlenen bildirimler yine uyarabilir.</string>
+    <string name="total_silence_title">Tam Sessizlik</string>
+    <string name="total_silence_description">Tüm sesleri engelle (alarmlar dahil)</string>
+    <string name="total_silence_details">Favoriler bile çalmaz. Acil aramalara ihtiyaç duyuyorsanız dikkatle kullanın.</string>
+
+    <!-- Calendar Picker -->
+    <string name="select_calendars">Takvimleri seç</string>
+
+    <!-- Debug Logs -->
+    <string name="debug_logs">Hata ayıklama günlükleri</string>
+    <string name="debug_logs_show_details">Ayrıntıları göster</string>
+    <string name="debug_logs_hide_details">Ayrıntıları gizle</string>
+    <string name="search_logs">Günlüklerde ara</string>
+    <string name="close_search">Aramayı kapat</string>
+    <string name="no_logs_yet">Henüz günlük yok</string>
+    <string name="clear_logs">Günlükleri temizle</string>
+    <string name="copy_logs">Günlükleri kopyala</string>
+    <string name="logs_copied">Günlükler kopyalandı</string>
+    <string name="debug_logs_menu">Diğer seçenekler</string>
+    <string name="debug_tools_enabled">Hata ayıklama araçları etkin</string>
+
+    <!-- Notifications -->
+    <string name="pre_dnd_notification_title">DND yakında başlıyor</string>
+    <string name="pre_dnd_notification_body">DND şu etkinlik için başlayacak: %1$s</string>
+    <string name="pre_dnd_notification_body_generic">DND 5 dakika içinde açılacak</string>
+    <string name="pre_dnd_notification_window">DND etkin %1$s–%2$s</string>
+    <string name="pre_dnd_notification_action">Şimdi etkinleştir</string>
+    <string name="pre_dnd_notification_setting_title">DND öncesi bildirim</string>
+    <string name="pre_dnd_notification_setting">DND başlamadan 5 dakika önce bildir</string>
+
+    <!-- Status Banner -->
+    <string name="status_setup_required">Kurulum gerekli</string>
+    <string name="status_missing_permissions">%1$d izin gerekli</string>
+    <string name="status_complete_setup_hint">Kurulumu aşağıda tamamlayın</string>
+    <string name="status_automation_paused">Otomatik sessize alma duraklatıldı</string>
+    <string name="status_automation_ready">Otomatik sessize alma hazır</string>
+    <string name="status_automation_hint">DND otomatik olarak etkinleşecek</string>
+    <string name="status_dnd_mode_format">DND modu: %1$s</string>
+    <string name="status_missing_permissions_summary">Otomatik DND için kurulumu tamamlayın.</string>
+    <string name="status_automation_paused_summary">Otomasyon kapalı. DND otomatik değişmez.</string>
+    <string name="status_dnd_active_summary">DND etkin. %1$s içinde biter.</string>
+    <string name="status_automation_ready_summary">DND %1$s modunda otomatik etkinleşecek.</string>
+
+    <string name="dnd_mode_banner_message">DND %1$s modunda otomatik etkinleşecek. Değiştirmek için dokunun.</string>
+    <string name="dnd_mode_banner_title">DND modu</string>
+    <string name="refresh_banner_title">Durumu yenile</string>
+    <string name="refresh_banner_message">Yenilemek için aşağı çekin. Ayarlarda manuel kontroller de mevcut.</string>
+    <string name="status_dnd_active">Rahatsız Etmeyin etkin</string>
+    <string name="status_in_meeting">Toplantı: %1$s</string>
+    <string name="status_dnd_ends_in">%1$s içinde biter</string>
+    <string name="status_next_meeting_in">Sıradaki toplantı %1$s içinde</string>
+
+    <!-- Tile -->
+    <string name="tile_disabled">Kapalı</string>
+    <string name="tile_disabled_desc">Calendar DND otomasyonu kapalı</string>
+    <string name="tile_enabled">Açık</string>
+    <string name="tile_enabled_desc">Calendar DND otomasyonu açık</string>
+    <string name="tile_next_prefix">Sıradaki: %1$s</string>
+    <string name="tile_next_desc">DND %1$s içinde %2$s için etkinleşecek</string>
+    <string name="tile_dnd_prefix">DND: %1$s</string>
+    <string name="tile_dnd_desc">Rahatsız Etmeyin %1$s boyunca etkin</string>
+    <string name="tile_dnd_desc_with_title">Rahatsız Etmeyin %1$s boyunca %2$s sırasında etkin</string>
+    <string name="tile_less_than_minute">&lt; 1 dk</string>
+    <string name="tile_minutes">%1$d dk</string>
+    <string name="tile_hours">%1$d sa</string>
+    <string name="tile_hours_minutes">%1$d sa %2$d dk</string>
+    <string name="tile_days">%1$d g</string>
+    <string name="tile_meeting_fallback">Toplantı</string>
+    <string name="tile_hint_title">Hızlı Ayarlar kutucuğu</string>
+    <string name="tile_hint_enabled_message">Otomasyon AÇIK. Aşağıdaki anahtarla istediğiniz zaman değiştirebilirsiniz.</string>
+    <string name="tile_hint_disabled_message">Otomasyon KAPALI. Toplantılarda DND’yi etkinleştirmek için aşağıdan açın.</string>
+
+    <!-- Settings -->
+    <string name="notifications_title">Bildirimler</string>
+    <string name="about_title">Uygulama hakkında</string>
+
+    <!-- Help -->
+    <string name="help_title">Yardım</string>
+    <string name="help_about_title">Uygulama hakkında</string>
+    <string name="help_about_subtitle">Sürüm, yazar ve destek</string>
+    <string name="help_feature_guide_title">Özellik Rehberi</string>
+    <string name="help_feature_guide_subtitle">Her ayar ve özelliğin ne yaptığını öğrenin</string>
+    <string name="help_show_more">Daha fazlasını göster</string>
+    <string name="help_show_less">Daha az göster</string>
+    <string name="help_search_placeholder">Yardım konularında ara</string>
+    <string name="help_search_clear">Aramayı temizle</string>
+    <string name="help_search_no_results">Eşleşen yardım konusu bulunamadı</string>
+
+    <string name="help_item_automation_title">Otomatik DND</string>
+    <string name="help_item_automation_summary">Takviminize göre DND’yi otomatik açıp kapatır.</string>
+    <string name="help_item_automation_details">Etkin olduğunda uygulama takviminizi okur, aktif toplantıları algılar ve bu zamanlarda DND uygular. DND’yi yalnızca daha önce kendisi açtıysa kapatır.</string>
+
+    <string name="help_item_permissions_title">İzinler</string>
+    <string name="help_item_permissions_summary">Otomasyon için Takvim + DND izni gerekir.</string>
+    <string name="help_item_permissions_details">Takvim izni etkinlikleri okur. DND izni Rahatsız Etmeyin’i ayarlamaya izin verir. Bildirim izni hatırlatmaları açar.</string>
+    <string name="unable_to_open_link">Bağlantı açılamadı.</string>
+
+    <string name="help_item_language_title">Dil</string>
+    <string name="help_item_language_summary">Uygulama dilini Ayarlardan seçin.</string>
+    <string name="help_item_language_details">Dili Ayarlardan değiştirebilirsiniz. Uygulama arayüzü hemen güncellenir ve cihaz dilini değiştirmez.</string>
+
+    <string name="help_item_privacy_title">Gizlilik</string>
+    <string name="help_item_privacy_summary">Analitik ve çökme/performans raporlarını kontrol edin.</string>
+    <string name="help_item_privacy_details">Kullanım analitiklerini ve çökme/performans raporlarını açıp kapatabilirsiniz. Analitik varsayılan olarak kapalıdır. Çökme raporları hataları düzeltmeye, performans raporları uygulama kararlılığını izlemeye yardımcı olur.</string>
+
+    <string name="help_item_updates_title">Güncellemeler</string>
+    <string name="help_item_updates_summary">Manuel güncellemeler GitHub sürümlerinden gelir.</string>
+    <string name="help_item_updates_details">Manuel sürümde uygulama GitHub sürüm akışını kontrol eder. Yeni sürüm varsa bir uyarı görür ve APK’yı indirebilirsiniz.</string>
+
+    <string name="help_item_exact_alarms_title">Kesin alarmlar</string>
+    <string name="help_item_exact_alarms_summary">Yeni Android sürümlerinde zamanlamayı daha güvenilir yapar.</string>
+    <string name="help_item_exact_alarms_details">Kesin alarmlara izin verilirse uygulama kesin başlangıç ve bitiş saatlerini planlar. Değilse korumalara ve periyodik kontrollere döner.</string>
+
+    <string name="help_item_battery_title">Pil optimizasyonu</string>
+    <string name="help_item_battery_summary">Kapalı olması alarmların ve işlerin zamanında çalışmasına yardımcı olur.</string>
+    <string name="help_item_battery_details">Bazı cihazlar arka plan işleri geciktirir. DND değişimleri geç oluyorsa Calendar DND için pil optimizasyonunu kapatın.</string>
+
+    <string name="help_item_busy_only_title">Yalnızca meşgul etkinlikler</string>
+    <string name="help_item_busy_only_summary">Boş veya kararsız olarak işaretlenen etkinlikleri yok sayar.</string>
+    <string name="help_item_busy_only_details">Etkin olduğunda yalnızca Meşgul etkinlikler DND’yi tetikler. Bu, isteğe bağlı veya bilgilendirme amaçlı etkinliklerde sessize almaktan kaçınır.</string>
+
+    <string name="help_item_ignore_all_day_title">Tüm gün etkinliklerini yok say</string>
+    <string name="help_item_ignore_all_day_summary">Tüm gün etkinliklerinin DND’yi tetiklemesini engeller.</string>
+    <string name="help_item_ignore_all_day_details">Tüm gün etkinlikleri çoğu zaman hatırlatma veya tatilleri temsil eder. Bu, DND’nin tüm gün açık kalmasını önler.</string>
+
+    <string name="help_item_min_duration_title">Minimum etkinlik süresi</string>
+    <string name="help_item_min_duration_summary">Kısa etkinlikleri filtreler.</string>
+    <string name="help_item_min_duration_details">Bu değerden kısa etkinlikler yok sayılır. Bu, hızlı takvim kayıtlarından kaynaklanan gereksiz değişimleri azaltır.</string>
+
+    <string name="help_item_dnd_mode_title">DND modu</string>
+    <string name="help_item_dnd_mode_summary">Yalnızca Öncelikli veya Tam Sessizlik seçin.</string>
+    <string name="help_item_dnd_mode_details">Yalnızca Öncelikli, yıldızlı kişiler ve öncelikli bildirimlere izin verir. Tam Sessizlik, alarmlar dahil tüm sesleri engeller.</string>
+
+    <string name="help_item_dnd_timing_title">DND zamanlaması</string>
+    <string name="help_item_dnd_timing_summary">DND’yi toplantı başlamadan önce veya sonra başlatın.</string>
+    <string name="help_item_dnd_timing_details">Kaydırıcıyla DND başlangıcını kaydırın. Negatif değerler erken başlatır, pozitif değerler geciktirir, 0 tam zamanında başlatır.</string>
+
+    <string name="help_item_pre_dnd_notification_title">DND öncesi bildirim</string>
+    <string name="help_item_pre_dnd_notification_summary">DND başlamadan 5 dakika önce isteğe bağlı hatırlatma.</string>
+    <string name="help_item_pre_dnd_notification_details">Etkin olduğunda uygulama DND başlamadan kısa süre önce hatırlatma gösterir ve hemen DND’yi açmanıza izin verir.</string>
+
+    <string name="help_item_tile_title">Hızlı Ayarlar kutucuğu</string>
+    <string name="help_item_tile_summary">Bildirim perdesinden otomatik DND’yi aç/kapat.</string>
+    <string name="help_item_tile_details">Kutucuğu Hızlı Ayarlara ekleyin ve tek dokunuşla aç/kapatın. Kurulum eksikse kutucuk uygulamayı açar.</string>
+
+    <string name="help_item_debug_logs_title">Hata ayıklama günlükleri</string>
+    <string name="help_item_debug_logs_summary">Motor kararlarını ve zamanlamayı gösterir.</string>
+    <string name="help_item_debug_logs_details">Zamanlamayı doğrulamak ve sorun gidermek için günlükleri kullanın. Sorun bildirirken paylaşmak için kopyalayabilirsiniz; başlıkta önemli ayarlar vardır.</string>
+
+    <string name="help_item_pull_refresh_title">Yenilemek için çek</string>
+    <string name="help_item_pull_refresh_summary">Ana ekranda aşağı çekerek durumu yenileyin.</string>
+    <string name="help_item_pull_refresh_details">Ana ekranda aşağı çekerek toplantı durumunuzu manuel yenileyin ve DND durumunu tekrar kontrol edin. Takviminiz yeni değiştiyse durumu hemen görmek için kullanışlıdır.</string>
+
+    <!-- Common -->
+    <string name="back">Geri</string>
+    <string name="continue_button">Devam</string>
+    <string name="grant_permission">İzin ver</string>
+    <string name="open_settings">Ayarları aç</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="done">Bitti</string>
+
+    <!-- Onboarding Flow -->
+    <string name="intro_title">Calendar DND’ye hoş geldiniz</string>
+    <string name="intro_body">Toplantılarınız için otomatik sessizlik, birkaç dakikada kurulum.</string>
+    <string name="intro_feature_auto">Takvimden otomatik DND</string>
+    <string name="intro_feature_merge">Arka arkaya toplantıları akıllıca birleştirir</string>
+    <string name="intro_feature_override">Manuel DND değişikliklerine saygı duyar</string>
+    <string name="intro_feature_privacy">Gizlilik odaklı, cihazda kalır</string>
+    <string name="intro_feature_keywords">İsteğe bağlı anahtar kelime filtresi (deneysel)</string>
+    <string name="intro_notice">Gizlilik öncelikli: takvim verileri cihazda kalır. İsteğe bağlı Firebase analizleri ve çökme raporları her zaman kapatılabilir.</string>
+    <string name="intro_vibe_coded">Vibe-coded.</string>
+    <string name="get_started">Başlayın</string>
+    <string name="step_indicator">Adım %1$d / %2$d</string>
+
+    <string name="language_title">Dil seçin</string>
+    <string name="language_description">Bunu daha sonra Ayarlar’dan değiştirebilirsiniz.</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_chinese" translatable="false">中文</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_croatian" translatable="false">Hrvatski</string>
+    <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
+    <string name="language_korean" translatable="false">한국어</string>
+
+    <string name="theme_title">Tema</string>
+    <string name="theme_description">Calendar DND’nin görünümünü seçin.</string>
+    <string name="theme_option_system">Sistem</string>
+    <string name="theme_option_light">Açık</string>
+    <string name="theme_option_dark">Koyu</string>
+    <string name="theme_option_system_subtitle">Cihaz ayarını takip eder.</string>
+    <string name="theme_option_light_subtitle">Her zaman açık renkleri kullanır.</string>
+    <string name="theme_option_dark_subtitle">Her zaman koyu renkleri kullanır.</string>
+
+    <string name="calendar_scope_title">İzlenecek takvimler</string>
+    <string name="calendar_scope_description">Tüm takvimleri kullanmayı veya belirli takvimleri seçmeyi seçin.</string>
+    <string name="calendar_scope_privacy_hint">Tüm takvim verileri cihazda kalır.</string>
+    <string name="calendar_scope_all_title">Tüm takvimler</string>
+    <string name="calendar_scope_all_summary">Bu cihazdaki tüm takvimleri kullan.</string>
+    <string name="calendar_scope_specific_title">Takvim seç</string>
+    <string name="calendar_scope_specific_summary">Hangi takvimlerin kullanılacağını seç.</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_general">Genel</string>
+    <string name="settings_privacy">Gizlilik ve izinler</string>
+    <string name="settings_help">Yardım</string>
+    <string name="privacy_title">Gizlilik</string>
+    <string name="dnd_timing_title">DND zamanlaması</string>
+    <string name="dnd_timing_start_title">DND başlangıcı</string>
+    <string name="dnd_timing_before_label">Önce</string>
+    <string name="dnd_timing_after_label">Sonra</string>
+    <string name="dnd_timing_on_time">Toplantı başladığında tam olarak başlar</string>
+    <string name="dnd_timing_before_meeting">Toplantıdan %1$d dk önce başlar</string>
+    <string name="dnd_timing_after_meeting">Toplantıdan %1$d dk sonra başlar</string>
+    <string name="dnd_timing_value_zero">0 dakika</string>
+    <string name="dnd_timing_value_before">%1$d dakika önce</string>
+    <string name="dnd_timing_value_after">%1$d dakika sonra</string>
+
+    <string name="privacy_intro">Veri paylaşarak uygulamayı geliştirmeye yardımcı olun. Bunu daha sonra değiştirebilirsiniz.</string>
+    <string name="privacy_change_later">Bunu daha sonra değiştirebilirsiniz.</string>
+    <string name="privacy_defaults_hint">Varsayılanlar: analiz kapalı, çökme ve performans raporları açık.</string>
+    <string name="analytics_opt_in_title">Kullanım analitiği</string>
+    <string name="analytics_opt_in_description">Özellikleri geliştirmek için anonim kullanım verilerini paylaş</string>
+    <string name="crashlytics_opt_in_title">Çökme ve performans raporları</string>
+    <string name="crashlytics_opt_in_description">Hataları düzeltmeye yardımcı olmak için çökme ve performans raporları gönder</string>
+
+    <!-- About -->
+    <string name="app_version_format">Sürüm %1$s (%2$d)</string>
+    <string name="github_repo_title">Sorun bildir</string>
+    <string name="github_repo_subtitle">GitHub’ı açıp hata bildir</string>
+    <string name="github_repo_url">https://github.com/BrunoAFK/CalendarDND</string>
+    <string name="github_issues_url">https://github.com/BrunoAFK/CalendarDND/issues</string>
+    <string name="github_releases_url">https://github.com/BrunoAFK/CalendarDND/releases</string>
+    <string name="github_latest_release_url">https://github.com/BrunoAFK/CalendarDND/releases/latest</string>
+    <string name="about_intro">Calendar DND toplantılarda telefonunuzu sessiz tutar ve sırada ne olduğunu gösterir.</string>
+    <string name="about_application_section_title">Uygulama</string>
+    <string name="about_section_title">Hakkında</string>
+    <string name="about_version_section_title">Sürüm</string>
+    <string name="about_version_label">Sürüm</string>
+    <string name="about_author_label">Yazar</string>
+    <string name="about_author_section_title">Yazar</string>
+    <string name="about_author_value">Bruno Pavelja</string>
+    <string name="about_github_label">GitHub</string>
+    <string name="about_report_title">Sorun bildir</string>
+    <string name="about_report_body">Bir sorun varsa GitHub’da bir issue açın ve cihaz modeli, Android sürümü ve adımları ekleyin. Ekran görüntüsü yardımcı olur.</string>
+    <string name="fcm_channel_name">Güncellemeler</string>
+    <string name="fcm_channel_description">Duyurular ve güncelleme bildirimleri</string>
+    <string name="fcm_default_title">Calendar DND</string>
+    <string name="about_version_title">Sürüm</string>
+    <string name="about_version_subtitle">GitHub’da sürümleri görüntüle</string>
+    <string name="about_whats_new_title">Neler yeni</string>
+    <string name="about_whats_new_action">Neler yeni</string>
+    <string name="about_whats_new_subtitle">Son değişiklikler ve sürüm notları</string>
+    <string name="about_features_title">Özellikler</string>
+    <string name="about_features_debug_title">Hata ayıklama araçları</string>
+    <string name="about_features_debug_subtitle">Sorun giderme için gelişmiş hata ayıklama araçlarını açın</string>
+    <string name="whats_new_title">Neler yeni</string>
+    <string name="whats_new_latest_title">Son sürüm</string>
+    <string name="whats_new_latest_body">Tüm değişiklikleri görmek için GitHub sürüm notlarını açın.</string>
+    <string name="whats_new_latest_action">Son sürüm notlarını görüntüle</string>
+    <string name="whats_new_latest_subtitle">GitHub’ı tarayıcıda açar</string>
+    <string name="whats_new_features_title">Öne çıkanlar</string>
+    <string name="whats_new_features_body">- Yeni Hakkında ve Neler yeni ekranları (sürüm bağlantılarıyla)\n- Tek net durum satırıyla kompakt DND banner’ı\n- Takvimi açmak için tam kart dokunuşu\n- Ayarlar ve izin ekranlarında üst başlık uyumu\n- Manuel DND kontrolleri ve otomasyon vurguları iyileştirildi</string>
+    <string name="whats_new_history_title">Eski sürümler</string>
+    <string name="whats_new_history_action">Tüm sürümleri görüntüle</string>
+    <string name="whats_new_history_subtitle">GitHub’da önceki sürümlere göz at</string>
+
+    <!-- Debug Tools -->
+    <string name="debug_tools_title">Hata ayıklama</string>
+    <string name="debug_tools_description">Otomasyon kararlarını inceleyin, bildirimleri önizleyin ve hata ayıklama yardımcılarını kontrol edin.</string>
+    <string name="debug_tools_app_info_title">Uygulama bilgisi</string>
+    <string name="debug_tools_open_title">Hata ayıklama araçları</string>
+    <string name="debug_tools_open_subtitle">Yerelleştirilmiş dizgileri ve derleme bilgisini incele</string>
+    <string name="debug_tools_languages_title">Diller</string>
+    <string name="debug_language_title">Dizgiler: %1$s</string>
+    <string name="debug_tools_preview_title">Önizleme</string>
+    <string name="debug_tools_splash_title">Açılış önizlemesi</string>
+    <string name="debug_tools_splash_subtitle">Mevcut simgeyle açılış düzenini önizle</string>
+    <string name="debug_tools_notifications_title">Bildirimler</string>
+    <string name="debug_tools_test_notification_title">Bildirim testi</string>
+    <string name="debug_tools_test_notification_subtitle">Bir DND öncesi hatırlatma bildirimi gönder</string>
+    <string name="debug_tools_dnd_preview_title">DND önizlemesi</string>
+    <string name="debug_tools_dnd_preview_priority_title">Yalnızca Öncelikli önizleme</string>
+    <string name="debug_tools_dnd_preview_total_title">Tam Sessizlik önizleme</string>
+    <string name="debug_tools_dnd_preview_subtitle">%1$d saniye boyunca geçici DND uygula</string>
+    <string name="debug_tools_logs_section_title">Günlükler</string>
+    <string name="debug_tools_logs_subtitle">Ne olduğunu görmek için otomasyon motoru günlüklerini görüntüle</string>
+    <string name="debug_tools_engine_section_title">Otomasyon motoru</string>
+    <string name="debug_tools_dry_run_title">Deneme çalıştırması (dry)</string>
+    <string name="debug_tools_dry_run_subtitle">DND veya zamanlamaları değiştirmeden bir sonraki kararı simüle et</string>
+    <string name="debug_tools_dry_run_toast">Dry run tamamlandı</string>
+    <string name="debug_tools_updates_title">Güncellemeler</string>
+    <string name="debug_tools_force_update_title">Güncellemeyi zorla</string>
+    <string name="debug_tools_force_update_subtitle">En son sürümü indir ve yükleyiciyi başlat</string>
+    <string name="debug_log_settings_title">Günlük ayarları</string>
+    <string name="debug_log_settings_subtitle">Hata ayıklama kayıtlarının ayrıntı düzeyini seç</string>
+    <string name="debug_log_settings_level_label">Günlük seviyesi</string>
+    <string name="debug_log_settings_include_details_title">Ayrıntılı günlükleri dahil et</string>
+    <string name="debug_log_settings_include_details_subtitle">Her kayda motor çalıştırma ayrıntılarını ekle</string>
+    <string name="debug_logs_share">Hata ayıklama özetini paylaş</string>
+    <string name="debug_tools_maintenance_title">Bakım</string>
+    <string name="debug_tools_total_silence_dialog_title">Tam Sessizlik onayı</string>
+    <string name="debug_tools_total_silence_dialog_subtitle">Etkinleştirmeden önce Tam Sessizlik onayını göster</string>
+    <string name="debug_tools_app_control_title">Uygulama kontrolleri</string>
+    <string name="debug_tools_nav_title">Gezinme</string>
+    <string name="debug_tools_nav_overlay_title">Gezinme hata ayıklama kaplamasını göster</string>
+    <string name="debug_tools_nav_overlay_subtitle">Mevcut rotayı ve dokunma günlüğünü gösterir</string>
+    <string name="debug_tools_restore_dnd_banner_title">DND modu banner’ını geri getir</string>
+    <string name="debug_tools_restore_dnd_banner_subtitle">Ana ekranda DND modu istemini tekrar göster</string>
+    <string name="debug_tools_restore_banners_title">Tüm banner’ları geri getir</string>
+    <string name="debug_tools_restore_banners_subtitle">Ana ekranda DND modu ve yenileme banner’larını tekrar göster</string>
+    <string name="debug_tools_reset_total_silence_title">Tam Sessizlik onayını sıfırla</string>
+    <string name="debug_tools_reset_total_silence_subtitle">Tam Sessizlik seçildiğinde uyarı diyalogunu yeniden göster</string>
+    <string name="dnd_priority_summary_title">Öncelikli kesintiler</string>
+    <string name="dnd_priority_description">Yalnızca Öncelikli aktifken hangi kişiler ve uygulamaların kesintiye izinli olduğunu seçin.</string>
+    <string name="dnd_priority_summary_format">İzin verilen: %1$s</string>
+    <string name="dnd_priority_summary_none">İzin verilen: Yok</string>
+    <string name="dnd_priority_summary_fallback">İzin verilen: Sistem ayarlarında yapılandırın</string>
+    <string name="dnd_priority_manage_button">Öncelik istisnalarını yönet</string>
+    <string name="dnd_priority_category_calls_with">Aramalar (%1$s)</string>
+    <string name="dnd_priority_category_messages_with">Mesajlar (%1$s)</string>
+    <string name="dnd_priority_category_reminders">Hatırlatmalar</string>
+    <string name="dnd_priority_category_events">Etkinlikler</string>
+    <string name="dnd_priority_category_alarms">Alarmlar</string>
+    <string name="dnd_priority_category_repeat_callers">Tekrarlayan arayanlar</string>
+    <string name="dnd_priority_senders_anyone">Herkes</string>
+    <string name="dnd_priority_senders_contacts">Kişiler</string>
+    <string name="dnd_priority_senders_starred">Yıldızlılar</string>
+    <string name="dnd_total_silence_warning_title">Tam Sessizlik uyarısı</string>
+    <string name="dnd_total_silence_warning_body">Tam Sessizlik, alarmlar dahil tüm sesleri engeller.</string>
+    <string name="dnd_total_silence_description">Sistem DND ayarlarından kontrol edin.</string>
+    <string name="dnd_mode_manage_hint">Kimin geçebileceğini seçmek için sistem DND ayarlarını kullanın.</string>
+    <string name="dnd_total_silence_manage_button">DND ayarlarını aç</string>
+    <string name="dnd_total_silence_confirm_title">Tam Sessizlik etkinleştirilsin mi?</string>
+    <string name="dnd_total_silence_confirm_body">Bu, toplantı bitene kadar alarmlar dahil tüm sesleri engeller.</string>
+    <string name="dnd_total_silence_confirm_button">Tam Sessizliği etkinleştir</string>
+    <string name="dnd_total_silence_cancel_button">İptal</string>
+
+    <!-- Manual updates -->
+    <string name="update_dialog_title">Güncelleme mevcut</string>
+    <string name="update_dialog_body">Sürüm %1$s mevcut.</string>
+    <string name="update_action_download">İndir</string>
+    <string name="update_action_later">Sonra</string>
+    <string name="update_notification_title">Güncelleme mevcut</string>
+    <string name="update_notification_body">Sürüm %1$s indirilmeye hazır.</string>
+    <string name="update_banner_title">Güncelleme mevcut</string>
+    <string name="update_banner_message">Sürüm %1$s indirilmeye hazır.</string>
+    <string name="pre_dnd_notification_timing_title">DND öncesi uyarı zamanı</string>
+    <string name="pre_dnd_notification_timing_value">%d dakika önce</string>
+    <string name="pre_dnd_notification_timing_help">Hatırlatmanın DND başlamadan ne kadar önce görüneceğini kontrol eder.</string>
+    <string name="post_meeting_notification_title">Toplantı sonrası bildirim</string>
+    <string name="post_meeting_notification_subtitle">Toplantı bitince DND’yi uzatmayı sor</string>
+    <string name="post_meeting_notification_timing_title">Toplantı sonrası zamanlama</string>
+    <string name="post_meeting_notification_timing_at_end">Toplantı bitiminde</string>
+    <string name="post_meeting_notification_timing_before">Bitimden %d dakika önce</string>
+    <string name="post_meeting_notification_timing_after">Bitimden %d dakika sonra</string>
+    <string name="post_meeting_notification_timing_help">DND’yi uzatma isteminin toplantı bitimi etrafında ne zaman görüneceğini ayarlar.</string>
+    <string name="post_meeting_notification_silent_title">Sessiz toplantı sonrası bildirimi</string>
+    <string name="post_meeting_notification_silent_subtitle">Düşük önem kanalı (ses yok). Titreşim sistem ayarlarına bağlıdır.</string>
+    <string name="notifications_advanced_title">Gelişmiş bildirimler</string>
+    <string name="notifications_advanced_subtitle">Zamanlama ve sessiz seçenekleri</string>
+    <string name="signature_warning_title">İmza doğrulama</string>
+    <string name="signature_warning_message">Bu sürümün imzası manuel güncelleme pin’iyle uyuşmuyor. Manuel güncellemeler devre dışı.</string>
+    <string name="signature_warning_unconfigured">Bu sürüm için manuel güncelleme sabitlemesi yapılandırılmamış. Manuel güncellemeler devre dışı.</string>
+    <string name="signature_warning_debug_note">Bu, debug derlemeleri için beklenir.</string>
+    <string name="external_link_prompt_title">Harici bağlantıyı aç</string>
+    <string name="external_link_prompt_message">%1$s bağlantısını tarayıcıda aç?</string>
+    <string name="external_link_open">Aç</string>
+    <string name="external_link_cancel">Şimdi değil</string>
+    <string name="update_screen_up_to_date">En güncel sürümdesiniz.</string>
+    <string name="update_open_failed">İndirme bağlantısını açacak uygulama bulunamadı.</string>
+    <string name="update_download_missing_hash">Bu sürüm için doğrulama kullanılamıyor.</string>
+    <string name="update_download_failed">Güncelleme indirilemedi veya doğrulanamadı.</string>
+    <string name="update_history_title">Sürüm geçmişi</string>
+    <string name="update_history_empty">Daha eski sürüm bulunamadı.</string>
+
+    <string name="update_menu_title">Güncellemeler</string>
+    <string name="update_menu_subtitle">Sürüm notları ve sürüm geçmişi</string>
+    <string name="update_screen_title">Güncellemeler</string>
+    <string name="update_screen_current_version">Mevcut sürüm: %1$s</string>
+    <string name="update_screen_latest_title">Son sürüm</string>
+    <string name="update_screen_history_title">Sürüm geçmişi</string>
+    <string name="update_screen_loading">Güncelleme bilgisi yükleniyor...</string>
+    <string name="update_screen_no_data">Güncelleme bilgisi yok.</string>
+    <string name="update_screen_unavailable">Bu derleme için güncellemeler mevcut değil.</string>
+    <string name="update_install_permission_required">Devam etmek için bu kaynaktan yüklemeye izin verin.</string>
+
+    <!-- Meeting overrun notifications -->
+    <string name="meeting_overrun_title">Toplantı uzadı mı?</string>
+    <string name="meeting_overrun_message">Odaklanmak için DND’yi uzat</string>
+    <string name="meeting_overrun_extend_format">+%1$ddk</string>
+    <string name="meeting_overrun_channel_name">Toplantı uzaması</string>
+    <string name="meeting_overrun_channel_name_silent">Toplantı uzaması (sessiz)</string>
+    <string name="meeting_overrun_channel_description">Toplantılar uzadığında bildirimler</string>
+    <string name="meeting_overrun_restore">Geri getir</string>
+
+    <!-- Debug tools -->
+    <string name="debug_section_title">Hata ayıklama</string>
+    <string name="debug_tools_disabled">Hata ayıklama araçları gizli</string>
+    <string name="debug_tools_hint">Hata ayıklama araçlarını aç/kapatmak için 5 kez dokunun.</string>
+
+    <string name="app_version_name_only">Sürüm %1$s</string>
+
+    <!-- Settings help text -->
+    <string name="settings_busy_only_help">“Boş” veya “Kararsız” işaretli etkinlikler de DND’yi tetikler.</string>
+    <string name="settings_min_duration_help">Daha kısa toplantılar DND’yi tetiklemez. Hızlı check-in’ler için kullanışlıdır.</string>
+    <string name="dnd_timing_help_on_time">DND toplantınız başladığında tam olarak başlar.</string>
+    <string name="dnd_timing_help_before">DND toplantınızdan %1$d dakika önce başlar.</string>
+    <string name="dnd_timing_help_after">DND toplantınızdan %1$d dakika sonra başlar.</string>
+
+    <!-- Permission status -->
+    <string name="permissions_title">İzinler</string>
+    <string name="permissions_subtitle">Gerekli erişimi gözden geçir ve düzelt.</string>
+    <string name="fix">Düzelt</string>
+    <string name="permission_status_calendar">Takvim erişimi</string>
+    <string name="permission_status_calendar_message">Etkinlikleri okumak için gerekli.</string>
+    <string name="permission_status_dnd">DND kontrolü</string>
+    <string name="permission_status_dnd_message">Rahatsız Etmeyin’i değiştirmek için gerekli.</string>
+    <string name="permission_status_exact_alarms">Kesin zamanlama</string>
+    <string name="permission_status_exact_alarms_message">Zamanlama 15 dakikaya kadar değişebilir.</string>
+    <string name="permission_status_notifications">Bildirimler</string>
+    <string name="permission_status_notifications_message">DND öncesi uyarılar için gerekli.</string>
+
+    <!-- Error states -->
+    <string name="error_calendar_permission_title">Takvim okunamıyor</string>
+    <string name="error_calendar_permission_message">Toplantılarınızı görmek için takvim izni verin.</string>
+    <string name="error_dnd_permission_title">DND kontrol edilemiyor</string>
+    <string name="error_dnd_permission_message">Otomatik sessize almak için Rahatsız Etmeyin erişimi verin.</string>
+    <string name="error_calendar_query_title">Takvim yüklenemedi</string>
+    <string name="error_calendar_query_message">Etkinlikleriniz okunurken bir sorun oluştu. Tekrar deneyin.</string>
+    <string name="error_dnd_change_title">DND değiştirilemedi</string>
+    <string name="error_dnd_change_message">DND’nin değişmesini engelleyen bir şey oldu. Bu bazen Samsung cihazlarda olur.</string>
+    <string name="error_no_calendars_title">Takvim bulunamadı</string>
+    <string name="error_no_calendars_message">Başlamak için cihazınıza en az bir takvim senkronlayın.</string>
+    <string name="error_network_title">Bağlantı sorunu</string>
+    <string name="error_network_message">Güncellemeler kontrol edilemedi. İnternet bağlantınızı kontrol edin.</string>
+    <string name="error_action_open_settings">Ayarları aç</string>
+    <string name="error_action_retry">Tekrar dene</string>
+    <string name="error_action_try_again">Yeniden dene</string>
+    <string name="error_action_open_calendar">Takvimi aç</string>
+    <string name="dismiss">Kapat</string>
+
+    <!-- Warning banner -->
+    <string name="warning_degraded_mode">DND zamanlaması daha az hassas olabilir. Doğru zamanlama için kesin alarmlara izin verin.</string>
+    <string name="fix_now">Şimdi düzelt</string>
+
+    <!-- Next meeting -->
+    <string name="dnd_will_activate">DND %1$s saatinde etkinleşecek</string>
+    <string name="time_until_format">%1$s içinde</string>
+    <string name="time_until_now">şimdi</string>
+    <string name="untitled_meeting">Başlıksız toplantı</string>
+    <string name="event_overview_now_label">Şimdi</string>
+    <string name="event_overview_next_label">Sıradaki</string>
+    <string name="event_overview_ends_in_format">%1$s içinde biter</string>
+    <string name="event_overview_starts_in_format">%1$s içinde başlar</string>
+
+    <!-- Empty states -->
+    <string name="no_upcoming_meetings">Her şey yolunda!</string>
+    <string name="no_meetings_hint">Önümüzdeki 7 gün için toplantı yok</string>
+    <string name="empty_no_meetings_title">Her şey yolunda!</string>
+    <string name="empty_no_meetings_message">Önümüzdeki 7 gün için toplantı planlanmamış. Etkinlik eklediğinizde DND otomatik etkinleşecek.</string>
+    <string name="open_calendar">Takvimi aç</string>
+    <string name="empty_no_calendars_title">Takvim bulunamadı</string>
+    <string name="empty_no_calendars_message">Başlamak için bir Google, Outlook veya başka bir takvim hesabı ekleyin.</string>
+    <string name="add_account">Hesap ekle</string>
+    <string name="empty_no_logs_title">Henüz etkinlik yok</string>
+    <string name="empty_no_logs_message">DND açılıp kapandıkça günlükler burada görünecek.</string>
+    <string name="empty_disabled_title">Otomatik sessize alma duraklatıldı</string>
+    <string name="empty_disabled_message">Takvim etkinlikleriniz sırasında DND’nin otomatik açılması için otomatik sessize almayı etkinleştirin.</string>
+    <string name="enable_now">Şimdi etkinleştir</string>
+
+</resources>

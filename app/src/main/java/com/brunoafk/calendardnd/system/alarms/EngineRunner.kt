@@ -256,22 +256,35 @@ object EngineRunner {
             val postMeetingOffsetMinutes = settingsSnapshot.postMeetingNotificationOffsetMinutes
             val postMeetingEnabled = input.automationEnabled &&
                 settingsSnapshot.postMeetingNotificationEnabled
-            val shouldSchedulePostMeetingCheck = postMeetingEnabled &&
-                postMeetingOffsetMinutes != 0 &&
-                output.activeWindow != null &&
-                output.dndWindowEndMs != null &&
-                output.dndWindowEndMs > 0L
+            val postMeetingWindowEndMs = when {
+                output.dndWindowEndMs != null && output.dndWindowEndMs > 0L -> output.dndWindowEndMs
+                input.activeWindowEndMs > 0L -> input.activeWindowEndMs
+                else -> null
+            }
 
-            if (shouldSchedulePostMeetingCheck) {
-                val triggerAtMs = output.dndWindowEndMs +
+            if (postMeetingEnabled && postMeetingWindowEndMs != null) {
+                val triggerAtMs = postMeetingWindowEndMs +
                     postMeetingOffsetMinutes.toLong() * 60 * 1000L
                 if (triggerAtMs > System.currentTimeMillis() + PRE_DND_NOTIFICATION_MIN_DELAY_MS) {
                     alarmScheduler.schedulePostMeetingCheckAlarm(triggerAtMs)
+                    debugLogStore.appendLog(
+                        DebugLogLevel.INFO,
+                        "Post-meeting check scheduled at ${AndroidTimeFormatter(context).formatTime(triggerAtMs)} " +
+                            "(offset=${postMeetingOffsetMinutes}m)"
+                    )
                 } else {
                     alarmScheduler.cancelPostMeetingCheckAlarm()
+                    debugLogStore.appendLog(
+                        DebugLogLevel.INFO,
+                        "Post-meeting check canceled (too soon for offset=${postMeetingOffsetMinutes}m)"
+                    )
                 }
-            } else if (!postMeetingEnabled || postMeetingOffsetMinutes == 0 || postMeetingOffsetMinutes < 0) {
+            } else {
                 alarmScheduler.cancelPostMeetingCheckAlarm()
+                debugLogStore.appendLog(
+                    DebugLogLevel.INFO,
+                    "Post-meeting check canceled (enabled=$postMeetingEnabled, windowEnd=$postMeetingWindowEndMs)"
+                )
             }
 
             // Ensure sanity worker if automation enabled

@@ -372,7 +372,6 @@ fun OnboardingScreen(
                     .fillMaxWidth()
                     .background(bottomBarBrush)
                     .onSizeChanged { bottomBarHeightPx = it.height }
-                    .padding(horizontal = 16.dp)
                     .padding(top = 18.dp, bottom = 14.dp)
             ) {
                 PrimaryActionButton(

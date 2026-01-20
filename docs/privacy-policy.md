@@ -37,6 +37,10 @@ These distributions include Firebase services:
 
 You can change these settings anytime in the app's Privacy screen.
 
+### Closed Testing Telemetry (Play Store)
+
+Closed testing builds can optionally send anonymous usage pings to verify tester activity. These pings include a random install ID, app version, and timestamp. No calendar data or personal identifiers are sent. You can opt out anytime in Debug Tools.
+
 ### F-Droid Distribution
 
 The F-Droid build does not include Firebase or any telemetry services. Analytics, crash reporting, and push notifications are completely absent from this build.

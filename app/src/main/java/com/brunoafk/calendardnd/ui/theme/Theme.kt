@@ -1,17 +1,19 @@
 package com.brunoafk.calendardnd.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.ln
+import com.brunoafk.calendardnd.domain.model.ThemeMode
 
 private val LightColors = lightColorScheme()
 private val DarkColors = darkColorScheme(
@@ -55,9 +57,11 @@ private val AppShapes = Shapes(
     large = RoundedCornerShape(8.dp)
 )
 
+val LocalIsDarkTheme = staticCompositionLocalOf { false }
+
 @Composable
 fun surfaceColorAtElevation(elevation: Dp): Color {
-    return if (isSystemInDarkTheme()) {
+    return if (LocalIsDarkTheme.current) {
         // Dark mode: use a lighter surface color for better contrast
         // Base alpha for elevation with higher multiplier for dark mode
         val alpha = ((8f * ln(elevation.value + 1)) / 100f).coerceIn(0f, 1f)
@@ -76,12 +80,19 @@ fun surfaceColorAtElevation(elevation: Dp): Color {
 }
 
 @Composable
-fun CalendarDndTheme(content: @Composable () -> Unit) {
-    val colors = if (isSystemInDarkTheme()) DarkColors else LightColors
+fun CalendarDndTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
+    val isDark = when (themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+    }
+    val colors = if (isDark) DarkColors else LightColors
 
-    MaterialTheme(
-        colorScheme = colors,
-        shapes = AppShapes,
-        content = content
-    )
+    CompositionLocalProvider(LocalIsDarkTheme provides isDark) {
+        MaterialTheme(
+            colorScheme = colors,
+            shapes = AppShapes,
+            content = content
+        )
+    }
 }

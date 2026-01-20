@@ -47,6 +47,7 @@ import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -83,6 +84,7 @@ fun SettingsScreen(
     onNavigateToPermissions: () -> Unit,
     onNavigateToEventKeywordFilter: () -> Unit,
     onNavigateToNotificationAdvanced: () -> Unit,
+    onNavigateToThemes: () -> Unit,
     highlightAutomation: Boolean,
     showUpdatesMenu: Boolean
 ) {
@@ -99,6 +101,7 @@ fun SettingsScreen(
     val dndStartOffsetMinutes by settingsStore.dndStartOffsetMinutes.collectAsState(initial = 0)
     val preDndNotificationEnabled by settingsStore.preDndNotificationEnabled.collectAsState(initial = false)
     val postMeetingNotificationEnabled by settingsStore.postMeetingNotificationEnabled.collectAsState(initial = true)
+    val themeMode by settingsStore.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     val requireTitleKeyword by settingsStore.requireTitleKeyword.collectAsState(initial = false)
     val titleKeywordMatchMode by settingsStore.titleKeywordMatchMode.collectAsState(
         initial = KeywordMatchMode.KEYWORDS
@@ -160,6 +163,11 @@ fun SettingsScreen(
             com.brunoafk.calendardnd.R.string.dnd_timing_help_after,
             dndStartOffsetMinutes
         )
+    }
+    val themeValueLabel = when (themeMode) {
+        ThemeMode.SYSTEM -> stringResource(com.brunoafk.calendardnd.R.string.theme_option_system)
+        ThemeMode.LIGHT -> stringResource(com.brunoafk.calendardnd.R.string.theme_option_light)
+        ThemeMode.DARK -> stringResource(com.brunoafk.calendardnd.R.string.theme_option_dark)
     }
 
     LaunchedEffect(Unit) {
@@ -297,6 +305,13 @@ fun SettingsScreen(
                         title = stringResource(com.brunoafk.calendardnd.R.string.language_title),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.language_description),
                         onClick = onNavigateToLanguage
+                    )
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.theme_title),
+                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.theme_description),
+                        value = themeValueLabel,
+                        onClick = onNavigateToThemes
                     )
                     SettingsDivider()
                     Column(

@@ -36,11 +36,17 @@ android {
             ?.toBooleanStrictOrNull() ?: false
         buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", debugToolsEnabled.toString())
 
+        val testerTelemetryDefault = (project.findProperty("testerTelemetryDefault") as String?)
+            ?.toBooleanStrictOrNull() ?: false
+        buildConfigField("boolean", "TESTER_TELEMETRY_DEFAULT", testerTelemetryDefault.toString())
+
         // Manual update defaults (override per flavor).
         buildConfigField("boolean", "MANUAL_UPDATE_ENABLED", "false")
         buildConfigField("String", "MANUAL_UPDATE_URLS", "\"\"")
         buildConfigField("String", "ALLOWED_SIGNER_SHA256", "\"\"")
         buildConfigField("boolean", "FIREBASE_ENABLED", "true")
+        buildConfigField("String", "UMAMI_BASE_URL", "\"https://stats.pavelja.me\"")
+        buildConfigField("String", "UMAMI_WEBSITE_ID", "\"f27a86c4-dd07-4ede-8e5e-8d9fd246e2c5\"")
     }
 
     val manualSignerSha256 = (project.findProperty("manualSignerSha256") as String?)
@@ -52,6 +58,7 @@ android {
     productFlavors {
         create("play") {
             dimension = "distribution"
+            buildConfigField("boolean", "TESTER_TELEMETRY_DEFAULT", "true")
         }
         create("fdroid") {
             dimension = "distribution"

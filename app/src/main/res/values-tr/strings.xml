@@ -376,6 +376,7 @@
     <string name="debug_tools_dnd_preview_subtitle">%1$d saniye boyunca geçici DND uygula</string>
     <string name="debug_tools_logs_section_title">Günlükler</string>
     <string name="debug_tools_telemetry_section_title">Testçi telemetrisi</string>
+    <string name="debug_tools_tester_telemetry_title">Kullanım pingi</string>
     <string name="debug_tools_logs_subtitle">Ne olduğunu görmek için otomasyon motoru günlüklerini görüntüle</string>
     <string name="debug_tools_engine_section_title">Otomasyon motoru</string>
     <string name="debug_tools_dry_run_title">Deneme çalıştırması (dry)</string>

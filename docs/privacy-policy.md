@@ -37,13 +37,18 @@ These distributions include Firebase services:
 
 You can change these settings anytime in the app's Privacy screen.
 
-### Closed Testing Telemetry (Play Store)
+### Telemetry (Usage Pings)
 
-Closed testing builds can optionally send anonymous usage pings to verify tester activity. These pings include a random install ID, app version, and timestamp. No calendar data or personal identifiers are sent. You can opt out anytime in Debug Tools.
+Some builds send anonymous usage pings to understand usage and decide what to improve. This is not user tracking and does not include calendar data.
+
+**Basic:** install ID, app version, device language, build flavor, daily active ping.  
+**Detailed (closed testing only):** Basic + app language, OS version, manufacturer, model.
+
+Opt out: open About and enable Debug Tools, then go to Settings > Debug Tools and disable Telemetry.
 
 ### F-Droid Distribution
 
-The F-Droid build does not include Firebase or any telemetry services. Analytics, crash reporting, and push notifications are completely absent from this build.
+The F-Droid build does not include Firebase. Analytics, crash reporting, and push notifications are completely absent.
 
 ## Update Checks (GitHub Distribution)
 
@@ -82,6 +87,7 @@ For details, see [Firebase Data Privacy](https://firebase.google.com/support/pri
 - **Crash & Performance Reports**: Opt-out via Privacy settings
 - **Permissions**: Revoke calendar, notifications, or DND access in Android settings
 - **Local Data**: Uninstall the app or clear app data to remove all local data
+- **Telemetry**: Open About and enable Debug Tools, then go to Settings > Debug Tools and disable Telemetry
 
 ## Data Subject Rights (Firebase)
 

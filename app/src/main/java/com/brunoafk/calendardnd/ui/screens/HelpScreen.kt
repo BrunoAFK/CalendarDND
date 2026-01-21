@@ -132,10 +132,22 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_ignore_all_day_details)
         ),
         HelpItem(
+            id = "require_location",
+            title = stringResource(R.string.help_item_require_location_title),
+            summary = stringResource(R.string.help_item_require_location_summary),
+            details = stringResource(R.string.help_item_require_location_details)
+        ),
+        HelpItem(
             id = "min_duration",
             title = stringResource(R.string.help_item_min_duration_title),
             summary = stringResource(R.string.help_item_min_duration_summary),
             details = stringResource(R.string.help_item_min_duration_details)
+        ),
+        HelpItem(
+            id = "title_filters",
+            title = stringResource(R.string.help_item_title_filters_title),
+            summary = stringResource(R.string.help_item_title_filters_summary),
+            details = stringResource(R.string.help_item_title_filters_details)
         ),
         HelpItem(
             id = "dnd_mode",

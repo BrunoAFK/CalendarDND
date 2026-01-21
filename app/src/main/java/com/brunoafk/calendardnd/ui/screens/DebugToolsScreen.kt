@@ -1,6 +1,9 @@
 package com.brunoafk.calendardnd.ui.screens
 
 import android.app.NotificationManager
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +42,7 @@ import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import com.brunoafk.calendardnd.ui.components.PersistentWarningBanner
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,6 +55,7 @@ fun DebugToolsScreen(
     onOpenLanguage: (String) -> Unit,
     onOpenDebugLogs: () -> Unit = {},
     onOpenLogSettings: () -> Unit = {},
+    onOpenTelemetryLevel: () -> Unit = {},
     signatureStatus: ManualUpdateManager.SignatureStatus = ManualUpdateManager.SignatureStatus(
         isAllowed = true,
         isPinned = true
@@ -63,8 +68,11 @@ fun DebugToolsScreen(
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
     )
-    val testerTelemetryEnabled by settingsStore.testerTelemetryEnabled.collectAsState(
-        initial = com.brunoafk.calendardnd.util.AppConfig.testerTelemetryDefault
+    val telemetryEnabled by settingsStore.telemetryEnabled.collectAsState(
+        initial = com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultEnabled
+    )
+    val telemetryLevel by settingsStore.telemetryLevel.collectAsState(
+        initial = com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultLevel
     )
     val totalSilenceDialogEnabled by settingsStore.totalSilenceDialogEnabled.collectAsState(
         initial = true
@@ -75,6 +83,12 @@ fun DebugToolsScreen(
         R.string.debug_tools_dnd_preview_subtitle,
         DND_PREVIEW_SECONDS
     )
+    val telemetryLevelLabel = when (telemetryLevel) {
+        com.brunoafk.calendardnd.domain.model.TelemetryLevel.BASIC ->
+            stringResource(R.string.debug_tools_telemetry_level_basic_title)
+        com.brunoafk.calendardnd.domain.model.TelemetryLevel.DETAILED ->
+            stringResource(R.string.debug_tools_telemetry_level_detailed_title)
+    }
     val languages = listOf(
         "en" to stringResource(R.string.language_english).ifBlank { "English" },
         "zh" to stringResource(R.string.language_chinese).ifBlank { "中文" },
@@ -151,12 +165,21 @@ fun DebugToolsScreen(
                     SettingsSwitchRow(
                         title = stringResource(R.string.debug_tools_tester_telemetry_title),
                         subtitle = stringResource(R.string.debug_tools_tester_telemetry_subtitle),
-                        checked = testerTelemetryEnabled,
+                        checked = telemetryEnabled,
                         onCheckedChange = { enabled ->
                             scope.launch {
-                                settingsStore.setTesterTelemetryEnabled(enabled)
+                                settingsStore.setTelemetryEnabled(enabled)
                             }
                         }
+                    )
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(R.string.debug_tools_telemetry_level_title),
+                        subtitle = stringResource(
+                            R.string.debug_tools_telemetry_level_current,
+                            telemetryLevelLabel
+                        ),
+                        onClick = onOpenTelemetryLevel
                     )
                 }
             }
@@ -210,6 +233,47 @@ fun DebugToolsScreen(
                                         context.getString(R.string.debug_tools_dry_run_toast),
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (BuildConfig.FLAVOR == "play") {
+                item {
+                    SettingsSection(title = stringResource(R.string.debug_tools_reviews_title)) {
+                        SettingsNavigationRow(
+                            title = stringResource(R.string.debug_tools_reviews_force_title),
+                            subtitle = stringResource(R.string.debug_tools_reviews_force_subtitle),
+                            onClick = {
+                                scope.launch {
+                                    val activity = context.findActivity()
+                                    if (activity == null) {
+                                        Toast.makeText(
+                                            context,
+                                            R.string.debug_tools_reviews_no_activity,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@launch
+                                    }
+                                    val settingsStore = SettingsStore(context)
+                                    withContext(Dispatchers.IO) {
+                                        settingsStore.setReviewPromptShown(false)
+                                    }
+                                    val manager = ReviewManagerFactory.create(activity)
+                                    manager.requestReviewFlow().addOnCompleteListener { requestTask ->
+                                        if (!requestTask.isSuccessful) {
+                                            return@addOnCompleteListener
+                                        }
+                                        val reviewInfo = requestTask.result
+                                        manager.launchReviewFlow(activity, reviewInfo)
+                                            .addOnCompleteListener {
+                                                scope.launch(Dispatchers.IO) {
+                                                    settingsStore.setReviewPromptShown(true)
+                                                }
+                                            }
+                                    }
                                 }
                             }
                         )
@@ -419,3 +483,14 @@ fun DebugToolsScreen(
 
 private const val DND_PREVIEW_SECONDS = 10
 private const val DND_PREVIEW_MS = DND_PREVIEW_SECONDS * 1000L
+
+private fun Context.findActivity(): Activity? {
+    var current = this
+    while (current is ContextWrapper) {
+        if (current is Activity) {
+            return current
+        }
+        current = current.baseContext
+    }
+    return null
+}

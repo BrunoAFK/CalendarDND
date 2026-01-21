@@ -73,6 +73,34 @@ fun AboutScreen(
         }
     }
 
+    fun openPlayStore() {
+        val packageName = context.packageName
+        val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val webIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        ).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        try {
+            context.startActivity(marketIntent)
+        } catch (_: Exception) {
+            try {
+                context.startActivity(webIntent)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.unable_to_open_link),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             OneUiTopAppBar(
@@ -169,6 +197,14 @@ fun AboutScreen(
                             subtitle = stringResource(R.string.github_repo_subtitle),
                             onClick = { openUrl(issuesUrl) }
                         )
+                        if (BuildConfig.FLAVOR == "play") {
+                            SettingsDivider()
+                            SettingsNavigationRow(
+                                title = stringResource(R.string.about_rate_title),
+                                subtitle = stringResource(R.string.about_rate_subtitle),
+                                onClick = { openPlayStore() }
+                            )
+                        }
                     }
                 }
             }

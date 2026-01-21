@@ -114,6 +114,7 @@ class DebugLogStore(private val context: Context) {
             appendLine("Busy only: ${settingsSnapshot.busyOnly}")
             appendLine("Ignore all-day: ${settingsSnapshot.ignoreAllDay}")
             appendLine("Min duration: ${settingsSnapshot.minEventMinutes}")
+            appendLine("Require location: ${settingsSnapshot.requireLocation}")
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
@@ -124,6 +125,9 @@ class DebugLogStore(private val context: Context) {
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
+                appendLine("Title filter case sensitive: ${settingsSnapshot.titleKeywordCaseSensitive}")
+                appendLine("Title filter match all: ${settingsSnapshot.titleKeywordMatchAll}")
+                appendLine("Title filter exclude: ${settingsSnapshot.titleKeywordExclude}")
                 appendLine("Title filter pattern: [redacted]")
             }
             appendLine("Analytics opt-in: $analyticsOptIn")
@@ -166,6 +170,7 @@ class DebugLogStore(private val context: Context) {
             appendLine("Busy only: ${settingsSnapshot.busyOnly}")
             appendLine("Ignore all-day: ${settingsSnapshot.ignoreAllDay}")
             appendLine("Min duration: ${settingsSnapshot.minEventMinutes}")
+            appendLine("Require location: ${settingsSnapshot.requireLocation}")
             appendLine("DND mode: ${settingsSnapshot.dndMode.name}")
             appendLine("DND offset: ${settingsSnapshot.dndStartOffsetMinutes}")
             appendLine("Pre-DND notification: ${settingsSnapshot.preDndNotificationEnabled}")
@@ -176,6 +181,9 @@ class DebugLogStore(private val context: Context) {
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
+                appendLine("Title filter case sensitive: ${settingsSnapshot.titleKeywordCaseSensitive}")
+                appendLine("Title filter match all: ${settingsSnapshot.titleKeywordMatchAll}")
+                appendLine("Title filter exclude: ${settingsSnapshot.titleKeywordExclude}")
                 appendLine("Title filter pattern: ${settingsSnapshot.titleKeyword}")
             }
             appendLine("Analytics opt-in: $analyticsOptIn")

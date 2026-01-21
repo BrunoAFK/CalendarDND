@@ -8,6 +8,7 @@ data class EventInstance(
     val eventId: Long,
     val calendarId: Long,
     val title: String,
+    val location: String,
     val begin: Long,
     val end: Long,
     val allDay: Boolean,

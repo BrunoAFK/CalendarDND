@@ -13,9 +13,13 @@ interface ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): List<EventInstance>
 
     suspend fun getNextInstance(
@@ -24,9 +28,13 @@ interface ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): EventInstance?
 
     suspend fun getInstancesInRange(
@@ -36,9 +44,13 @@ interface ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+        titleKeywordMatchMode: com.brunoafk.calendardnd.domain.model.KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): List<EventInstance>
 
     suspend fun getCalendars(): List<CalendarInfo>

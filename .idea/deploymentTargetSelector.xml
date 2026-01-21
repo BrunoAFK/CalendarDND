@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="llama">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-01-20T18:48:02.773179Z">
+        <DropdownSelection timestamp="2026-01-21T13:32:41.594688Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=RFGYB1LQXEK" />

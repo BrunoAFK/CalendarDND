@@ -16,7 +16,10 @@ class CalendarRepositoryTest {
             title = title,
             requireTitleKeyword = true,
             titleKeyword = pattern,
-            matchMode = KeywordMatchMode.KEYWORDS
+            matchMode = KeywordMatchMode.KEYWORDS,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertTrue(matches)
@@ -28,7 +31,10 @@ class CalendarRepositoryTest {
             title = "Lunch Break",
             requireTitleKeyword = true,
             titleKeyword = "sync, planning",
-            matchMode = KeywordMatchMode.KEYWORDS
+            matchMode = KeywordMatchMode.KEYWORDS,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertFalse(matches)
@@ -40,7 +46,10 @@ class CalendarRepositoryTest {
             title = "Project Kickoff 2025",
             requireTitleKeyword = true,
             titleKeyword = "Kickoff\\s\\d{4}",
-            matchMode = KeywordMatchMode.REGEX
+            matchMode = KeywordMatchMode.REGEX,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertTrue(matches)
@@ -52,7 +61,10 @@ class CalendarRepositoryTest {
             title = "Project Kickoff",
             requireTitleKeyword = true,
             titleKeyword = "Kickoff(",
-            matchMode = KeywordMatchMode.REGEX
+            matchMode = KeywordMatchMode.REGEX,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertFalse(matches)
@@ -64,7 +76,10 @@ class CalendarRepositoryTest {
             title = "Project Kickoff",
             requireTitleKeyword = true,
             titleKeyword = "   ",
-            matchMode = KeywordMatchMode.KEYWORDS
+            matchMode = KeywordMatchMode.KEYWORDS,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertFalse(matches)
@@ -76,7 +91,10 @@ class CalendarRepositoryTest {
             title = "Anything",
             requireTitleKeyword = false,
             titleKeyword = "",
-            matchMode = KeywordMatchMode.KEYWORDS
+            matchMode = KeywordMatchMode.KEYWORDS,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
         )
 
         assertTrue(matches)

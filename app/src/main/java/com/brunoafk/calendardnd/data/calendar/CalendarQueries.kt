@@ -29,6 +29,7 @@ object CalendarQueries {
                     CalendarContract.Instances.EVENT_ID,
                     CalendarContract.Instances.CALENDAR_ID,
                     CalendarContract.Instances.TITLE,
+                    CalendarContract.Instances.EVENT_LOCATION,
                     CalendarContract.Instances.BEGIN,
                     CalendarContract.Instances.END,
                     CalendarContract.Instances.ALL_DAY,
@@ -49,6 +50,9 @@ object CalendarQueries {
                         val eventIdIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
                         val calendarIdIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
                         val titleIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
+                        val locationIdx = cursor.getColumnIndexOrThrow(
+                            CalendarContract.Instances.EVENT_LOCATION
+                        )
                         val beginIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
                         val endIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.END)
                         val allDayIdx = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
@@ -61,6 +65,7 @@ object CalendarQueries {
                                     eventId = cursor.getLong(eventIdIdx),
                                     calendarId = cursor.getLong(calendarIdIdx),
                                     title = cursor.getString(titleIdx) ?: "",
+                                    location = cursor.getString(locationIdx) ?: "",
                                     begin = cursor.getLong(beginIdx),
                                     end = cursor.getLong(endIdx),
                                     allDay = cursor.getInt(allDayIdx) == 1,

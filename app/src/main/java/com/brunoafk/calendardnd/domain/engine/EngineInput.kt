@@ -17,6 +17,7 @@ data class EngineInput(
     val busyOnly: Boolean,
     val ignoreAllDay: Boolean,
     val minEventMinutes: Int,
+    val requireLocation: Boolean,
     val dndMode: DndMode,
     val dndStartOffsetMinutes: Int,
     val preDndNotificationEnabled: Boolean,
@@ -24,6 +25,9 @@ data class EngineInput(
     val requireTitleKeyword: Boolean,
     val titleKeyword: String,
     val titleKeywordMatchMode: KeywordMatchMode,
+    val titleKeywordCaseSensitive: Boolean,
+    val titleKeywordMatchAll: Boolean,
+    val titleKeywordExclude: Boolean,
     val postMeetingNotificationEnabled: Boolean,
     val postMeetingNotificationOffsetMinutes: Int,
 

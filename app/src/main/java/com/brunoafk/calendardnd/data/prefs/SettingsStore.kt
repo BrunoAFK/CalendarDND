@@ -8,6 +8,7 @@ import com.brunoafk.calendardnd.data.prefs.DebugLogFilterLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.domain.model.TelemetryLevel
 import com.brunoafk.calendardnd.domain.model.ThemeMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,7 @@ class SettingsStore(private val context: Context) {
         private val BUSY_ONLY = booleanPreferencesKey("busy_only")
         private val IGNORE_ALL_DAY = booleanPreferencesKey("ignore_all_day")
         private val MIN_EVENT_MINUTES = intPreferencesKey("min_event_minutes")
+        private val REQUIRE_LOCATION = booleanPreferencesKey("require_location")
         private val DND_MODE = stringPreferencesKey("dnd_mode")
         private val DND_START_OFFSET_MINUTES = intPreferencesKey("dnd_start_offset_minutes")
         private val PRE_DND_NOTIFICATION_ENABLED = booleanPreferencesKey("pre_dnd_notification_enabled")
@@ -39,6 +41,9 @@ class SettingsStore(private val context: Context) {
         private val REQUIRE_TITLE_KEYWORD = booleanPreferencesKey("require_title_keyword")
         private val TITLE_KEYWORD = stringPreferencesKey("title_keyword")
         private val TITLE_KEYWORD_MATCH_MODE = stringPreferencesKey("title_keyword_match_mode")
+        private val TITLE_KEYWORD_CASE_SENSITIVE = booleanPreferencesKey("title_keyword_case_sensitive")
+        private val TITLE_KEYWORD_MATCH_ALL = booleanPreferencesKey("title_keyword_match_all")
+        private val TITLE_KEYWORD_EXCLUDE = booleanPreferencesKey("title_keyword_exclude")
         private val LAST_IN_APP_UPDATE_VERSION = stringPreferencesKey("last_in_app_update_version")
         private val LAST_NOTIFICATION_UPDATE_VERSION = stringPreferencesKey("last_notification_update_version")
         private val LAST_SEEN_UPDATE_VERSION = stringPreferencesKey("last_seen_update_version")
@@ -56,10 +61,15 @@ class SettingsStore(private val context: Context) {
         private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
             intPreferencesKey("post_meeting_notification_offset_minutes")
         private val POST_MEETING_NOTIFICATION_SILENT = booleanPreferencesKey("post_meeting_notification_silent")
+        private val TELEMETRY_ENABLED = booleanPreferencesKey("telemetry_enabled")
+        private val TELEMETRY_LEVEL = stringPreferencesKey("telemetry_level")
         private val TESTER_TELEMETRY_ENABLED = booleanPreferencesKey("tester_telemetry_enabled")
         private val INSTALL_ID = stringPreferencesKey("install_id")
         private val INSTALL_PING_SENT = booleanPreferencesKey("install_ping_sent")
         private val LAST_DAILY_PING_DATE = stringPreferencesKey("last_daily_ping_date")
+        private val FIRST_OPEN_MS = longPreferencesKey("first_open_ms")
+        private val APP_OPEN_COUNT = intPreferencesKey("app_open_count")
+        private val REVIEW_PROMPT_SHOWN = booleanPreferencesKey("review_prompt_shown")
     }
 
     data class SettingsSnapshot(
@@ -68,6 +78,7 @@ class SettingsStore(private val context: Context) {
         val busyOnly: Boolean,
         val ignoreAllDay: Boolean,
         val minEventMinutes: Int,
+        val requireLocation: Boolean,
         val dndMode: DndMode,
         val dndStartOffsetMinutes: Int,
         val preDndNotificationEnabled: Boolean,
@@ -75,10 +86,19 @@ class SettingsStore(private val context: Context) {
         val requireTitleKeyword: Boolean,
         val titleKeyword: String,
         val titleKeywordMatchMode: KeywordMatchMode,
+        val titleKeywordCaseSensitive: Boolean,
+        val titleKeywordMatchAll: Boolean,
+        val titleKeywordExclude: Boolean,
         val crashlyticsOptIn: Boolean,
         val postMeetingNotificationEnabled: Boolean,
         val postMeetingNotificationOffsetMinutes: Int,
         val postMeetingNotificationSilent: Boolean
+    )
+
+    data class ReviewPromptState(
+        val firstOpenMs: Long,
+        val appOpenCount: Int,
+        val promptShown: Boolean
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -99,6 +119,10 @@ class SettingsStore(private val context: Context) {
 
     val minEventMinutes: Flow<Int> = dataStore.data.map { prefs ->
         prefs[MIN_EVENT_MINUTES] ?: 10
+    }
+
+    val requireLocation: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[REQUIRE_LOCATION] ?: false
     }
 
     val dndMode: Flow<DndMode> = dataStore.data.map { prefs ->
@@ -153,6 +177,18 @@ class SettingsStore(private val context: Context) {
         KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE])
     }
 
+    val titleKeywordCaseSensitive: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[TITLE_KEYWORD_CASE_SENSITIVE] ?: false
+    }
+
+    val titleKeywordMatchAll: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[TITLE_KEYWORD_MATCH_ALL] ?: false
+    }
+
+    val titleKeywordExclude: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[TITLE_KEYWORD_EXCLUDE] ?: false
+    }
+
     val debugOverlayEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_OVERLAY_ENABLED] ?: false
     }
@@ -190,7 +226,7 @@ class SettingsStore(private val context: Context) {
     }
 
     val postMeetingNotificationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: true
+        prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: false
     }
 
     val postMeetingNotificationOffsetMinutes: Flow<Int> = dataStore.data.map { prefs ->
@@ -201,8 +237,22 @@ class SettingsStore(private val context: Context) {
         prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
     }
 
-    val testerTelemetryEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[TESTER_TELEMETRY_ENABLED] ?: com.brunoafk.calendardnd.util.AppConfig.testerTelemetryDefault
+    val telemetryEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        when {
+            prefs.contains(TELEMETRY_ENABLED) ->
+                prefs[TELEMETRY_ENABLED] ?: com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultEnabled
+            prefs.contains(TESTER_TELEMETRY_ENABLED) ->
+                prefs[TESTER_TELEMETRY_ENABLED] ?: com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultEnabled
+            else -> com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultEnabled
+        }
+    }
+
+    val telemetryLevel: Flow<TelemetryLevel> = dataStore.data.map { prefs ->
+        if (prefs.contains(TELEMETRY_LEVEL)) {
+            TelemetryLevel.fromString(prefs[TELEMETRY_LEVEL])
+        } else {
+            com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultLevel
+        }
     }
 
     val lastSeenUpdateVersion: Flow<String?> = dataStore.data.map { prefs ->
@@ -217,6 +267,7 @@ class SettingsStore(private val context: Context) {
             busyOnly = prefs[BUSY_ONLY] ?: true,
             ignoreAllDay = prefs[IGNORE_ALL_DAY] ?: true,
             minEventMinutes = prefs[MIN_EVENT_MINUTES] ?: 10,
+            requireLocation = prefs[REQUIRE_LOCATION] ?: false,
             dndMode = DndMode.fromString(prefs[DND_MODE] ?: "PRIORITY"),
             dndStartOffsetMinutes = prefs[DND_START_OFFSET_MINUTES] ?: 0,
             preDndNotificationEnabled = prefs[PRE_DND_NOTIFICATION_ENABLED] ?: false,
@@ -224,8 +275,11 @@ class SettingsStore(private val context: Context) {
             requireTitleKeyword = prefs[REQUIRE_TITLE_KEYWORD] ?: false,
             titleKeyword = prefs[TITLE_KEYWORD] ?: "",
             titleKeywordMatchMode = KeywordMatchMode.fromString(prefs[TITLE_KEYWORD_MATCH_MODE]),
+            titleKeywordCaseSensitive = prefs[TITLE_KEYWORD_CASE_SENSITIVE] ?: false,
+            titleKeywordMatchAll = prefs[TITLE_KEYWORD_MATCH_ALL] ?: false,
+            titleKeywordExclude = prefs[TITLE_KEYWORD_EXCLUDE] ?: false,
             crashlyticsOptIn = prefs[CRASHLYTICS_OPT_IN] ?: true,
-            postMeetingNotificationEnabled = prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: true,
+            postMeetingNotificationEnabled = prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: false,
             postMeetingNotificationOffsetMinutes = prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] ?: 0,
             postMeetingNotificationSilent = prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
         )
@@ -275,6 +329,13 @@ class SettingsStore(private val context: Context) {
         logSettingChange("Min event minutes", minutes.toString())
     }
 
+    suspend fun setRequireLocation(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[REQUIRE_LOCATION] = enabled
+        }
+        logSettingChange("Require location", enabled.toString())
+    }
+
     suspend fun setRequireTitleKeyword(enabled: Boolean) {
         dataStore.edit { prefs ->
             prefs[REQUIRE_TITLE_KEYWORD] = enabled
@@ -294,6 +355,27 @@ class SettingsStore(private val context: Context) {
             prefs[TITLE_KEYWORD_MATCH_MODE] = mode.name
         }
         logSettingChange("Title keyword match", mode.name)
+    }
+
+    suspend fun setTitleKeywordCaseSensitive(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[TITLE_KEYWORD_CASE_SENSITIVE] = enabled
+        }
+        logSettingChange("Title keyword case sensitive", enabled.toString())
+    }
+
+    suspend fun setTitleKeywordMatchAll(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[TITLE_KEYWORD_MATCH_ALL] = enabled
+        }
+        logSettingChange("Title keyword match all", enabled.toString())
+    }
+
+    suspend fun setTitleKeywordExclude(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[TITLE_KEYWORD_EXCLUDE] = enabled
+        }
+        logSettingChange("Title keyword exclude", enabled.toString())
     }
 
     suspend fun setDndMode(mode: DndMode) {
@@ -351,11 +433,18 @@ class SettingsStore(private val context: Context) {
         logSettingChange("Post-meeting notification silent", silent.toString())
     }
 
-    suspend fun setTesterTelemetryEnabled(enabled: Boolean) {
+    suspend fun setTelemetryEnabled(enabled: Boolean) {
         dataStore.edit { prefs ->
-            prefs[TESTER_TELEMETRY_ENABLED] = enabled
+            prefs[TELEMETRY_ENABLED] = enabled
         }
-        logSettingChange("Tester telemetry", if (enabled) "enabled" else "disabled")
+        logSettingChange("Telemetry", if (enabled) "enabled" else "disabled")
+    }
+
+    suspend fun setTelemetryLevel(level: TelemetryLevel) {
+        dataStore.edit { prefs ->
+            prefs[TELEMETRY_LEVEL] = level.name
+        }
+        logSettingChange("Telemetry level", level.name)
     }
 
     suspend fun getOrCreateInstallId(): String {
@@ -383,6 +472,30 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setLastDailyPingDate(date: String) {
         dataStore.edit { it[LAST_DAILY_PING_DATE] = date }
+    }
+
+    suspend fun recordAppOpen(nowMs: Long): ReviewPromptState {
+        val prefs = dataStore.data.first()
+        val firstOpenMs = prefs[FIRST_OPEN_MS] ?: nowMs
+        val appOpenCount = (prefs[APP_OPEN_COUNT] ?: 0) + 1
+        val promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false
+        dataStore.edit {
+            it[FIRST_OPEN_MS] = firstOpenMs
+            it[APP_OPEN_COUNT] = appOpenCount
+        }
+        return ReviewPromptState(
+            firstOpenMs = firstOpenMs,
+            appOpenCount = appOpenCount,
+            promptShown = promptShown
+        )
+    }
+
+    suspend fun setReviewPromptShown(shown: Boolean) {
+        dataStore.edit { it[REVIEW_PROMPT_SHOWN] = shown }
+    }
+
+    suspend fun getPreferredLanguageTag(): String {
+        return dataStore.data.first()[PREFERRED_LANGUAGE_TAG].orEmpty()
     }
 
     suspend fun setPreferredLanguageTag(tag: String) {

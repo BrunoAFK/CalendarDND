@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.system.receivers.ExtendDndReceiver
+import com.brunoafk.calendardnd.util.PermissionUtils
 
 /**
  * Shows notification when a meeting runs over scheduled time
@@ -20,6 +21,10 @@ object MeetingOverrunNotificationHelper {
     private const val NOTIFICATION_ID = 1002
 
     fun showOverrunNotification(context: Context, silent: Boolean) {
+        if (!PermissionUtils.hasNotificationPermission(context)) {
+            return
+        }
+
         val channelId = if (silent) CHANNEL_ID_SILENT else CHANNEL_ID
         createNotificationChannel(context, silent)
 

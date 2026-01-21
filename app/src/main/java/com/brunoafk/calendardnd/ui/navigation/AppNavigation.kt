@@ -43,6 +43,7 @@ import com.brunoafk.calendardnd.ui.screens.DebugToolsScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLanguageScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLogSettingsScreen
 import com.brunoafk.calendardnd.ui.screens.DebugSplashPreviewScreen
+import com.brunoafk.calendardnd.ui.screens.TelemetryLevelScreen
 import com.brunoafk.calendardnd.ui.screens.PermissionsScreen
 import com.brunoafk.calendardnd.ui.screens.AboutScreen
 import com.brunoafk.calendardnd.ui.screens.WhatsNewScreen
@@ -80,6 +81,7 @@ object AppRoutes {
     const val DEBUG_LANGUAGE = "debug_language/{tag}"
     const val DEBUG_SPLASH = "debug_splash"
     const val DEBUG_LOG_SETTINGS = "debug_log_settings"
+    const val DEBUG_TELEMETRY_LEVEL = "debug_telemetry_level"
     const val UPDATES = "updates"
     const val UPDATE_HISTORY = "update_history"
     const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
@@ -789,6 +791,10 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_LOG_SETTINGS)
                         },
+                        onOpenTelemetryLevel = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DEBUG_TELEMETRY_LEVEL)
+                        },
                         signatureStatus = signatureStatus
                     )
                 }
@@ -807,6 +813,27 @@ fun AppNavigation(
                     }
                 ) {
                     DebugLogSettingsScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.DEBUG_TELEMETRY_LEVEL) {
+                val route = AppRoutes.DEBUG_TELEMETRY_LEVEL
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    TelemetryLevelScreen(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()

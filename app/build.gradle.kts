@@ -36,9 +36,14 @@ android {
             ?.toBooleanStrictOrNull() ?: false
         buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", debugToolsEnabled.toString())
 
-        val testerTelemetryDefault = (project.findProperty("testerTelemetryDefault") as String?)
-            ?.toBooleanStrictOrNull() ?: false
-        buildConfigField("boolean", "TESTER_TELEMETRY_DEFAULT", testerTelemetryDefault.toString())
+        val telemetryDefaultEnabled = (project.findProperty("telemetryDefaultEnabled") as String?)
+            ?.toBooleanStrictOrNull() ?: true
+        buildConfigField("boolean", "TELEMETRY_DEFAULT_ENABLED", telemetryDefaultEnabled.toString())
+
+        val telemetryDefaultLevel = (project.findProperty("telemetryDefaultLevel") as String?)
+            ?.trim()
+            ?.uppercase() ?: "BASIC"
+        buildConfigField("String", "TELEMETRY_DEFAULT_LEVEL", "\"$telemetryDefaultLevel\"")
 
         // Manual update defaults (override per flavor).
         buildConfigField("boolean", "MANUAL_UPDATE_ENABLED", "false")
@@ -58,7 +63,7 @@ android {
     productFlavors {
         create("play") {
             dimension = "distribution"
-            buildConfigField("boolean", "TESTER_TELEMETRY_DEFAULT", "true")
+            buildConfigField("String", "TELEMETRY_DEFAULT_LEVEL", "\"DETAILED\"")
         }
         create("fdroid") {
             dimension = "distribution"
@@ -120,6 +125,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "Calendar DND (Debug)")
+            buildConfigField("boolean", "TELEMETRY_DEFAULT_ENABLED", "false")
         }
         release {
             isMinifyEnabled = true
@@ -167,6 +173,8 @@ dependencies {
         add("${flavor}Implementation", "com.google.firebase:firebase-messaging")
         add("${flavor}Implementation", "com.google.firebase:firebase-perf")
     }
+    compileOnly("com.google.android.play:review-ktx:2.0.1")
+    add("playImplementation", "com.google.android.play:review-ktx:2.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

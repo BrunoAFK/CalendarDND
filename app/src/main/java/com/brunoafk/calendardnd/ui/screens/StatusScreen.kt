@@ -112,9 +112,13 @@ fun StatusScreen(
     var busyOnly by remember { mutableStateOf(true) }
     var ignoreAllDay by remember { mutableStateOf(true) }
     var minEventMinutes by remember { mutableStateOf(10) }
+    var requireLocation by remember { mutableStateOf(false) }
     var requireTitleKeyword by remember { mutableStateOf(false) }
     var titleKeyword by remember { mutableStateOf("") }
     var titleKeywordMatchMode by remember { mutableStateOf(KeywordMatchMode.KEYWORDS) }
+    var titleKeywordCaseSensitive by remember { mutableStateOf(false) }
+    var titleKeywordMatchAll by remember { mutableStateOf(false) }
+    var titleKeywordExclude by remember { mutableStateOf(false) }
     var onboardingCompleted by remember { mutableStateOf(false) }
     var dndMode by remember { mutableStateOf(DndMode.PRIORITY) }
     var canScheduleExactAlarms by remember {
@@ -153,9 +157,13 @@ fun StatusScreen(
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
                     minEventMinutes = minEventMinutes,
+                    requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
                     titleKeyword = titleKeyword,
-                    titleKeywordMatchMode = titleKeywordMatchMode
+                    titleKeywordMatchMode = titleKeywordMatchMode,
+                    titleKeywordCaseSensitive = titleKeywordCaseSensitive,
+                    titleKeywordMatchAll = titleKeywordMatchAll,
+                    titleKeywordExclude = titleKeywordExclude
                 )
                 val window = MeetingWindowResolver.findActiveWindow(activeInstances, now)
                 val next = calendarRepository.getNextInstance(
@@ -164,9 +172,13 @@ fun StatusScreen(
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
                     minEventMinutes = minEventMinutes,
+                    requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
                     titleKeyword = titleKeyword,
-                    titleKeywordMatchMode = titleKeywordMatchMode
+                    titleKeywordMatchMode = titleKeywordMatchMode,
+                    titleKeywordCaseSensitive = titleKeywordCaseSensitive,
+                    titleKeywordMatchAll = titleKeywordMatchAll,
+                    titleKeywordExclude = titleKeywordExclude
                 )
                 window to next
             }
@@ -292,6 +304,16 @@ fun StatusScreen(
 
     DisposableEffect(Unit) {
         val job = scope.launch {
+            settingsStore.requireLocation.collectLatest { value ->
+                requireLocation = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
             settingsStore.requireTitleKeyword.collectLatest { value ->
                 requireTitleKeyword = value
                 refresh()
@@ -314,6 +336,36 @@ fun StatusScreen(
         val job = scope.launch {
             settingsStore.titleKeywordMatchMode.collectLatest { value ->
                 titleKeywordMatchMode = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.titleKeywordCaseSensitive.collectLatest { value ->
+                titleKeywordCaseSensitive = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.titleKeywordMatchAll.collectLatest { value ->
+                titleKeywordMatchAll = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.titleKeywordExclude.collectLatest { value ->
+                titleKeywordExclude = value
                 refresh()
             }
         }

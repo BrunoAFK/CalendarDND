@@ -175,9 +175,13 @@ class AutomationTileService : TileService() {
                 busyOnly = settings.busyOnly,
                 ignoreAllDay = settings.ignoreAllDay,
                 minEventMinutes = settings.minEventMinutes,
+                requireLocation = settings.requireLocation,
                 requireTitleKeyword = settings.requireTitleKeyword,
                 titleKeyword = settings.titleKeyword,
-                titleKeywordMatchMode = settings.titleKeywordMatchMode
+                titleKeywordMatchMode = settings.titleKeywordMatchMode,
+                titleKeywordCaseSensitive = settings.titleKeywordCaseSensitive,
+                titleKeywordMatchAll = settings.titleKeywordMatchAll,
+                titleKeywordExclude = settings.titleKeywordExclude
             )
 
             nextInstance?.let {
@@ -210,9 +214,13 @@ class AutomationTileService : TileService() {
                 busyOnly = settings.busyOnly,
                 ignoreAllDay = settings.ignoreAllDay,
                 minEventMinutes = settings.minEventMinutes,
+                requireLocation = settings.requireLocation,
                 requireTitleKeyword = settings.requireTitleKeyword,
                 titleKeyword = settings.titleKeyword,
-                titleKeywordMatchMode = settings.titleKeywordMatchMode
+                titleKeywordMatchMode = settings.titleKeywordMatchMode,
+                titleKeywordCaseSensitive = settings.titleKeywordCaseSensitive,
+                titleKeywordMatchAll = settings.titleKeywordMatchAll,
+                titleKeywordExclude = settings.titleKeywordExclude
             )
 
             activeInstances.firstOrNull()?.title?.ifBlank { null }

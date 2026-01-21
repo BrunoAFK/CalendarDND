@@ -31,6 +31,7 @@ import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
+import com.brunoafk.calendardnd.ui.components.SettingsDivider
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import kotlinx.coroutines.launch
@@ -48,6 +49,9 @@ fun EventKeywordFilterScreen(
     val titleKeywordMatchMode by settingsStore.titleKeywordMatchMode.collectAsState(
         initial = KeywordMatchMode.KEYWORDS
     )
+    val titleKeywordCaseSensitive by settingsStore.titleKeywordCaseSensitive.collectAsState(initial = false)
+    val titleKeywordMatchAll by settingsStore.titleKeywordMatchAll.collectAsState(initial = false)
+    val titleKeywordExclude by settingsStore.titleKeywordExclude.collectAsState(initial = false)
     var keywordInput by remember { mutableStateOf(titleKeyword) }
     var modeMenuExpanded by remember { mutableStateOf(false) }
 
@@ -63,16 +67,33 @@ fun EventKeywordFilterScreen(
             runCatching { Regex(keywordInput) }.isFailure
     }
 
-    val inputLabel = if (titleKeywordMatchMode == KeywordMatchMode.REGEX) {
-        stringResource(R.string.event_keyword_filter_regex_label)
-    } else {
-        stringResource(R.string.event_keyword_filter_keywords_label)
+    val inputLabel = when (titleKeywordMatchMode) {
+        KeywordMatchMode.KEYWORDS -> stringResource(R.string.event_keyword_filter_keywords_label)
+        KeywordMatchMode.WHOLE_WORD -> stringResource(R.string.event_keyword_filter_whole_word_label)
+        KeywordMatchMode.STARTS_WITH -> stringResource(R.string.event_keyword_filter_starts_with_label)
+        KeywordMatchMode.ENDS_WITH -> stringResource(R.string.event_keyword_filter_ends_with_label)
+        KeywordMatchMode.EXACT -> stringResource(R.string.event_keyword_filter_exact_label)
+        KeywordMatchMode.REGEX -> stringResource(R.string.event_keyword_filter_regex_label)
     }
-    val inputHelp = if (titleKeywordMatchMode == KeywordMatchMode.REGEX) {
-        stringResource(R.string.event_keyword_filter_regex_help)
-    } else {
-        stringResource(R.string.event_keyword_filter_keywords_help)
+    val inputHelp = when (titleKeywordMatchMode) {
+        KeywordMatchMode.KEYWORDS -> stringResource(R.string.event_keyword_filter_keywords_help)
+        KeywordMatchMode.WHOLE_WORD -> stringResource(R.string.event_keyword_filter_whole_word_help)
+        KeywordMatchMode.STARTS_WITH -> stringResource(R.string.event_keyword_filter_starts_with_help)
+        KeywordMatchMode.ENDS_WITH -> stringResource(R.string.event_keyword_filter_ends_with_help)
+        KeywordMatchMode.EXACT -> stringResource(R.string.event_keyword_filter_exact_help)
+        KeywordMatchMode.REGEX -> stringResource(R.string.event_keyword_filter_regex_help)
     }
+    val inputExamples = when (titleKeywordMatchMode) {
+        KeywordMatchMode.KEYWORDS -> stringResource(R.string.event_keyword_filter_keywords_examples)
+        KeywordMatchMode.WHOLE_WORD -> stringResource(R.string.event_keyword_filter_whole_word_examples)
+        KeywordMatchMode.STARTS_WITH -> stringResource(R.string.event_keyword_filter_starts_with_examples)
+        KeywordMatchMode.ENDS_WITH -> stringResource(R.string.event_keyword_filter_ends_with_examples)
+        KeywordMatchMode.EXACT -> stringResource(R.string.event_keyword_filter_exact_examples)
+        KeywordMatchMode.REGEX -> stringResource(R.string.event_keyword_filter_regex_examples)
+    }
+    val showCaseSensitive = titleKeywordMatchMode != KeywordMatchMode.REGEX
+    val showMatchAll = titleKeywordMatchMode == KeywordMatchMode.KEYWORDS ||
+        titleKeywordMatchMode == KeywordMatchMode.WHOLE_WORD
 
     Scaffold(
         topBar = {
@@ -109,12 +130,18 @@ fun EventKeywordFilterScreen(
                         ) {
                             OutlinedTextField(
                                 value = when (titleKeywordMatchMode) {
-                                    KeywordMatchMode.KEYWORDS -> stringResource(
-                                        R.string.event_keyword_filter_mode_keywords
-                                    )
-                                    KeywordMatchMode.REGEX -> stringResource(
-                                        R.string.event_keyword_filter_mode_regex
-                                    )
+                                    KeywordMatchMode.KEYWORDS ->
+                                        stringResource(R.string.event_keyword_filter_mode_keywords)
+                                    KeywordMatchMode.WHOLE_WORD ->
+                                        stringResource(R.string.event_keyword_filter_mode_whole_word)
+                                    KeywordMatchMode.STARTS_WITH ->
+                                        stringResource(R.string.event_keyword_filter_mode_starts_with)
+                                    KeywordMatchMode.ENDS_WITH ->
+                                        stringResource(R.string.event_keyword_filter_mode_ends_with)
+                                    KeywordMatchMode.EXACT ->
+                                        stringResource(R.string.event_keyword_filter_mode_exact)
+                                    KeywordMatchMode.REGEX ->
+                                        stringResource(R.string.event_keyword_filter_mode_regex)
                                 },
                                 onValueChange = {},
                                 readOnly = true,
@@ -140,6 +167,42 @@ fun EventKeywordFilterScreen(
                                         modeMenuExpanded = false
                                     },
                                     text = { Text(stringResource(R.string.event_keyword_filter_mode_keywords)) }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.WHOLE_WORD)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_whole_word)) }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.STARTS_WITH)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_starts_with)) }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.ENDS_WITH)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_ends_with)) }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        scope.launch {
+                                            settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.EXACT)
+                                        }
+                                        modeMenuExpanded = false
+                                    },
+                                    text = { Text(stringResource(R.string.event_keyword_filter_mode_exact)) }
                                 )
                                 DropdownMenuItem(
                                     onClick = {
@@ -172,11 +235,7 @@ fun EventKeywordFilterScreen(
                         )
                         Spacer(modifier = Modifier.padding(top = 6.dp))
                         Text(
-                            text = if (titleKeywordMatchMode == KeywordMatchMode.REGEX) {
-                                stringResource(R.string.event_keyword_filter_regex_examples)
-                            } else {
-                                stringResource(R.string.event_keyword_filter_keywords_examples)
-                            },
+                            text = inputExamples,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -189,6 +248,43 @@ fun EventKeywordFilterScreen(
                             )
                         }
                     }
+                    SettingsDivider()
+                    if (showCaseSensitive) {
+                        SettingsSwitchRow(
+                            title = stringResource(R.string.event_keyword_filter_case_sensitive_title),
+                            subtitle = stringResource(R.string.event_keyword_filter_case_sensitive_subtitle),
+                            checked = titleKeywordCaseSensitive,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setTitleKeywordCaseSensitive(enabled)
+                                }
+                            }
+                        )
+                        SettingsDivider()
+                    }
+                    if (showMatchAll) {
+                        SettingsSwitchRow(
+                            title = stringResource(R.string.event_keyword_filter_match_all_title),
+                            subtitle = stringResource(R.string.event_keyword_filter_match_all_subtitle),
+                            checked = titleKeywordMatchAll,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setTitleKeywordMatchAll(enabled)
+                                }
+                            }
+                        )
+                        SettingsDivider()
+                    }
+                    SettingsSwitchRow(
+                        title = stringResource(R.string.event_keyword_filter_exclude_title),
+                        subtitle = stringResource(R.string.event_keyword_filter_exclude_subtitle),
+                        checked = titleKeywordExclude,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setTitleKeywordExclude(enabled)
+                            }
+                        }
+                    )
                 }
             }
 

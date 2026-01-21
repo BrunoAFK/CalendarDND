@@ -55,6 +55,7 @@ object EngineRunner {
                 currentFilter
             }
             val perfEnabled = AppConfig.crashlyticsEnabled && settingsSnapshot.crashlyticsOptIn
+            val hasNotifications = PermissionUtils.hasNotificationPermission(context)
 
             // Gather input
             val input = EngineInput(
@@ -65,14 +66,18 @@ object EngineRunner {
                 busyOnly = settingsSnapshot.busyOnly,
                 ignoreAllDay = settingsSnapshot.ignoreAllDay,
                 minEventMinutes = settingsSnapshot.minEventMinutes,
+                requireLocation = settingsSnapshot.requireLocation,
                 dndMode = settingsSnapshot.dndMode,
                 dndStartOffsetMinutes = settingsSnapshot.dndStartOffsetMinutes,
-                preDndNotificationEnabled = settingsSnapshot.preDndNotificationEnabled,
+                preDndNotificationEnabled = settingsSnapshot.preDndNotificationEnabled && hasNotifications,
                 preDndNotificationLeadMinutes = settingsSnapshot.preDndNotificationLeadMinutes,
                 requireTitleKeyword = settingsSnapshot.requireTitleKeyword,
                 titleKeyword = settingsSnapshot.titleKeyword,
                 titleKeywordMatchMode = settingsSnapshot.titleKeywordMatchMode,
-                postMeetingNotificationEnabled = settingsSnapshot.postMeetingNotificationEnabled,
+                titleKeywordCaseSensitive = settingsSnapshot.titleKeywordCaseSensitive,
+                titleKeywordMatchAll = settingsSnapshot.titleKeywordMatchAll,
+                titleKeywordExclude = settingsSnapshot.titleKeywordExclude,
+                postMeetingNotificationEnabled = settingsSnapshot.postMeetingNotificationEnabled && hasNotifications,
                 postMeetingNotificationOffsetMinutes = settingsSnapshot.postMeetingNotificationOffsetMinutes,
                 dndSetByApp = runtimeSnapshot.dndSetByApp,
                 activeWindowEndMs = runtimeSnapshot.activeWindowEndMs,

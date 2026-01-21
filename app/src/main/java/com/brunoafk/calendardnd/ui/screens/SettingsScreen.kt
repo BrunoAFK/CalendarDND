@@ -1,5 +1,6 @@
 package com.brunoafk.calendardnd.ui.screens
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -36,6 +37,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -93,14 +96,51 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     val settingsStore = remember { SettingsStore(context) }
     val dndController = remember { DndController(context) }
+    var hasNotifications by remember {
+        mutableStateOf(PermissionUtils.hasNotificationPermission(context))
+    }
+    var pendingNotificationRequest by remember { mutableStateOf<NotificationPermissionRequest?>(null) }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        val currentHasNotifications = PermissionUtils.hasNotificationPermission(context)
+        hasNotifications = currentHasNotifications
+        val pending = pendingNotificationRequest
+        pendingNotificationRequest = null
+        if (!granted || pending == null) {
+            return@rememberLauncherForActivityResult
+        }
+        scope.launch {
+            when (pending) {
+                NotificationPermissionRequest.PRE_DND -> {
+                    settingsStore.setPreDndNotificationEnabled(true)
+                    settingsStore.setPreDndNotificationUserSet(true)
+                    AnalyticsTracker.logSettingsChanged(
+                        context,
+                        "pre_dnd_notification",
+                        true.toString()
+                    )
+                }
+                NotificationPermissionRequest.POST_MEETING -> {
+                    settingsStore.setPostMeetingNotificationEnabled(true)
+                    AnalyticsTracker.logSettingsChanged(
+                        context,
+                        "post_meeting_notification",
+                        true.toString()
+                    )
+                }
+            }
+        }
+    }
 
     val busyOnly by settingsStore.busyOnly.collectAsState(initial = true)
     val ignoreAllDay by settingsStore.ignoreAllDay.collectAsState(initial = true)
     val minEventMinutes by settingsStore.minEventMinutes.collectAsState(initial = 10)
+    val requireLocation by settingsStore.requireLocation.collectAsState(initial = false)
     val dndMode by settingsStore.dndMode.collectAsState(initial = DndMode.PRIORITY)
     val dndStartOffsetMinutes by settingsStore.dndStartOffsetMinutes.collectAsState(initial = 0)
     val preDndNotificationEnabled by settingsStore.preDndNotificationEnabled.collectAsState(initial = false)
-    val postMeetingNotificationEnabled by settingsStore.postMeetingNotificationEnabled.collectAsState(initial = true)
+    val postMeetingNotificationEnabled by settingsStore.postMeetingNotificationEnabled.collectAsState(initial = false)
     val themeMode by settingsStore.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     val requireTitleKeyword by settingsStore.requireTitleKeyword.collectAsState(initial = false)
     val titleKeywordMatchMode by settingsStore.titleKeywordMatchMode.collectAsState(
@@ -172,6 +212,16 @@ fun SettingsScreen(
 
     LaunchedEffect(Unit) {
         AnalyticsTracker.logScreenView(context, "settings")
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasNotifications = PermissionUtils.hasNotificationPermission(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     val showDebugTools = debugToolsUnlocked
@@ -401,6 +451,24 @@ fun SettingsScreen(
                         }
                     )
                     SettingsDivider()
+                    SettingsSwitchRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.require_location_title),
+                        subtitle = stringResource(
+                            com.brunoafk.calendardnd.R.string.require_location_description
+                        ),
+                        checked = requireLocation,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setRequireLocation(enabled)
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "require_location",
+                                    enabled.toString()
+                                )
+                            }
+                        }
+                    )
+                    SettingsDivider()
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             stringResource(com.brunoafk.calendardnd.R.string.min_duration_title),
@@ -455,6 +523,18 @@ fun SettingsScreen(
                             when (titleKeywordMatchMode) {
                                 KeywordMatchMode.KEYWORDS -> stringResource(
                                     com.brunoafk.calendardnd.R.string.event_keyword_filter_value_keywords
+                                )
+                                KeywordMatchMode.WHOLE_WORD -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_whole_words
+                                )
+                                KeywordMatchMode.STARTS_WITH -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_starts_with
+                                )
+                                KeywordMatchMode.ENDS_WITH -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_ends_with
+                                )
+                                KeywordMatchMode.EXACT -> stringResource(
+                                    com.brunoafk.calendardnd.R.string.event_keyword_filter_value_exact
                                 )
                                 KeywordMatchMode.REGEX -> stringResource(
                                     com.brunoafk.calendardnd.R.string.event_keyword_filter_value_regex
@@ -523,8 +603,13 @@ fun SettingsScreen(
                     SettingsSwitchRow(
                         title = stringResource(com.brunoafk.calendardnd.R.string.pre_dnd_notification_setting_title),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.pre_dnd_notification_setting),
-                        checked = preDndNotificationEnabled,
+                        checked = hasNotifications && preDndNotificationEnabled,
                         onCheckedChange = { enabled ->
+                            if (enabled && !PermissionUtils.hasNotificationPermission(context)) {
+                                pendingNotificationRequest = NotificationPermissionRequest.PRE_DND
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                return@SettingsSwitchRow
+                            }
                             scope.launch {
                                 settingsStore.setPreDndNotificationEnabled(enabled)
                                 settingsStore.setPreDndNotificationUserSet(true)
@@ -540,8 +625,13 @@ fun SettingsScreen(
                     SettingsSwitchRow(
                         title = stringResource(com.brunoafk.calendardnd.R.string.post_meeting_notification_title),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.post_meeting_notification_subtitle),
-                        checked = postMeetingNotificationEnabled,
+                        checked = hasNotifications && postMeetingNotificationEnabled,
                         onCheckedChange = { enabled ->
+                            if (enabled && !PermissionUtils.hasNotificationPermission(context)) {
+                                pendingNotificationRequest = NotificationPermissionRequest.POST_MEETING
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                return@SettingsSwitchRow
+                            }
                             scope.launch {
                                 settingsStore.setPostMeetingNotificationEnabled(enabled)
                                 AnalyticsTracker.logSettingsChanged(
@@ -647,6 +737,12 @@ fun SettingsScreen(
         }
     }
 }
+
+}
+
+private enum class NotificationPermissionRequest {
+    PRE_DND,
+    POST_MEETING
 }
 
 

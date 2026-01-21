@@ -43,9 +43,13 @@ class AutomationEngine(
             busyOnly = input.busyOnly,
             ignoreAllDay = input.ignoreAllDay,
             minEventMinutes = input.minEventMinutes,
+            requireLocation = input.requireLocation,
             requireTitleKeyword = input.requireTitleKeyword,
             titleKeyword = input.titleKeyword,
-            titleKeywordMatchMode = input.titleKeywordMatchMode
+            titleKeywordMatchMode = input.titleKeywordMatchMode,
+            titleKeywordCaseSensitive = input.titleKeywordCaseSensitive,
+            titleKeywordMatchAll = input.titleKeywordMatchAll,
+            titleKeywordExclude = input.titleKeywordExclude
         )
 
         val activeWindow = MeetingWindowResolver.findActiveWindow(instancesAroundNow, now)
@@ -56,9 +60,13 @@ class AutomationEngine(
             input.busyOnly,
             input.ignoreAllDay,
             input.minEventMinutes,
+            input.requireLocation,
             input.requireTitleKeyword,
             input.titleKeyword,
-            input.titleKeywordMatchMode
+            input.titleKeywordMatchMode,
+            input.titleKeywordCaseSensitive,
+            input.titleKeywordMatchAll,
+            input.titleKeywordExclude
         )
 
         val dndWindow = resolveDndWindow(

@@ -42,8 +42,10 @@ import com.brunoafk.calendardnd.util.ExternalLinkPolicy
 import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.lifecycleScope
 import com.brunoafk.calendardnd.util.UmamiTelemetry
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             UmamiTelemetry.trackAppOpenIfEnabled(this@MainActivity)
         }
+        maybeRequestReview()
 
         setContent {
             val baseContext = LocalContext.current
@@ -203,6 +206,39 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun maybeRequestReview() {
+        if (BuildConfig.FLAVOR != "play" || BuildConfig.DEBUG) {
+            return
+        }
+        val settingsStore = SettingsStore(this)
+        lifecycleScope.launch {
+            val nowMs = System.currentTimeMillis()
+            val state = withContext(Dispatchers.IO) {
+                settingsStore.recordAppOpen(nowMs)
+            }
+            if (state.promptShown) {
+                return@launch
+            }
+            val daysSinceFirstOpen = nowMs - state.firstOpenMs
+            val threeDaysMs = 3L * 24 * 60 * 60 * 1000
+            if (state.appOpenCount < 5 || daysSinceFirstOpen < threeDaysMs) {
+                return@launch
+            }
+            withContext(Dispatchers.IO) {
+                settingsStore.setReviewPromptShown(true)
+            }
+            val manager = ReviewManagerFactory.create(this@MainActivity)
+            manager.requestReviewFlow().addOnCompleteListener { requestTask ->
+                if (!requestTask.isSuccessful) {
+                    return@addOnCompleteListener
+                }
+                val reviewInfo = requestTask.result
+                manager.launchReviewFlow(this@MainActivity, reviewInfo)
+                    .addOnCompleteListener { }
             }
         }
     }

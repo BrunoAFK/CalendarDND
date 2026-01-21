@@ -3,8 +3,10 @@ package com.brunoafk.calendardnd.util
 import android.content.Context
 import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
+import com.brunoafk.calendardnd.domain.model.TelemetryLevel
 import kotlinx.coroutines.flow.first
 import org.json.JSONObject
+import android.os.Build
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -19,8 +21,14 @@ object UmamiTelemetry {
 
     suspend fun trackAppOpenIfEnabled(context: Context) {
         val settingsStore = SettingsStore(context)
-        if (!settingsStore.testerTelemetryEnabled.first()) {
+        if (!settingsStore.telemetryEnabled.first()) {
             return
+        }
+        val telemetryLevel = settingsStore.telemetryLevel.first()
+        val appLanguage = if (telemetryLevel == TelemetryLevel.DETAILED) {
+            settingsStore.getPreferredLanguageTag().ifBlank { "system" }
+        } else {
+            null
         }
         val baseUrl = AppConfig.umamiBaseUrl.trim().trimEnd('/')
         val websiteId = AppConfig.umamiWebsiteId.trim()
@@ -31,7 +39,7 @@ object UmamiTelemetry {
         val installId = settingsStore.getOrCreateInstallId()
 
         if (!settingsStore.getInstallPingSent()) {
-            if (sendEvent(baseUrl, websiteId, installId, INSTALL_EVENT)) {
+            if (sendEvent(baseUrl, websiteId, installId, telemetryLevel, appLanguage, INSTALL_EVENT)) {
                 settingsStore.setInstallPingSent(true)
             }
         }
@@ -39,7 +47,7 @@ object UmamiTelemetry {
         val today = LocalDate.now(ZoneId.systemDefault()).toString()
         val lastDaily = settingsStore.getLastDailyPingDate()
         if (lastDaily != today) {
-            if (sendEvent(baseUrl, websiteId, installId, DAILY_EVENT)) {
+            if (sendEvent(baseUrl, websiteId, installId, telemetryLevel, appLanguage, DAILY_EVENT)) {
                 settingsStore.setLastDailyPingDate(today)
             }
         }
@@ -49,23 +57,36 @@ object UmamiTelemetry {
         baseUrl: String,
         websiteId: String,
         installId: String,
+        telemetryLevel: TelemetryLevel,
+        appLanguage: String?,
         eventName: String
     ): Boolean {
+        val deviceLanguage = Locale.getDefault().toLanguageTag()
+        val dataPayload = JSONObject()
+            .put("install_id", installId)
+            .put("app_version", BuildConfig.VERSION_NAME)
+            .put("device_language", deviceLanguage)
+            .put("flavor", BuildConfig.FLAVOR)
+
+        if (telemetryLevel == TelemetryLevel.DETAILED) {
+            dataPayload
+                .put("app_language", appLanguage ?: "system")
+                .put("os_version", Build.VERSION.RELEASE ?: "")
+                .put("sdk_int", Build.VERSION.SDK_INT)
+                .put("manufacturer", Build.MANUFACTURER ?: "")
+                .put("model", Build.MODEL ?: "")
+        }
+
         val payload = JSONObject()
             .put("website", websiteId)
             .put("hostname", "app")
-            .put("language", Locale.getDefault().language)
+            .put("language", deviceLanguage)
             .put("referrer", "")
             .put("screen", "0x0")
             .put("title", "Calendar DND")
             .put("url", "/$eventName")
             .put("name", eventName)
-            .put(
-                "data",
-                JSONObject()
-                    .put("install_id", installId)
-                    .put("app_version", BuildConfig.VERSION_NAME)
-            )
+            .put("data", dataPayload)
 
         val body = JSONObject()
             .put("type", "event")

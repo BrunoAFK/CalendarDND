@@ -19,9 +19,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: KeywordMatchMode
+        titleKeywordMatchMode: KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): List<EventInstance> {
         val windowStart = now - ACTIVE_INSTANCES_WINDOW_MS
         val windowEnd = now + ACTIVE_INSTANCES_WINDOW_MS
@@ -42,9 +46,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                         busyOnly,
                         ignoreAllDay,
                         minEventMinutes,
+                        requireLocation,
                         requireTitleKeyword,
                         titleKeyword,
-                        titleKeywordMatchMode
+                        titleKeywordMatchMode,
+                        titleKeywordCaseSensitive,
+                        titleKeywordMatchAll,
+                        titleKeywordExclude
                     )
         }
     }
@@ -59,9 +67,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: KeywordMatchMode
+        titleKeywordMatchMode: KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): EventInstance? {
         val windowEnd = now + NEXT_INSTANCE_LOOKAHEAD_MS
 
@@ -82,9 +94,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                             busyOnly,
                             ignoreAllDay,
                             minEventMinutes,
+                            requireLocation,
                             requireTitleKeyword,
                             titleKeyword,
-                            titleKeywordMatchMode
+                            titleKeywordMatchMode,
+                            titleKeywordCaseSensitive,
+                            titleKeywordMatchAll,
+                            titleKeywordExclude
                         )
             }
             .minByOrNull { it.begin }
@@ -101,9 +117,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: KeywordMatchMode
+        titleKeywordMatchMode: KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): List<EventInstance> {
         val allInstances = CalendarQueries.queryInstances(
             context,
@@ -118,9 +138,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                 busyOnly,
                 ignoreAllDay,
                 minEventMinutes,
+                requireLocation,
                 requireTitleKeyword,
                 titleKeyword,
-                titleKeywordMatchMode
+                titleKeywordMatchMode,
+                titleKeywordCaseSensitive,
+                titleKeywordMatchAll,
+                titleKeywordExclude
             )
         }
     }
@@ -141,9 +165,13 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         minEventMinutes: Int,
+        requireLocation: Boolean,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        titleKeywordMatchMode: KeywordMatchMode
+        titleKeywordMatchMode: KeywordMatchMode,
+        titleKeywordCaseSensitive: Boolean,
+        titleKeywordMatchAll: Boolean,
+        titleKeywordExclude: Boolean
     ): Boolean {
         // Calendar filter (empty selection means "all calendars")
         if (selectedCalendarIds.isNotEmpty() &&
@@ -166,7 +194,20 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             return false
         }
 
-        if (!matchesTitleKeyword(instance.title, requireTitleKeyword, titleKeyword, titleKeywordMatchMode)) {
+        if (requireLocation && instance.location.isBlank()) {
+            return false
+        }
+
+        if (!matchesTitleKeyword(
+                instance.title,
+                requireTitleKeyword,
+                titleKeyword,
+                titleKeywordMatchMode,
+                titleKeywordCaseSensitive,
+                titleKeywordMatchAll,
+                titleKeywordExclude
+            )
+        ) {
             return false
         }
 
@@ -177,7 +218,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         title: String,
         requireTitleKeyword: Boolean,
         titleKeyword: String,
-        matchMode: KeywordMatchMode
+        matchMode: KeywordMatchMode,
+        caseSensitive: Boolean,
+        matchAll: Boolean,
+        excludeMatches: Boolean
     ): Boolean {
         if (!requireTitleKeyword) {
             return true
@@ -191,7 +235,10 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
             title,
             requireTitleKeyword,
             pattern,
-            matchMode
+            matchMode,
+            caseSensitive,
+            matchAll,
+            excludeMatches
         )
     }
 }
@@ -200,7 +247,10 @@ internal fun matchesTitleKeyword(
     title: String,
     requireTitleKeyword: Boolean,
     titleKeyword: String,
-    matchMode: KeywordMatchMode
+    matchMode: KeywordMatchMode,
+    caseSensitive: Boolean,
+    matchAll: Boolean,
+    excludeMatches: Boolean
 ): Boolean {
     if (!requireTitleKeyword) {
         return true
@@ -210,18 +260,71 @@ internal fun matchesTitleKeyword(
         return false
     }
 
-    return when (matchMode) {
+    val normalizedTitle = if (caseSensitive) title else title.lowercase()
+    val effectiveMatchAll = matchAll && (
+        matchMode == KeywordMatchMode.KEYWORDS || matchMode == KeywordMatchMode.WHOLE_WORD
+    )
+    val keywords = pattern
+        .split(",", "\n")
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+    val matches = when (matchMode) {
         KeywordMatchMode.KEYWORDS -> {
-            val keywords = pattern
-                .split(",", "\n")
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
             if (keywords.isEmpty()) {
                 false
             } else {
-                keywords.any { keyword ->
-                    title.contains(keyword, ignoreCase = true)
+                val keywordMatches = keywords.map { keyword ->
+                    val normalizedKeyword = if (caseSensitive) keyword else keyword.lowercase()
+                    normalizedTitle.contains(normalizedKeyword)
                 }
+                if (effectiveMatchAll) keywordMatches.all { it } else keywordMatches.any { it }
+            }
+        }
+        KeywordMatchMode.WHOLE_WORD -> {
+            if (keywords.isEmpty()) {
+                false
+            } else {
+                val keywordMatches = keywords.map { keyword ->
+                    val regex = Regex(
+                        "\\b${Regex.escape(keyword)}\\b",
+                        if (caseSensitive) emptySet() else setOf(RegexOption.IGNORE_CASE)
+                    )
+                    regex.containsMatchIn(title)
+                }
+                if (effectiveMatchAll) keywordMatches.all { it } else keywordMatches.any { it }
+            }
+        }
+        KeywordMatchMode.STARTS_WITH -> {
+            if (keywords.isEmpty()) {
+                false
+            } else {
+                val keywordMatches = keywords.map { keyword ->
+                    val normalizedKeyword = if (caseSensitive) keyword else keyword.lowercase()
+                    normalizedTitle.startsWith(normalizedKeyword)
+                }
+                keywordMatches.any { it }
+            }
+        }
+        KeywordMatchMode.ENDS_WITH -> {
+            if (keywords.isEmpty()) {
+                false
+            } else {
+                val keywordMatches = keywords.map { keyword ->
+                    val normalizedKeyword = if (caseSensitive) keyword else keyword.lowercase()
+                    normalizedTitle.endsWith(normalizedKeyword)
+                }
+                keywordMatches.any { it }
+            }
+        }
+        KeywordMatchMode.EXACT -> {
+            if (keywords.isEmpty()) {
+                false
+            } else {
+                val keywordMatches = keywords.map { keyword ->
+                    val normalizedKeyword = if (caseSensitive) keyword else keyword.lowercase()
+                    normalizedTitle == normalizedKeyword
+                }
+                keywordMatches.any { it }
             }
         }
         KeywordMatchMode.REGEX -> {
@@ -229,4 +332,5 @@ internal fun matchesTitleKeyword(
             regex.containsMatchIn(title)
         }
     }
+    return if (excludeMatches) !matches else matches
 }

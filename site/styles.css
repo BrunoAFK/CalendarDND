@@ -1,19 +1,52 @@
+/* Local Inter Font */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('fonts/Inter-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('fonts/Inter-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/Inter-Bold.woff2') format('woff2');
+}
+
 /* CSS Variables for Light/Dark Theme */
 :root {
-    /* Light theme (default) */
+    /* Light theme - logo base with purple/blue accents */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #ededed;
+    --text-primary: #1b1b1b;
+    --text-secondary: #4a4a4a;
+    --text-muted: #888888;
     --accent: #6366f1;
     --accent-hover: #4f46e5;
     --accent-light: #e0e7ff;
-    --border: #e2e8f0;
+    --border: #e0e0e0;
     --shadow: rgba(0, 0, 0, 0.1);
     --shadow-lg: rgba(0, 0, 0, 0.15);
-    --phone-frame: #1a1a1a;
+    --phone-frame: #1b1b1b;
     --phone-frame-inner: #2a2a2a;
     --card-bg: #ffffff;
     --gradient-start: #6366f1;
@@ -21,21 +54,22 @@
 }
 
 [data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
+    /* Dark theme - logo base with purple/blue accents */
+    --bg-primary: #1b1b1b;
+    --bg-secondary: #252525;
+    --bg-tertiary: #333333;
+    --text-primary: #ededed;
+    --text-secondary: #c0c0c0;
+    --text-muted: #888888;
     --accent: #818cf8;
     --accent-hover: #a5b4fc;
     --accent-light: #312e81;
-    --border: #334155;
+    --border: #404040;
     --shadow: rgba(0, 0, 0, 0.3);
     --shadow-lg: rgba(0, 0, 0, 0.4);
     --phone-frame: #000000;
-    --phone-frame-inner: #1a1a1a;
-    --card-bg: #1e293b;
+    --phone-frame-inner: #1b1b1b;
+    --card-bg: #252525;
     --gradient-start: #818cf8;
     --gradient-end: #a78bfa;
 }
@@ -159,21 +193,27 @@ body {
     justify-content: center;
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    background: #1b1b1b;
     border-radius: 28px;
     margin-bottom: 2rem;
-    color: white;
+    color: #ededed;
     box-shadow: 0 20px 40px var(--shadow-lg);
+}
+
+[data-theme="dark"] .app-icon {
+    background: #ededed;
+    color: #1b1b1b;
 }
 
 .hero h1 {
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 700;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1b1b1b;
+}
+
+[data-theme="dark"] .hero h1 {
+    color: #ffffff;
 }
 
 .tagline {

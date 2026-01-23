@@ -427,6 +427,8 @@
     <string name="debug_tools_telemetry_level_detailed_subtitle">Temel\'e ek olarak uygulama dili, OS surumu, uretici, model.</string>
     <string name="debug_tools_logs_subtitle">Ne olduğunu görmek için otomasyon motoru günlüklerini görüntüle</string>
     <string name="debug_tools_engine_section_title">Otomasyon motoru</string>
+    <string name="debug_tools_next_check_title">Sonraki planlı kontrol</string>
+    <string name="debug_tools_next_check_unset">Henüz planlanmadı</string>
     <string name="debug_tools_reviews_title">Play Store</string>
     <string name="debug_tools_reviews_force_title">Yorumu zorla goster</string>
     <string name="debug_tools_reviews_force_subtitle">Uygulama ici yorum dialogunu simdi goster.</string>

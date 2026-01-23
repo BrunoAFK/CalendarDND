@@ -584,6 +584,8 @@
     <string name="debug_tools_force_update_title">强制更新</string>
     <string name="debug_tools_force_update_subtitle">下载并启动最新版本的安装程序</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_next_check_title">下一次计划检查</string>
+    <string name="debug_tools_next_check_unset">尚未计划</string>
     <string name="debug_tools_reviews_title">Play Store</string>
     <string name="debug_tools_reviews_force_title">强制显示评价</string>
     <string name="debug_tools_reviews_force_subtitle">立即显示应用内评价对话框。</string>

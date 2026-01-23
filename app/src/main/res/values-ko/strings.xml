@@ -528,6 +528,8 @@
     <string name="debug_tools_force_update_title">강제 업데이트</string>
     <string name="debug_tools_force_update_subtitle">최신 릴리스의 설치 프로그램을 다운로드해 실행합니다</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_next_check_title">다음 예약된 점검</string>
+    <string name="debug_tools_next_check_unset">아직 예약되지 않음</string>
     <string name="debug_tools_reviews_title">Play Store</string>
     <string name="debug_tools_reviews_force_title">리뷰 강제 표시</string>
     <string name="debug_tools_reviews_force_subtitle">인앱 리뷰 대화상자를 지금 표시합니다.</string>

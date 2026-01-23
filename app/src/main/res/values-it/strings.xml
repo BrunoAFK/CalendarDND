@@ -528,6 +528,8 @@
     <string name="debug_tools_force_update_title">Forza aggiornamento</string>
     <string name="debug_tools_force_update_subtitle">Scarica e avvia l\'installer per l\'ultima release</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_next_check_title">Prossimo controllo pianificato</string>
+    <string name="debug_tools_next_check_unset">Non ancora pianificato</string>
     <string name="debug_tools_reviews_title">Play Store</string>
     <string name="debug_tools_reviews_force_title">Forza recensione</string>
     <string name="debug_tools_reviews_force_subtitle">Mostra ora il dialogo di recensione in-app.</string>

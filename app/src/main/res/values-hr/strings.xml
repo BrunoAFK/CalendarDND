@@ -528,6 +528,8 @@
     <string name="debug_tools_force_update_title">Prisili ažuriranje</string>
     <string name="debug_tools_force_update_subtitle">Preuzmi i pokreni instalacijski program za najnovije izdanje</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_next_check_title">Sljedeća zakazana provjera</string>
+    <string name="debug_tools_next_check_unset">Još nije zakazano</string>
     <string name="debug_tools_reviews_title">Play Store</string>
     <string name="debug_tools_reviews_force_title">Prisili recenziju</string>
     <string name="debug_tools_reviews_force_subtitle">Prikazi in-app dijalog za recenziju sada.</string>

@@ -18,6 +18,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
+        skipRecurring: Boolean,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -45,6 +46,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                         selectedCalendarIds,
                         busyOnly,
                         ignoreAllDay,
+                        skipRecurring,
                         minEventMinutes,
                         requireLocation,
                         requireTitleKeyword,
@@ -66,6 +68,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
+        skipRecurring: Boolean,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -88,14 +91,15 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                 // Must start in the future
                 instance.begin > now &&
                         // Apply filters
-                        isRelevantInstance(
-                            instance,
-                            selectedCalendarIds,
-                            busyOnly,
-                            ignoreAllDay,
-                            minEventMinutes,
-                            requireLocation,
-                            requireTitleKeyword,
+                    isRelevantInstance(
+                        instance,
+                        selectedCalendarIds,
+                        busyOnly,
+                        ignoreAllDay,
+                        skipRecurring,
+                        minEventMinutes,
+                        requireLocation,
+                        requireTitleKeyword,
                             titleKeyword,
                             titleKeywordMatchMode,
                             titleKeywordCaseSensitive,
@@ -116,6 +120,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
+        skipRecurring: Boolean,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -137,6 +142,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                 selectedCalendarIds,
                 busyOnly,
                 ignoreAllDay,
+                skipRecurring,
                 minEventMinutes,
                 requireLocation,
                 requireTitleKeyword,
@@ -164,6 +170,7 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         selectedCalendarIds: Set<String>,
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
+        skipRecurring: Boolean,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -186,6 +193,11 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
 
         // Busy-only filter
         if (busyOnly && instance.availability != CalendarContract.Events.AVAILABILITY_BUSY) {
+            return false
+        }
+
+        // Recurring filter
+        if (skipRecurring && instance.isRecurring) {
             return false
         }
 

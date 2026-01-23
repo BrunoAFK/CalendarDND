@@ -103,6 +103,8 @@
     <string name="busy_only_description">Ignora eventi liberi/da definire</string>
     <string name="ignore_allday_title">Ignora eventi di tutto il giorno</string>
     <string name="ignore_allday_description">Non attivare DND per eventi di tutto il giorno</string>
+    <string name="skip_recurring_title">Salta eventi ricorrenti</string>
+    <string name="skip_recurring_description">Non attivare DND per eventi ricorrenti</string>
     <string name="require_location_title">Posizione richiesta</string>
     <string name="require_location_description">Attiva DND solo quando l\'evento ha una posizione.</string>
     <string name="min_duration_title">Durata minima evento</string>

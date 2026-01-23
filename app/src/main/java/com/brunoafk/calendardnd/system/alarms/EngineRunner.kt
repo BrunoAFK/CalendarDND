@@ -65,6 +65,7 @@ object EngineRunner {
                 selectedCalendarIds = settingsSnapshot.selectedCalendarIds,
                 busyOnly = settingsSnapshot.busyOnly,
                 ignoreAllDay = settingsSnapshot.ignoreAllDay,
+                skipRecurring = settingsSnapshot.skipRecurring,
                 minEventMinutes = settingsSnapshot.minEventMinutes,
                 requireLocation = settingsSnapshot.requireLocation,
                 dndMode = settingsSnapshot.dndMode,

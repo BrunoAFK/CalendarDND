@@ -16,6 +16,7 @@ data class EngineInput(
     val selectedCalendarIds: Set<String>,
     val busyOnly: Boolean,
     val ignoreAllDay: Boolean,
+    val skipRecurring: Boolean,
     val minEventMinutes: Int,
     val requireLocation: Boolean,
     val dndMode: DndMode,

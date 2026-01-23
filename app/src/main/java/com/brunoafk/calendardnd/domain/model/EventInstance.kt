@@ -12,7 +12,8 @@ data class EventInstance(
     val begin: Long,
     val end: Long,
     val allDay: Boolean,
-    val availability: Int
+    val availability: Int,
+    val isRecurring: Boolean = false
 ) {
     val durationMinutes: Long
         get() = (end - begin) / 60_000L

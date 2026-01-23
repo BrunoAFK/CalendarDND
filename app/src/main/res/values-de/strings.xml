@@ -103,6 +103,8 @@
     <string name="busy_only_description">Freie/vorläufige Termine ignorieren</string>
     <string name="ignore_allday_title">Ganztägige Termine ignorieren</string>
     <string name="ignore_allday_description">DND nicht für ganztägige Termine auslösen</string>
+    <string name="skip_recurring_title">Wiederkehrende Termine überspringen</string>
+    <string name="skip_recurring_description">DND nicht für wiederkehrende Termine auslösen</string>
     <string name="require_location_title">Ort erforderlich</string>
     <string name="require_location_description">Nur DND auslösen, wenn ein Termin einen Ort hat.</string>
     <string name="min_duration_title">Minimale Termindauer</string>

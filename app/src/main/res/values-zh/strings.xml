@@ -106,6 +106,8 @@
     <string name="busy_only_description">忽略空闲/暂定事件</string>
     <string name="ignore_allday_title">忽略全天事件</string>
     <string name="ignore_allday_description">全天事件不触发免打扰</string>
+    <string name="skip_recurring_title">跳过重复事件</string>
+    <string name="skip_recurring_description">重复事件不触发免打扰</string>
     <string name="require_location_title">需要位置</string>
     <string name="require_location_description">仅在事件包含位置时触发 DND。</string>
     <string name="min_duration_title">最短事件时长</string>

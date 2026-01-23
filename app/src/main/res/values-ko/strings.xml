@@ -103,6 +103,8 @@
     <string name="busy_only_description">비어 있음/임시 이벤트 무시</string>
     <string name="ignore_allday_title">하루 종일 이벤트 무시</string>
     <string name="ignore_allday_description">하루 종일 이벤트로는 DND를 켜지 않음</string>
+    <string name="skip_recurring_title">반복 일정 무시</string>
+    <string name="skip_recurring_description">반복 일정은 DND를 켜지 않음</string>
     <string name="require_location_title">위치 필요</string>
     <string name="require_location_description">이벤트에 위치가 있을 때만 DND를 실행합니다.</string>
     <string name="min_duration_title">최소 이벤트 길이</string>

@@ -135,6 +135,7 @@ fun SettingsScreen(
 
     val busyOnly by settingsStore.busyOnly.collectAsState(initial = true)
     val ignoreAllDay by settingsStore.ignoreAllDay.collectAsState(initial = true)
+    val skipRecurring by settingsStore.skipRecurring.collectAsState(initial = false)
     val minEventMinutes by settingsStore.minEventMinutes.collectAsState(initial = 10)
     val requireLocation by settingsStore.requireLocation.collectAsState(initial = false)
     val dndMode by settingsStore.dndMode.collectAsState(initial = DndMode.PRIORITY)
@@ -445,6 +446,22 @@ fun SettingsScreen(
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
                                     "ignore_all_day",
+                                    enabled.toString()
+                                )
+                            }
+                        }
+                    )
+                    SettingsDivider()
+                    SettingsSwitchRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.skip_recurring_title),
+                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.skip_recurring_description),
+                        checked = skipRecurring,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setSkipRecurring(enabled)
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "skip_recurring",
                                     enabled.toString()
                                 )
                             }

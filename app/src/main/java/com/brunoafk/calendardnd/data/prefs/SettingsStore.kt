@@ -26,6 +26,7 @@ class SettingsStore(private val context: Context) {
         private val SELECTED_CALENDAR_IDS = stringSetPreferencesKey("selected_calendar_ids")
         private val BUSY_ONLY = booleanPreferencesKey("busy_only")
         private val IGNORE_ALL_DAY = booleanPreferencesKey("ignore_all_day")
+        private val SKIP_RECURRING = booleanPreferencesKey("skip_recurring")
         private val MIN_EVENT_MINUTES = intPreferencesKey("min_event_minutes")
         private val REQUIRE_LOCATION = booleanPreferencesKey("require_location")
         private val DND_MODE = stringPreferencesKey("dnd_mode")
@@ -77,6 +78,7 @@ class SettingsStore(private val context: Context) {
         val selectedCalendarIds: Set<String>,
         val busyOnly: Boolean,
         val ignoreAllDay: Boolean,
+        val skipRecurring: Boolean,
         val minEventMinutes: Int,
         val requireLocation: Boolean,
         val dndMode: DndMode,
@@ -115,6 +117,10 @@ class SettingsStore(private val context: Context) {
 
     val ignoreAllDay: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[IGNORE_ALL_DAY] ?: true
+    }
+
+    val skipRecurring: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[SKIP_RECURRING] ?: false
     }
 
     val minEventMinutes: Flow<Int> = dataStore.data.map { prefs ->
@@ -266,6 +272,7 @@ class SettingsStore(private val context: Context) {
             selectedCalendarIds = prefs[SELECTED_CALENDAR_IDS] ?: emptySet(),
             busyOnly = prefs[BUSY_ONLY] ?: true,
             ignoreAllDay = prefs[IGNORE_ALL_DAY] ?: true,
+            skipRecurring = prefs[SKIP_RECURRING] ?: false,
             minEventMinutes = prefs[MIN_EVENT_MINUTES] ?: 10,
             requireLocation = prefs[REQUIRE_LOCATION] ?: false,
             dndMode = DndMode.fromString(prefs[DND_MODE] ?: "PRIORITY"),
@@ -320,6 +327,13 @@ class SettingsStore(private val context: Context) {
             prefs[IGNORE_ALL_DAY] = enabled
         }
         logSettingChange("Ignore all-day", enabled.toString())
+    }
+
+    suspend fun setSkipRecurring(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[SKIP_RECURRING] = enabled
+        }
+        logSettingChange("Skip recurring", enabled.toString())
     }
 
     suspend fun setMinEventMinutes(minutes: Int) {

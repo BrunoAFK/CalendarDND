@@ -30,6 +30,7 @@ import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.dnd.DndController
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogStore
+import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.Trigger
@@ -38,10 +39,12 @@ import com.brunoafk.calendardnd.system.notifications.DndNotificationHelper
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.components.SettingsDivider
+import com.brunoafk.calendardnd.ui.components.SettingsInfoRow
 import com.brunoafk.calendardnd.ui.components.SettingsNavigationRow
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import com.brunoafk.calendardnd.ui.components.PersistentWarningBanner
+import com.brunoafk.calendardnd.util.TimeUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -64,6 +67,7 @@ fun DebugToolsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settingsStore = remember { SettingsStore(context) }
+    val runtimeStateStore = remember { RuntimeStateStore(context) }
     val dndController = remember { DndController(context) }
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
@@ -77,6 +81,9 @@ fun DebugToolsScreen(
     val totalSilenceDialogEnabled by settingsStore.totalSilenceDialogEnabled.collectAsState(
         initial = true
     )
+    val lastPlannedBoundaryMs by runtimeStateStore.lastPlannedBoundaryMs.collectAsState(
+        initial = 0L
+    )
     val testNotificationTitle = stringResource(R.string.debug_tools_test_notification_title)
     val testNotificationSubtitle = stringResource(R.string.debug_tools_test_notification_subtitle)
     val dndPreviewSubtitle = stringResource(
@@ -88,6 +95,11 @@ fun DebugToolsScreen(
             stringResource(R.string.debug_tools_telemetry_level_basic_title)
         com.brunoafk.calendardnd.domain.model.TelemetryLevel.DETAILED ->
             stringResource(R.string.debug_tools_telemetry_level_detailed_title)
+    }
+    val nextCheckLabel = if (lastPlannedBoundaryMs > 0L) {
+        TimeUtils.formatDateTime(context, lastPlannedBoundaryMs)
+    } else {
+        stringResource(R.string.debug_tools_next_check_unset)
     }
     val languages = listOf(
         "en" to stringResource(R.string.language_english).ifBlank { "English" },
@@ -220,6 +232,11 @@ fun DebugToolsScreen(
             item {
                 SettingsSection(title = stringResource(R.string.debug_tools_engine_section_title)) {
                     Column {
+                        SettingsInfoRow(
+                            title = stringResource(R.string.debug_tools_next_check_title),
+                            subtitle = nextCheckLabel
+                        )
+                        SettingsDivider()
                         SettingsNavigationRow(
                             title = stringResource(R.string.debug_tools_dry_run_title),
                             subtitle = stringResource(R.string.debug_tools_dry_run_subtitle),

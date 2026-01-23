@@ -106,6 +106,8 @@
     <string name="busy_only_description">Ignore free/tentative events</string>
     <string name="ignore_allday_title">Ignore All-Day Events</string>
     <string name="ignore_allday_description">Don\'t trigger DND for all-day events</string>
+    <string name="skip_recurring_title">Skip Recurring Events</string>
+    <string name="skip_recurring_description">Don\'t trigger DND for recurring events</string>
     <string name="require_location_title">Location Required</string>
     <string name="require_location_description">Only trigger DND when an event has a location.</string>
     <string name="min_duration_title">Minimum Event Duration</string>
@@ -425,6 +427,8 @@
     <string name="debug_tools_telemetry_level_detailed_title">Detailed</string>
     <string name="debug_tools_telemetry_level_detailed_subtitle">Everything in Basic, plus app language, OS version, manufacturer, model.</string>
     <string name="debug_tools_engine_section_title">Automation engine</string>
+    <string name="debug_tools_next_check_title">Next scheduled check</string>
+    <string name="debug_tools_next_check_unset">Not scheduled yet</string>
     <string name="debug_tools_dry_run_title">Test run (dry)</string>
     <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
     <string name="debug_tools_dry_run_toast">Dry run complete</string>

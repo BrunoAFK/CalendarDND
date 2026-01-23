@@ -103,6 +103,8 @@
     <string name="busy_only_description">Ignoriraj slobodne/privremene događaje</string>
     <string name="ignore_allday_title">Ignoriraj cjelodnevne događaje</string>
     <string name="ignore_allday_description">Ne pokreći DND za cjelodnevne događaje</string>
+    <string name="skip_recurring_title">Preskoči ponavljajuće događaje</string>
+    <string name="skip_recurring_description">Ne pokreći DND za ponavljajuće događaje</string>
     <string name="require_location_title">Lokacija obavezna</string>
     <string name="require_location_description">DND samo za događaje koji imaju lokaciju.</string>
     <string name="min_duration_title">Minimalno trajanje događaja</string>

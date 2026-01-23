@@ -106,6 +106,8 @@
     <string name="busy_only_description">Boş/kararsız etkinlikleri yok say</string>
     <string name="ignore_allday_title">Tüm gün etkinliklerini yok say</string>
     <string name="ignore_allday_description">Tüm gün etkinlikleri için DND tetikleme</string>
+    <string name="skip_recurring_title">Tekrarlayan etkinlikleri atla</string>
+    <string name="skip_recurring_description">Tekrarlayan etkinlikler için DND tetikleme</string>
     <string name="require_location_title">Konum gerekli</string>
     <string name="require_location_description">Etkinlikte konum varsa DND tetikle.</string>
     <string name="min_duration_title">Minimum etkinlik süresi</string>

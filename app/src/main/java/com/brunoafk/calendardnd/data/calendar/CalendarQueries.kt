@@ -74,6 +74,20 @@ object CalendarQueries {
                             )
                         }
                     }
+                    if (results.isNotEmpty()) {
+                        val recurringEventIds = queryRecurringEventIds(
+                            context,
+                            results.map { it.eventId }.toSet()
+                        )
+                        if (recurringEventIds.isNotEmpty()) {
+                            for (index in results.indices) {
+                                val instance = results[index]
+                                if (recurringEventIds.contains(instance.eventId)) {
+                                    results[index] = instance.copy(isRecurring = true)
+                                }
+                            }
+                        }
+                    }
                 } catch (e: Exception) {
                     ExceptionHandler.handleCalendarException(e, "queryInstances")
                 }
@@ -126,5 +140,54 @@ object CalendarQueries {
                 results
             } ?: emptyList()
         }
+    }
+
+    private fun queryRecurringEventIds(
+        context: Context,
+        eventIds: Set<Long>
+    ): Set<Long> {
+        if (eventIds.isEmpty()) {
+            return emptySet()
+        }
+
+        val recurringEventIds = mutableSetOf<Long>()
+        val chunks = eventIds.toList().chunked(500)
+        val projection = arrayOf(
+            CalendarContract.Events._ID,
+            CalendarContract.Events.RRULE,
+            CalendarContract.Events.RDATE
+        )
+
+        try {
+            chunks.forEach { chunk ->
+                val placeholders = List(chunk.size) { "?" }.joinToString(",")
+                val selection = "${CalendarContract.Events._ID} IN ($placeholders)"
+                val selectionArgs = chunk.map { it.toString() }.toTypedArray()
+
+                context.contentResolver.query(
+                    CalendarContract.Events.CONTENT_URI,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null
+                )?.use { cursor ->
+                    val idIdx = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
+                    val rruleIdx = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
+                    val rdateIdx = cursor.getColumnIndexOrThrow(CalendarContract.Events.RDATE)
+
+                    while (cursor.moveToNext()) {
+                        val rrule = cursor.getString(rruleIdx)
+                        val rdate = cursor.getString(rdateIdx)
+                        if (!rrule.isNullOrBlank() || !rdate.isNullOrBlank()) {
+                            recurringEventIds.add(cursor.getLong(idIdx))
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            ExceptionHandler.handleCalendarException(e, "queryRecurringEventIds")
+        }
+
+        return recurringEventIds
     }
 }

@@ -111,6 +111,7 @@ fun StatusScreen(
     var selectedCalendarIds by remember { mutableStateOf(emptySet<String>()) }
     var busyOnly by remember { mutableStateOf(true) }
     var ignoreAllDay by remember { mutableStateOf(true) }
+    var skipRecurring by remember { mutableStateOf(false) }
     var minEventMinutes by remember { mutableStateOf(10) }
     var requireLocation by remember { mutableStateOf(false) }
     var requireTitleKeyword by remember { mutableStateOf(false) }
@@ -156,6 +157,7 @@ fun StatusScreen(
                     selectedCalendarIds = selectedCalendarIds,
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
+                    skipRecurring = skipRecurring,
                     minEventMinutes = minEventMinutes,
                     requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
@@ -171,6 +173,7 @@ fun StatusScreen(
                     selectedCalendarIds = selectedCalendarIds,
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
+                    skipRecurring = skipRecurring,
                     minEventMinutes = minEventMinutes,
                     requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
@@ -259,6 +262,16 @@ fun StatusScreen(
         val job = scope.launch {
             settingsStore.ignoreAllDay.collectLatest { value ->
                 ignoreAllDay = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.skipRecurring.collectLatest { value ->
+                skipRecurring = value
                 refresh()
             }
         }

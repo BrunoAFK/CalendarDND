@@ -64,12 +64,14 @@ android {
         create("play") {
             dimension = "distribution"
             buildConfigField("String", "TELEMETRY_DEFAULT_LEVEL", "\"DETAILED\"")
+            buildConfigField("String", "PLAY_STORE_UPDATE_MANAGER_CLASS", "\"com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerImpl\"")
         }
         create("fdroid") {
             dimension = "distribution"
             buildConfigField("boolean", "FIREBASE_ENABLED", "false")
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+            buildConfigField("String", "PLAY_STORE_UPDATE_MANAGER_CLASS", "\"com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerNoOp\"")
         }
         create("manual") {
             dimension = "distribution"
@@ -85,6 +87,7 @@ android {
                 "ALLOWED_SIGNER_SHA256",
                 "\"$manualSignerSha256\""
             )
+            buildConfigField("String", "PLAY_STORE_UPDATE_MANAGER_CLASS", "\"com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerNoOp\"")
         }
     }
 
@@ -151,6 +154,21 @@ android {
         buildConfig = true
     }
 
+    sourceSets {
+        getByName("main") {
+            java.srcDirs("src/main/java")
+        }
+        getByName("play") {
+            java.srcDirs("src/play/java")
+        }
+        getByName("fdroid") {
+            java.srcDirs("src/fdroid/java")
+        }
+        getByName("manual") {
+            java.srcDirs("src/manual/java")
+        }
+    }
+
     applicationVariants.all {
         if (flavorName == "fdroid") {
             val variantName = name.replaceFirstChar { it.uppercaseChar() }
@@ -175,6 +193,7 @@ dependencies {
     }
     compileOnly("com.google.android.play:review-ktx:2.0.1")
     add("playImplementation", "com.google.android.play:review-ktx:2.0.1")
+    add("playImplementation", "com.google.android.play:app-update-ktx:2.1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

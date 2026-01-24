@@ -30,6 +30,7 @@ import com.brunoafk.calendardnd.ui.theme.CalendarDndTheme
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.system.notifications.UpdateNotificationHelper
 import com.brunoafk.calendardnd.system.update.ManualUpdateManager
+import com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerProvider
 import com.brunoafk.calendardnd.ui.components.ManualUpdatePrompt
 import android.content.res.Configuration
 import android.os.LocaleList
@@ -43,6 +44,7 @@ import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.lifecycleScope
 import com.brunoafk.calendardnd.util.UmamiTelemetry
 import com.google.android.play.core.review.ReviewManagerFactory
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         private const val SETTINGS_DEEPLINK_HOST = "settings"
         private const val KEYWORDS_DEEPLINK_HOST = "keywords"
         private const val HELP_DEEPLINK_HOST = "help"
+
     }
 
     private val tileHintState = mutableStateOf(false)
@@ -66,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     private val openKeywordsState = mutableStateOf(false)
     private val openHelpState = mutableStateOf(false)
     private val pendingExternalUrlState = mutableStateOf<String?>(null)
+    private val playStoreUpdateManager by lazy { PlayStoreUpdateManagerProvider.get() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +85,7 @@ class MainActivity : AppCompatActivity() {
             UmamiTelemetry.trackAppOpenIfEnabled(this@MainActivity)
         }
         maybeRequestReview()
+        playStoreUpdateManager.checkForPlayStoreUpdate(this)
 
         setContent {
             val baseContext = LocalContext.current
@@ -209,6 +214,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        playStoreUpdateManager.handleActivityResult(requestCode, resultCode, this)
+    }
+
 
     private fun maybeRequestReview() {
         if (BuildConfig.FLAVOR != "play" || BuildConfig.DEBUG) {

@@ -1,0 +1,7 @@
+# New features
+- Added a "Skip recurring events" filter so recurring meetings won’t trigger DND.
+
+# Improvements
+- Debug Tools now shows the next scheduled automation check time.
+- Added Google Play in-app updates for Play Store builds.
+- Improved in-app review prompts.

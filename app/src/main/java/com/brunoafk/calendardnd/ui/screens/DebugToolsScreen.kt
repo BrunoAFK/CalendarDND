@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.BuildConfig
@@ -65,6 +67,8 @@ fun DebugToolsScreen(
     )
 ) {
     val context = LocalContext.current
+    val viewContext = LocalView.current.context
+    val activityOwner = LocalActivityResultRegistryOwner.current
     val scope = rememberCoroutineScope()
     val settingsStore = remember { SettingsStore(context) }
     val runtimeStateStore = remember { RuntimeStateStore(context) }
@@ -265,7 +269,8 @@ fun DebugToolsScreen(
                             subtitle = stringResource(R.string.debug_tools_reviews_force_subtitle),
                             onClick = {
                                 scope.launch {
-                                    val activity = context.findActivity()
+                                    val activity = (activityOwner as? Activity)
+                                        ?: viewContext.findActivity()
                                     if (activity == null) {
                                         Toast.makeText(
                                             context,

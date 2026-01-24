@@ -44,6 +44,9 @@ import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.lifecycleScope
 import com.brunoafk.calendardnd.util.UmamiTelemetry
 import com.google.android.play.core.review.ReviewManagerFactory
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.ActivityResultLauncher
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,9 +73,17 @@ class MainActivity : AppCompatActivity() {
     private val openHelpState = mutableStateOf(false)
     private val pendingExternalUrlState = mutableStateOf<String?>(null)
     private val playStoreUpdateManager by lazy { PlayStoreUpdateManagerProvider.get() }
+    private lateinit var playStoreUpdateLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        playStoreUpdateLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
+            if (result.resultCode != RESULT_OK) {
+                playStoreUpdateManager.checkForPlayStoreUpdate(this, playStoreUpdateLauncher)
+            }
+        }
         tileHintState.value = isTilePreferencesIntent(intent)
         openUpdatesState.value = shouldOpenUpdates(intent)
         openAboutState.value = shouldOpenAbout(intent)
@@ -85,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             UmamiTelemetry.trackAppOpenIfEnabled(this@MainActivity)
         }
         maybeRequestReview()
-        playStoreUpdateManager.checkForPlayStoreUpdate(this)
+        playStoreUpdateManager.checkForPlayStoreUpdate(this, playStoreUpdateLauncher)
 
         setContent {
             val baseContext = LocalContext.current
@@ -215,10 +226,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        playStoreUpdateManager.handleActivityResult(requestCode, resultCode, this)
+    override fun onResume() {
+        super.onResume()
+        if (::playStoreUpdateLauncher.isInitialized) {
+            playStoreUpdateManager.resumeIfUpdateInProgress(this, playStoreUpdateLauncher)
+        }
     }
 
 

@@ -14,10 +14,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import com.brunoafk.calendardnd.ui.components.OneUiHeader
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -46,6 +48,7 @@ import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.EventInstance
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.domain.model.ThemeDebugMode
 import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.domain.planning.MeetingWindowResolver
 import com.brunoafk.calendardnd.system.alarms.AlarmScheduler
@@ -89,7 +92,8 @@ fun StatusScreen(
     onOpenSettings: (Boolean) -> Unit,
     onOpenDebugLogs: () -> Unit,
     onOpenSetup: () -> Unit,
-    onOpenDndMode: () -> Unit
+    onOpenDndMode: () -> Unit,
+    onSelectTheme: (String) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -112,6 +116,8 @@ fun StatusScreen(
     var busyOnly by remember { mutableStateOf(true) }
     var ignoreAllDay by remember { mutableStateOf(true) }
     var skipRecurring by remember { mutableStateOf(false) }
+    var selectedDaysMask by remember { mutableStateOf(com.brunoafk.calendardnd.util.WeekdayMask.ALL_DAYS_MASK) }
+    var selectedDaysEnabled by remember { mutableStateOf(false) }
     var minEventMinutes by remember { mutableStateOf(10) }
     var requireLocation by remember { mutableStateOf(false) }
     var requireTitleKeyword by remember { mutableStateOf(false) }
@@ -122,6 +128,8 @@ fun StatusScreen(
     var titleKeywordExclude by remember { mutableStateOf(false) }
     var onboardingCompleted by remember { mutableStateOf(false) }
     var dndMode by remember { mutableStateOf(DndMode.PRIORITY) }
+    var dndStartOffsetMinutes by remember { mutableStateOf(0) }
+    var oneTimeActionConfirmation by remember { mutableStateOf(true) }
     var canScheduleExactAlarms by remember {
         mutableStateOf(alarmScheduler.canScheduleExactAlarms())
     }
@@ -131,8 +139,14 @@ fun StatusScreen(
     var dndBannerDismissed by remember { mutableStateOf(false) }
     var refreshBannerDismissed by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
+    var themeDebugMode by remember { mutableStateOf(ThemeDebugMode.OFF) }
     var tileHintVisible by remember { mutableStateOf(false) }
     var lastSeenUpdateVersion by remember { mutableStateOf("") }
+    var userSuppressedUntilMs by remember { mutableStateOf(0L) }
+    var userSuppressedFromMs by remember { mutableStateOf(0L) }
+    var manualEventStartMs by remember { mutableStateOf(0L) }
+    var manualEventEndMs by remember { mutableStateOf(0L) }
+    var pendingOneTimeDialog by remember { mutableStateOf<OneTimeDialog?>(null) }
 
     LaunchedEffect(showTileHint) {
         tileHintVisible = showTileHint
@@ -158,6 +172,8 @@ fun StatusScreen(
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
                     skipRecurring = skipRecurring,
+                    selectedDaysEnabled = selectedDaysEnabled,
+                    selectedDaysMask = selectedDaysMask,
                     minEventMinutes = minEventMinutes,
                     requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
@@ -174,6 +190,8 @@ fun StatusScreen(
                     busyOnly = busyOnly,
                     ignoreAllDay = ignoreAllDay,
                     skipRecurring = skipRecurring,
+                    selectedDaysEnabled = selectedDaysEnabled,
+                    selectedDaysMask = selectedDaysMask,
                     minEventMinutes = minEventMinutes,
                     requireLocation = requireLocation,
                     requireTitleKeyword = requireTitleKeyword,
@@ -187,6 +205,65 @@ fun StatusScreen(
             }
             activeWindow = snapshot.first
             nextInstance = snapshot.second
+        }
+    }
+
+    fun buildManualWindow(instance: EventInstance): Pair<Long, Long> {
+        val offsetMs = dndStartOffsetMinutes * 60_000L
+        val rawStart = instance.begin + offsetMs
+        val start = if (rawStart >= instance.end) instance.begin else rawStart
+        return start to instance.end
+    }
+
+    fun determineActiveAction(event: EventInstance?): OneTimeActionType? {
+        if (event == null) return null
+        val now = System.currentTimeMillis()
+        val (startMs, endMs) = buildManualWindow(event)
+
+        if (userSuppressedUntilMs > 0 && now < userSuppressedUntilMs) {
+            if (userSuppressedFromMs <= startMs && userSuppressedUntilMs >= endMs) {
+                return OneTimeActionType.SKIP
+            }
+        }
+
+        if (manualEventEndMs > 0 && now < manualEventEndMs) {
+            if (manualEventStartMs <= startMs && manualEventEndMs >= endMs) {
+                return OneTimeActionType.ENABLE
+            }
+        }
+
+        return null
+    }
+
+    fun applyOneTimeAction(action: OneTimeAction) {
+        scope.launch {
+            when (action) {
+                is OneTimeAction.EnableForEvent -> {
+                    runtimeStateStore.setManualEventStartMs(action.startMs)
+                    runtimeStateStore.setManualEventEndMs(action.endMs)
+                    runtimeStateStore.setUserSuppressedFromMs(0L)
+                    runtimeStateStore.setUserSuppressedUntilMs(0L)
+                }
+                is OneTimeAction.SkipEvent -> {
+                    runtimeStateStore.setUserSuppressedFromMs(action.startMs)
+                    runtimeStateStore.setUserSuppressedUntilMs(action.endMs)
+                }
+            }
+            withContext(Dispatchers.IO) {
+                EngineRunner.runEngine(context, Trigger.MANUAL)
+            }
+        }
+    }
+
+    fun clearOneTimeAction() {
+        scope.launch {
+            runtimeStateStore.setManualEventStartMs(0L)
+            runtimeStateStore.setManualEventEndMs(0L)
+            runtimeStateStore.setUserSuppressedFromMs(0L)
+            runtimeStateStore.setUserSuppressedUntilMs(0L)
+            withContext(Dispatchers.IO) {
+                EngineRunner.runEngine(context, Trigger.MANUAL)
+            }
         }
     }
 
@@ -222,8 +299,36 @@ fun StatusScreen(
 
     DisposableEffect(Unit) {
         val job = scope.launch {
+            settingsStore.dndStartOffsetMinutes.collectLatest { value ->
+                dndStartOffsetMinutes = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
             settingsStore.onboardingCompleted.collectLatest { value ->
                 onboardingCompleted = value
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.themeDebugMode.collectLatest { mode ->
+                themeDebugMode = mode
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.oneTimeActionConfirmation.collectLatest { value ->
+                oneTimeActionConfirmation = value
             }
         }
         onDispose { job.cancel() }
@@ -234,6 +339,34 @@ fun StatusScreen(
             runtimeStateStore.dndSetByApp.collectLatest { value ->
                 dndSetByApp = value
             }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            runtimeStateStore.userSuppressedUntilMs.collectLatest { userSuppressedUntilMs = it }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            runtimeStateStore.userSuppressedFromMs.collectLatest { userSuppressedFromMs = it }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            runtimeStateStore.manualEventStartMs.collectLatest { manualEventStartMs = it }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            runtimeStateStore.manualEventEndMs.collectLatest { manualEventEndMs = it }
         }
         onDispose { job.cancel() }
     }
@@ -272,6 +405,26 @@ fun StatusScreen(
         val job = scope.launch {
             settingsStore.skipRecurring.collectLatest { value ->
                 skipRecurring = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.selectedDaysMask.collectLatest { value ->
+                selectedDaysMask = value
+                refresh()
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.selectedDaysEnabled.collectLatest { value ->
+                selectedDaysEnabled = value
                 refresh()
             }
         }
@@ -461,6 +614,25 @@ fun StatusScreen(
         }
         EventOverviewState(current = currentSummary, next = nextSummary)
     }
+    val nextActionData = nextInstance?.let { instance ->
+        val (startMs, endMs) = buildManualWindow(instance)
+        if (automationEnabled) {
+            OneTimeAction.SkipEvent(instance, startMs, endMs)
+        } else {
+            OneTimeAction.EnableForEvent(instance, startMs, endMs)
+        }
+    }
+    val activeActionType = determineActiveAction(nextInstance)
+    val nextActionLabel = when (activeActionType) {
+        OneTimeActionType.SKIP -> stringResource(R.string.action_status_dnd_skipped_tap)
+        OneTimeActionType.ENABLE -> stringResource(R.string.action_status_dnd_enabled_tap)
+        null -> if (automationEnabled) {
+            stringResource(R.string.action_strip_tap_to_skip)
+        } else {
+            stringResource(R.string.action_strip_tap_to_enable)
+        }
+    }
+    val nextActionEnabled = hasCalendarPermission && hasPolicyAccess
 
     LaunchedEffect(currentError) {
         permissionErrorDismissed = false
@@ -471,14 +643,68 @@ fun StatusScreen(
             kotlinx.coroutines.delay(60_000L)
         }
     }
+
+    pendingOneTimeDialog?.let { dialog ->
+        val (titleRes, bodyRes, confirmRes) = when (dialog) {
+            is OneTimeDialog.Set -> when (dialog.action) {
+                is OneTimeAction.EnableForEvent -> Triple(
+                    R.string.next_event_enable_confirm_title,
+                    R.string.next_event_enable_confirm_body,
+                    R.string.next_event_enable_confirm_action
+                )
+                is OneTimeAction.SkipEvent -> Triple(
+                    R.string.next_event_skip_confirm_title,
+                    R.string.next_event_skip_confirm_body,
+                    R.string.next_event_skip_confirm_action
+                )
+            }
+            is OneTimeDialog.Clear -> when (dialog.activeType) {
+                OneTimeActionType.ENABLE -> Triple(
+                    R.string.next_event_clear_enable_title,
+                    R.string.next_event_clear_enable_body,
+                    R.string.next_event_clear_enable_action
+                )
+                OneTimeActionType.SKIP -> Triple(
+                    R.string.next_event_clear_skip_title,
+                    R.string.next_event_clear_skip_body,
+                    R.string.next_event_clear_skip_action
+                )
+            }
+        }
+
+        AlertDialog(
+            onDismissRequest = { pendingOneTimeDialog = null },
+            title = { Text(text = stringResource(titleRes)) },
+            text = { Text(text = stringResource(bodyRes)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingOneTimeDialog = null
+                        when (dialog) {
+                            is OneTimeDialog.Set -> applyOneTimeAction(dialog.action)
+                            is OneTimeDialog.Clear -> clearOneTimeAction()
+                        }
+                    }
+                ) {
+                    Text(text = stringResource(confirmRes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingOneTimeDialog = null }) {
+                    Text(text = stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     Scaffold(
         bottomBar = {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
                     .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
                     onClick = { onOpenSettings(false) },
@@ -486,6 +712,10 @@ fun StatusScreen(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                 ) {
                     Text(stringResource(R.string.settings))
+                }
+
+                if (themeDebugMode == ThemeDebugMode.THEME_SELECTOR) {
+                    ThemeSelectorBottomBar(onSelectTheme = onSelectTheme)
                 }
             }
         }
@@ -620,11 +850,11 @@ fun StatusScreen(
                         error = currentError,
                         onPrimaryAction = {
                             when (currentError) {
-                                AppError.CalendarPermissionDenied -> openAppSettings(context)
+                                AppError.CalendarPermissionDenied -> StatusScreenIntents.openAppSettings(context)
                                 AppError.DndPermissionDenied -> dndController.openPolicyAccessSettings()
                                 AppError.CalendarQueryFailed -> refresh()
                                 AppError.DndChangeFailed -> refresh()
-                                AppError.NoCalendarsFound -> openCalendarApp(context)
+                                AppError.NoCalendarsFound -> StatusScreenIntents.openCalendarApp(context)
                                 AppError.NetworkError -> refresh()
                             }
                         },
@@ -658,14 +888,39 @@ fun StatusScreen(
                     EventOverviewCard(
                         state = eventOverview,
                         onCurrentClick = activeWindow?.events?.firstOrNull()?.let { current ->
-                            { openCalendarEvent(context, current.eventId, current.begin) }
+                            { StatusScreenIntents.openCalendarEvent(context, current.eventId, current.begin) }
                         },
                         onNextClick = nextInstance?.let { next ->
-                            { openCalendarEvent(context, next.eventId, next.begin) }
+                            { StatusScreenIntents.openCalendarEvent(context, next.eventId, next.begin) }
+                        },
+                        highlightNext = activeActionType != null,
+                        actionStripActive = activeActionType != null,
+                        nextActionLabel = nextActionData?.let { nextActionLabel },
+                        nextActionEnabled = nextActionEnabled,
+                        onNextAction = if (nextInstance != null) {
+                            {
+                                if (activeActionType == null) {
+                                    nextActionData?.let { action ->
+                                        if (oneTimeActionConfirmation) {
+                                            pendingOneTimeDialog = OneTimeDialog.Set(action)
+                                        } else {
+                                            applyOneTimeAction(action)
+                                        }
+                                    }
+                                } else {
+                                    if (oneTimeActionConfirmation) {
+                                        pendingOneTimeDialog = OneTimeDialog.Clear(activeActionType)
+                                    } else {
+                                        clearOneTimeAction()
+                                    }
+                                }
+                            }
+                        } else {
+                            null
                         }
                     )
                 } else {
-                    EmptyStates.NoMeetings(onOpenCalendar = { openCalendarApp(context) })
+                    EmptyStates.NoMeetings(onOpenCalendar = { StatusScreenIntents.openCalendarApp(context) })
                 }
 
             }
@@ -679,35 +934,4 @@ fun StatusScreen(
             )
         }
     }
-}
-
-private fun openAppSettings(context: android.content.Context) {
-    val intent = android.content.Intent(
-        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        android.net.Uri.fromParts("package", context.packageName, null)
-    ).apply {
-        flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-    context.startActivity(intent)
-}
-
-private fun openCalendarApp(context: android.content.Context) {
-    val intent = android.content.Intent(android.content.Intent.ACTION_MAIN).apply {
-        addCategory(android.content.Intent.CATEGORY_APP_CALENDAR)
-        flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-    context.startActivity(intent)
-}
-
-private fun openCalendarEvent(context: android.content.Context, eventId: Long, beginMs: Long) {
-    val uri = android.content.ContentUris.withAppendedId(
-        android.provider.CalendarContract.Events.CONTENT_URI,
-        eventId
-    )
-    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-        data = uri
-        putExtra(android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginMs)
-        flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-    context.startActivity(intent)
 }

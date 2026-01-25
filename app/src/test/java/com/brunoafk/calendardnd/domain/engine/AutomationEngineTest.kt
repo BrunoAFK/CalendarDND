@@ -6,6 +6,7 @@ import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.EventInstance
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.Trigger
+import com.brunoafk.calendardnd.util.WeekdayMask
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
@@ -615,6 +616,8 @@ class AutomationEngineTest {
         busyOnly: Boolean = true,
         ignoreAllDay: Boolean = true,
         skipRecurring: Boolean = false,
+        selectedDaysEnabled: Boolean = false,
+        selectedDaysMask: Int = WeekdayMask.ALL_DAYS_MASK,
         minEventMinutes: Int = 10,
         requireLocation: Boolean = false,
         dndMode: DndMode = DndMode.PRIORITY,
@@ -629,7 +632,10 @@ class AutomationEngineTest {
         dndSetByApp: Boolean = false,
         activeWindowEndMs: Long = 0,
         userSuppressedUntilMs: Long = 0,
+        userSuppressedFromMs: Long = 0,
         manualDndUntilMs: Long = 0,
+        manualEventStartMs: Long = 0,
+        manualEventEndMs: Long = 0,
         lastKnownDndFilter: Int = -1,
         hasCalendarPermission: Boolean = true,
         hasPolicyAccess: Boolean = true,
@@ -638,7 +644,9 @@ class AutomationEngineTest {
         currentSystemFilter: Int = 1,
         preDndNotificationLeadMinutes: Int = 5,
         postMeetingNotificationEnabled: Boolean = true,
-        postMeetingNotificationOffsetMinutes: Int = 0
+        postMeetingNotificationOffsetMinutes: Int = 0,
+        skippedEventBeginMs: Long = 0,
+        notifiedNewEventBeforeSkip: Boolean = false
     ): EngineInput {
         return EngineInput(
             trigger = Trigger.MANUAL,
@@ -648,6 +656,8 @@ class AutomationEngineTest {
             busyOnly = busyOnly,
             ignoreAllDay = ignoreAllDay,
             skipRecurring = skipRecurring,
+            selectedDaysEnabled = selectedDaysEnabled,
+            selectedDaysMask = selectedDaysMask,
             minEventMinutes = minEventMinutes,
             requireLocation = requireLocation,
             dndMode = dndMode,
@@ -665,13 +675,18 @@ class AutomationEngineTest {
             dndSetByApp = dndSetByApp,
             activeWindowEndMs = activeWindowEndMs,
             userSuppressedUntilMs = userSuppressedUntilMs,
+            userSuppressedFromMs = userSuppressedFromMs,
             manualDndUntilMs = manualDndUntilMs,
+            manualEventStartMs = manualEventStartMs,
+            manualEventEndMs = manualEventEndMs,
             lastKnownDndFilter = lastKnownDndFilter,
             hasCalendarPermission = hasCalendarPermission,
             hasPolicyAccess = hasPolicyAccess,
             hasExactAlarms = hasExactAlarms,
             systemDndIsOn = systemDndIsOn,
-            currentSystemFilter = currentSystemFilter
+            currentSystemFilter = currentSystemFilter,
+            skippedEventBeginMs = skippedEventBeginMs,
+            notifiedNewEventBeforeSkip = notifiedNewEventBeforeSkip
         )
     }
 
@@ -690,6 +705,8 @@ class AutomationEngineTest {
             busyOnly: Boolean,
             ignoreAllDay: Boolean,
             skipRecurring: Boolean,
+            selectedDaysEnabled: Boolean,
+            selectedDaysMask: Int,
             minEventMinutes: Int,
             requireLocation: Boolean,
             requireTitleKeyword: Boolean,
@@ -708,6 +725,8 @@ class AutomationEngineTest {
             busyOnly: Boolean,
             ignoreAllDay: Boolean,
             skipRecurring: Boolean,
+            selectedDaysEnabled: Boolean,
+            selectedDaysMask: Int,
             minEventMinutes: Int,
             requireLocation: Boolean,
             requireTitleKeyword: Boolean,
@@ -727,6 +746,8 @@ class AutomationEngineTest {
             busyOnly: Boolean,
             ignoreAllDay: Boolean,
             skipRecurring: Boolean,
+            selectedDaysEnabled: Boolean,
+            selectedDaysMask: Int,
             minEventMinutes: Int,
             requireLocation: Boolean,
             requireTitleKeyword: Boolean,

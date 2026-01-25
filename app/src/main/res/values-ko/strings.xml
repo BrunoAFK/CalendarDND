@@ -33,12 +33,28 @@
     <!-- Status Screen -->
     <string name="automation">자동 DND</string>
     <string name="automation_description">캘린더에 따라 DND를 자동으로 켜고 끕니다</string>
+    <string name="one_time_action_confirmation_title">일회성 작업 확인</string>
+    <string name="one_time_action_confirmation_subtitle">다음 일정에 대해 DND를 켜거나 건너뛰기 전에 확인</string>
     <string name="active">활성</string>
     <string name="inactive">비활성</string>
     <string name="setup_required">⚠️ 설정 필요 - 권한 누락</string>
     <string name="complete_setup">설정 완료</string>
     <string name="current_meeting">현재 회의</string>
     <string name="next_meeting">다음 회의</string>
+    <string name="next_event_enable_dnd">이 일정에만 DND 켜기</string>
+    <string name="next_event_skip_dnd">이 일정에서 DND 건너뛰기</string>
+    <string name="next_event_enable_confirm_title">다음 일정에서 DND를 켤까요?</string>
+    <string name="next_event_enable_confirm_body">방해 금지는 다음 일정에만 적용됩니다. 시작 전까지 변경할 수 있습니다.</string>
+    <string name="next_event_enable_confirm_action">이 일정에 적용</string>
+    <string name="next_event_skip_confirm_title">다음 일정에서 DND를 건너뛸까요?</string>
+    <string name="next_event_skip_confirm_body">다음 일정에서는 방해 금지가 켜지지 않습니다. 시작 전까지 변경할 수 있습니다.</string>
+    <string name="next_event_skip_confirm_action">이 일정 건너뛰기</string>
+    <string name="next_event_clear_enable_title">일회성 DND를 해제할까요?</string>
+    <string name="next_event_clear_enable_body">다음 일정은 일반 자동화 설정을 따릅니다.</string>
+    <string name="next_event_clear_enable_action">이 일정에서 해제</string>
+    <string name="next_event_clear_skip_title">이 일정에서 건너뛰기를 해제할까요?</string>
+    <string name="next_event_clear_skip_body">다음 일정은 일반 자동화 설정을 따릅니다.</string>
+    <string name="next_event_clear_skip_action">이 일정에서 해제</string>
     <string name="none">없음</string>
     <string name="none_scheduled">예정 없음</string>
     <string name="dnd_status">DND 상태</string>
@@ -105,6 +121,16 @@
     <string name="ignore_allday_description">하루 종일 이벤트로는 DND를 켜지 않음</string>
     <string name="skip_recurring_title">반복 일정 무시</string>
     <string name="skip_recurring_description">반복 일정은 DND를 켜지 않음</string>
+    <string name="filter_days_title">활성 요일</string>
+    <string name="filter_days_description">선택한 요일에 있는 일정만 DND를 켭니다.</string>
+    <string name="day_filter_title">요일 필터</string>
+    <string name="day_filter_section_title">필터</string>
+    <string name="day_filter_enable_title">요일 필터 사용</string>
+    <string name="day_filter_enable_description">선택한 요일에만 DND를 켭니다.</string>
+    <string name="day_filter_days_title">요일</string>
+    <string name="day_filter_days_description">DND를 켤 요일을 선택하세요.</string>
+    <string name="day_filter_all_days">모든 요일</string>
+    <string name="day_filter_summary_selected">선택됨: %1$s</string>
     <string name="require_location_title">위치 필요</string>
     <string name="require_location_description">이벤트에 위치가 있을 때만 DND를 실행합니다.</string>
     <string name="min_duration_title">최소 이벤트 길이</string>
@@ -155,6 +181,11 @@
     <string name="status_automation_paused_summary">자동화가 꺼져 있습니다. DND는 자동으로 바뀌지 않습니다.</string>
     <string name="status_dnd_active_summary">DND가 활성화됨. %1$s 후 종료됩니다.</string>
     <string name="status_automation_ready_summary">DND가 %1$s 모드로 자동 활성화됩니다.</string>
+    <string name="automation_summary_calendars_all">캘린더: 전체</string>
+    <string name="automation_summary_calendars_selected">캘린더: %d</string>
+    <string name="automation_summary_filters_none">필터: 없음</string>
+    <string name="automation_summary_filters_count">필터: %d</string>
+    <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
     <string name="dnd_mode_banner_message">DND가 %1$s 모드로 자동 활성화됩니다. 눌러서 변경하세요.</string>
     <string name="dnd_mode_banner_title">DND 모드</string>
@@ -280,6 +311,7 @@
     <string name="no">아니오</string>
     <string name="done">완료</string>
     <string name="ok">확인</string>
+    <string name="cancel">취소</string>
 
     <!-- Onboarding Flow -->
     <string name="intro_title">Calendar DND에 오신 것을 환영합니다</string>
@@ -297,14 +329,26 @@
     <string name="language_description">나중에 설정에서 변경할 수 있습니다.</string>
     <string name="step_indicator">%2$d단계 중 %1$d단계</string>
 
-    <string name="theme_title">테마</string>
-    <string name="theme_description">Calendar DND의 모양을 선택하세요.</string>
+    <string name="theme_title">색상 및 테마</string>
+    <string name="theme_description">색상 모드와 테마 스타일을 선택하세요.</string>
     <string name="theme_option_system">시스템</string>
     <string name="theme_option_light">라이트</string>
     <string name="theme_option_dark">다크</string>
     <string name="theme_option_system_subtitle">기기 설정을 따릅니다.</string>
     <string name="theme_option_light_subtitle">항상 밝은 색상을 사용합니다.</string>
     <string name="theme_option_dark_subtitle">항상 어두운 색상을 사용합니다.</string>
+    <string name="theme_colors_section_title">색상</string>
+    <string name="theme_section_title">테마</string>
+    <string name="legacy_theme_title">레거시 테마 사용</string>
+    <string name="legacy_theme_subtitle">클래식 메인 화면으로 돌아갑니다.</string>
+    <string name="theme_list_current_title">현재 테마</string>
+    <string name="theme_list_current_subtitle">현재 활성</string>
+    <string name="theme_list_official_title">공식 테마</string>
+    <string name="theme_list_main_title">메인 테마</string>
+    <string name="theme_list_main_subtitle">기본 메인 화면</string>
+    <string name="theme_list_legacy_title">레거시 테마</string>
+    <string name="theme_list_legacy_subtitle">클래식 메인 화면</string>
+    <string name="theme_list_other_title">기타 테마</string>
 
     <string name="calendar_scope_title">모니터링할 캘린더</string>
     <string name="calendar_scope_description">모든 캘린더를 사용하거나 특정 캘린더를 선택하세요.</string>
@@ -399,6 +443,21 @@
     <string name="debug_tools_open_title">디버그 도구</string>
     <string name="debug_tools_open_subtitle">현지화 문자열과 빌드 정보를 확인합니다</string>
     <string name="debug_tools_languages_title">언어</string>
+    <string name="debug_tools_themes_title">테마</string>
+    <string name="debug_tools_main_view_v2_title">카드 그리드</string>
+    <string name="debug_tools_main_view_v2_subtitle">상태와 컨트롤이 있는 컴팩트 카드</string>
+    <string name="debug_tools_main_view_v3_title">벤토 그리드</string>
+    <string name="debug_tools_main_view_v3_subtitle">앰비언트 강조가 있는 비대칭 타일</string>
+    <string name="debug_tools_main_view_v4_title">프로 대시보드</string>
+    <string name="debug_tools_main_view_v4_subtitle">카운트다운 중심의 구조적 레이아웃</string>
+    <string name="debug_tools_main_view_v5_title">플레이풀 그라데이션</string>
+    <string name="debug_tools_main_view_v5_subtitle">부드러운 그라데이션 포인트의 대담한 카드</string>
+    <string name="debug_tools_main_view_v6_title">메인 화면 V6 - 미니멀</string>
+    <string name="debug_tools_main_view_v6_subtitle">빠른 작업과 은은한 움직임을 갖춘 깔끔한 레이아웃</string>
+    <string name="debug_tools_main_view_v7_title">메인 화면 V7 - 하단 컨트롤</string>
+    <string name="debug_tools_main_view_v7_subtitle">V2 레이아웃에 하단 자동화 컨트롤</string>
+    <string name="debug_tools_main_view_v10_title">메인 화면 V10 - 개선된 V4</string>
+    <string name="debug_tools_main_view_v10_subtitle">그라데이션 상태와 필터, 개선된 레이아웃</string>
     <string name="debug_language_title">문자열: %1$s</string>
     <string name="debug_tools_preview_title">미리보기</string>
     <string name="debug_tools_splash_title">스플래시 미리보기</string>
@@ -493,6 +552,9 @@
     <string name="fix_now">지금 수정</string>
     <string name="dnd_will_activate">DND가 %1$s에 활성화됩니다</string>
     <string name="time_until_format">%1$s 후</string>
+    <string name="time_unit_hours_short">시간</string>
+    <string name="time_unit_minutes_short">분</string>
+    <string name="time_unit_seconds_short">초</string>
     <string name="time_until_now">지금</string>
     <string name="untitled_meeting">제목 없는 회의</string>
     <string name="no_upcoming_meetings">일정이 없습니다!</string>
@@ -564,6 +626,23 @@
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_title">Meeting running over?</string>
     <string name="meeting_overrun_restore">복원</string>
+
+    <!-- Action status strip -->
+    <string name="action_status_dnd_skipped">이 이벤트에 대해 방해 금지 모드가 건너뛰어집니다</string>
+    <string name="action_status_dnd_enabled">이 이벤트에 대해 방해 금지 모드가 활성화됨</string>
+    <string name="action_status_dnd_enabled_tap">이 이벤트에 대해 방해 금지 모드가 활성화됨 • 탭하여 제거</string>
+    <string name="action_status_dnd_skipped_tap">이 이벤트에 대해 방해 금지 모드가 건너뛰어집니다 • 탭하여 제거</string>
+    <string name="action_status_undo">실행 취소</string>
+    <string name="action_strip_tap_to_skip">이 이벤트에 대해 DND를 건너뛰려면 탭하세요</string>
+    <string name="action_strip_tap_to_enable">이 이벤트에 대해 DND를 활성화하려면 탭하세요</string>
+
+    <!-- New event before skipped notification -->
+    <string name="new_event_before_skipped_title">새 일정 감지됨</string>
+    <string name="new_event_before_skipped_body">\"%1$s\"이(가) 건너뛴 이벤트 전에 예정되어 있습니다</string>
+    <string name="new_event_before_skipped_body_generic">새 일정이 건너뛴 이벤트 전에 예정되어 있습니다</string>
+    <string name="new_event_before_skipped_channel_name">새 이벤트 알림</string>
+    <string name="new_event_before_skipped_channel_description">건너뛴 이벤트 전에 새 일정이 나타날 때 알림</string>
+
     <string name="settings_help">Help</string>
     <string name="settings_privacy">Privacy &amp;amp; Permissions</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
@@ -606,4 +685,24 @@
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
     <string name="meeting_overrun_channel_name_silent">회의 지연(무음)</string>
+    <string name="debug_tools_gradient_debug_title">그라데이션 디버그</string>
+    <string name="debug_tools_gradient_debug_subtitle">해석된 그라데이션 색상 표시</string>
+    <string name="debug_tools_themes_list_title">테마 목록</string>
+    <string name="debug_tools_themes_list_subtitle">전체 테마 목록 열기</string>
+    <string name="debug_tools_main_view_default_title">메인 화면 – 기본</string>
+    <string name="debug_tools_main_view_default_subtitle">전체 정보가 있는 클래식 레이아웃</string>
+    <string name="debug_tools_main_view_v8_title">Main View V8 - Hybrid</string>
+    <string name="debug_tools_main_view_v8_subtitle">Hybrid of V4 and V7</string>
+    <string name="theme_debug_mode_title">테마 디버깅</string>
+    <string name="theme_debug_mode_description">테마에서 표시될 디버그 컨트롤을 선택하세요.</string>
+    <string name="theme_debug_mode_off">끔</string>
+    <string name="theme_debug_mode_off_subtitle">모든 테마 디버그 UI 숨기기</string>
+    <string name="theme_debug_mode_gradient">그라데이션 개요</string>
+    <string name="theme_debug_mode_gradient_subtitle">V10의 계산된 그라데이션 색상 표시</string>
+    <string name="theme_debug_mode_selector">테마 선택기</string>
+    <string name="theme_debug_mode_selector_subtitle">테마 전환 바 표시</string>
+    <string name="theme_debug_selector_title">테마 선택기</string>
+    <string name="theme_debug_selector_subtitle">모든 테마 미리보기로 전환</string>
+    <string name="theme_debug_selector_action">선택</string>
+    <string name="close">닫기</string>
 </resources>

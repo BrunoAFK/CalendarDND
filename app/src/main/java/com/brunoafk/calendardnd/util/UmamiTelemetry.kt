@@ -30,6 +30,8 @@ object UmamiTelemetry {
         } else {
             null
         }
+        val analyticsEnabled = settingsStore.analyticsOptIn.first()
+        val crashlyticsEnabled = settingsStore.crashlyticsOptIn.first()
         val baseUrl = AppConfig.umamiBaseUrl.trim().trimEnd('/')
         val websiteId = AppConfig.umamiWebsiteId.trim()
         if (baseUrl.isBlank() || websiteId.isBlank()) {
@@ -39,7 +41,17 @@ object UmamiTelemetry {
         val installId = settingsStore.getOrCreateInstallId()
 
         if (!settingsStore.getInstallPingSent()) {
-            if (sendEvent(baseUrl, websiteId, installId, telemetryLevel, appLanguage, INSTALL_EVENT)) {
+            if (sendEvent(
+                    baseUrl,
+                    websiteId,
+                    installId,
+                    telemetryLevel,
+                    appLanguage,
+                    analyticsEnabled,
+                    crashlyticsEnabled,
+                    INSTALL_EVENT
+                )
+            ) {
                 settingsStore.setInstallPingSent(true)
             }
         }
@@ -47,7 +59,17 @@ object UmamiTelemetry {
         val today = LocalDate.now(ZoneId.systemDefault()).toString()
         val lastDaily = settingsStore.getLastDailyPingDate()
         if (lastDaily != today) {
-            if (sendEvent(baseUrl, websiteId, installId, telemetryLevel, appLanguage, DAILY_EVENT)) {
+            if (sendEvent(
+                    baseUrl,
+                    websiteId,
+                    installId,
+                    telemetryLevel,
+                    appLanguage,
+                    analyticsEnabled,
+                    crashlyticsEnabled,
+                    DAILY_EVENT
+                )
+            ) {
                 settingsStore.setLastDailyPingDate(today)
             }
         }
@@ -59,6 +81,8 @@ object UmamiTelemetry {
         installId: String,
         telemetryLevel: TelemetryLevel,
         appLanguage: String?,
+        analyticsEnabled: Boolean,
+        crashlyticsEnabled: Boolean,
         eventName: String
     ): Boolean {
         val deviceLanguage = Locale.getDefault().toLanguageTag()
@@ -67,6 +91,8 @@ object UmamiTelemetry {
             .put("app_version", BuildConfig.VERSION_NAME)
             .put("device_language", deviceLanguage)
             .put("flavor", BuildConfig.FLAVOR)
+            .put("analytics_opt_in", analyticsEnabled)
+            .put("crashlytics_opt_in", crashlyticsEnabled)
 
         if (telemetryLevel == TelemetryLevel.DETAILED) {
             dataPayload

@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.DebugLogFilterLevel
 import com.brunoafk.calendardnd.data.prefs.DebugLogLevel
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.TelemetryLevel
 import com.brunoafk.calendardnd.domain.model.ThemeMode
+import com.brunoafk.calendardnd.domain.model.ThemeDebugMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,6 +29,8 @@ class SettingsStore(private val context: Context) {
         private val BUSY_ONLY = booleanPreferencesKey("busy_only")
         private val IGNORE_ALL_DAY = booleanPreferencesKey("ignore_all_day")
         private val SKIP_RECURRING = booleanPreferencesKey("skip_recurring")
+        private val SELECTED_DAYS_MASK = intPreferencesKey("selected_days_mask")
+        private val SELECTED_DAYS_ENABLED = booleanPreferencesKey("selected_days_enabled")
         private val MIN_EVENT_MINUTES = intPreferencesKey("min_event_minutes")
         private val REQUIRE_LOCATION = booleanPreferencesKey("require_location")
         private val DND_MODE = stringPreferencesKey("dnd_mode")
@@ -36,6 +40,7 @@ class SettingsStore(private val context: Context) {
         private val PRE_DND_NOTIFICATION_LEAD_MINUTES = intPreferencesKey("pre_dnd_notification_lead_minutes")
         private val PREFERRED_LANGUAGE_TAG = stringPreferencesKey("preferred_language_tag")
         private val THEME_MODE = stringPreferencesKey("theme_mode")
+        private val LEGACY_THEME_ENABLED = booleanPreferencesKey("legacy_theme_enabled")
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val ANALYTICS_OPT_IN = booleanPreferencesKey("analytics_opt_in")
         private val CRASHLYTICS_OPT_IN = booleanPreferencesKey("crashlytics_opt_in")
@@ -57,6 +62,7 @@ class SettingsStore(private val context: Context) {
         private val LOG_LEVEL_FILTER = stringPreferencesKey("log_level_filter")
         private val LOG_LEVEL_CAPTURE = stringPreferencesKey("log_level_capture")
         private val DEBUG_LOG_INCLUDE_DETAILS = booleanPreferencesKey("debug_log_include_details")
+        private val THEME_DEBUG_MODE = stringPreferencesKey("theme_debug_mode")
         private val SIGNING_CERT_FINGERPRINT = stringPreferencesKey("signing_cert_fingerprint")
         private val POST_MEETING_NOTIFICATION_ENABLED = booleanPreferencesKey("post_meeting_notification_enabled")
         private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
@@ -71,6 +77,8 @@ class SettingsStore(private val context: Context) {
         private val FIRST_OPEN_MS = longPreferencesKey("first_open_ms")
         private val APP_OPEN_COUNT = intPreferencesKey("app_open_count")
         private val REVIEW_PROMPT_SHOWN = booleanPreferencesKey("review_prompt_shown")
+        private val MODERN_BANNER_DESIGN = booleanPreferencesKey("modern_banner_design")
+        private val ONE_TIME_ACTION_CONFIRMATION = booleanPreferencesKey("one_time_action_confirmation")
     }
 
     data class SettingsSnapshot(
@@ -79,6 +87,8 @@ class SettingsStore(private val context: Context) {
         val busyOnly: Boolean,
         val ignoreAllDay: Boolean,
         val skipRecurring: Boolean,
+        val selectedDaysEnabled: Boolean,
+        val selectedDaysMask: Int,
         val minEventMinutes: Int,
         val requireLocation: Boolean,
         val dndMode: DndMode,
@@ -107,6 +117,10 @@ class SettingsStore(private val context: Context) {
         prefs[AUTOMATION_ENABLED] ?: true
     }
 
+    val oneTimeActionConfirmation: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[ONE_TIME_ACTION_CONFIRMATION] ?: true
+    }
+
     val selectedCalendarIds: Flow<Set<String>> = dataStore.data.map { prefs ->
         prefs[SELECTED_CALENDAR_IDS] ?: emptySet()
     }
@@ -121,6 +135,14 @@ class SettingsStore(private val context: Context) {
 
     val skipRecurring: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[SKIP_RECURRING] ?: false
+    }
+
+    val selectedDaysMask: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[SELECTED_DAYS_MASK] ?: com.brunoafk.calendardnd.util.WeekdayMask.ALL_DAYS_MASK
+    }
+
+    val selectedDaysEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[SELECTED_DAYS_ENABLED] ?: false
     }
 
     val minEventMinutes: Flow<Int> = dataStore.data.map { prefs ->
@@ -159,12 +181,17 @@ class SettingsStore(private val context: Context) {
         ThemeMode.fromString(prefs[THEME_MODE])
     }
 
+    val legacyThemeEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[LEGACY_THEME_ENABLED] ?: false
+    }
+
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[ONBOARDING_COMPLETED] ?: false
     }
 
     val analyticsOptIn: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[ANALYTICS_OPT_IN] ?: false
+        val defaultEnabled = BuildConfig.FLAVOR == "play"
+        prefs[ANALYTICS_OPT_IN] ?: defaultEnabled
     }
 
     val crashlyticsOptIn: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -230,6 +257,10 @@ class SettingsStore(private val context: Context) {
     val debugLogIncludeDetails: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_LOG_INCLUDE_DETAILS] ?: false
     }
+    val themeDebugMode: Flow<ThemeDebugMode> = dataStore.data.map { prefs ->
+        val raw = prefs[THEME_DEBUG_MODE] ?: ThemeDebugMode.OFF.name
+        runCatching { ThemeDebugMode.valueOf(raw) }.getOrDefault(ThemeDebugMode.OFF)
+    }
 
     val postMeetingNotificationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: false
@@ -273,6 +304,9 @@ class SettingsStore(private val context: Context) {
             busyOnly = prefs[BUSY_ONLY] ?: true,
             ignoreAllDay = prefs[IGNORE_ALL_DAY] ?: true,
             skipRecurring = prefs[SKIP_RECURRING] ?: false,
+            selectedDaysEnabled = prefs[SELECTED_DAYS_ENABLED] ?: false,
+            selectedDaysMask = prefs[SELECTED_DAYS_MASK]
+                ?: com.brunoafk.calendardnd.util.WeekdayMask.ALL_DAYS_MASK,
             minEventMinutes = prefs[MIN_EVENT_MINUTES] ?: 10,
             requireLocation = prefs[REQUIRE_LOCATION] ?: false,
             dndMode = DndMode.fromString(prefs[DND_MODE] ?: "PRIORITY"),
@@ -309,6 +343,13 @@ class SettingsStore(private val context: Context) {
         logSettingChange("Automation", if (enabled) "enabled" else "disabled")
     }
 
+    suspend fun setOneTimeActionConfirmation(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[ONE_TIME_ACTION_CONFIRMATION] = enabled
+        }
+        logSettingChange("One-time DND confirmation", enabled.toString())
+    }
+
     suspend fun setSelectedCalendarIds(ids: Set<String>) {
         dataStore.edit { prefs ->
             prefs[SELECTED_CALENDAR_IDS] = ids
@@ -334,6 +375,20 @@ class SettingsStore(private val context: Context) {
             prefs[SKIP_RECURRING] = enabled
         }
         logSettingChange("Skip recurring", enabled.toString())
+    }
+
+    suspend fun setSelectedDaysEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[SELECTED_DAYS_ENABLED] = enabled
+        }
+        logSettingChange("Selected days enabled", enabled.toString())
+    }
+
+    suspend fun setSelectedDaysMask(mask: Int) {
+        dataStore.edit { prefs ->
+            prefs[SELECTED_DAYS_MASK] = mask
+        }
+        logSettingChange("Selected days mask", mask.toString())
     }
 
     suspend fun setMinEventMinutes(minutes: Int) {
@@ -508,6 +563,14 @@ class SettingsStore(private val context: Context) {
         dataStore.edit { it[REVIEW_PROMPT_SHOWN] = shown }
     }
 
+    val modernBannerDesign: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[MODERN_BANNER_DESIGN] ?: false
+    }
+
+    suspend fun setModernBannerDesign(enabled: Boolean) {
+        dataStore.edit { it[MODERN_BANNER_DESIGN] = enabled }
+    }
+
     suspend fun getPreferredLanguageTag(): String {
         return dataStore.data.first()[PREFERRED_LANGUAGE_TAG].orEmpty()
     }
@@ -523,6 +586,13 @@ class SettingsStore(private val context: Context) {
             prefs[THEME_MODE] = mode.name
         }
         logSettingChange("Theme mode", mode.name)
+    }
+
+    suspend fun setLegacyThemeEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[LEGACY_THEME_ENABLED] = enabled
+        }
+        logSettingChange("Legacy theme", enabled.toString())
     }
 
     suspend fun setOnboardingCompleted(completed: Boolean) {
@@ -626,6 +696,12 @@ class SettingsStore(private val context: Context) {
             prefs[DEBUG_LOG_INCLUDE_DETAILS] = enabled
         }
         logSettingChange("Log include details", if (enabled) "enabled" else "disabled")
+    }
+    suspend fun setThemeDebugMode(mode: ThemeDebugMode) {
+        dataStore.edit { prefs ->
+            prefs[THEME_DEBUG_MODE] = mode.name
+        }
+        logSettingChange("Theme debug mode", mode.name.lowercase())
     }
 
     private suspend fun logSettingChange(label: String, value: String) {

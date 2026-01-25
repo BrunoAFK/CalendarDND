@@ -52,7 +52,8 @@ object AnalyticsTracker {
             context,
             "screen_view",
             Bundle().apply {
-                putString("screen", screen)
+                putString("screen_name", screen)
+                putString("screen_class", "MainActivity")
             }
         )
     }

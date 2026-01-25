@@ -31,16 +31,33 @@
     <string name="battery_rationale">Without this, alarms can be delayed or skipped.</string>
     <string name="open_app_settings">Open App Settings</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Status Screen -->
     <string name="automation">Automatic DND</string>
     <string name="automation_description">Turns DND on and off based on your calendar</string>
+    <string name="one_time_action_confirmation_title">Confirm one-time actions</string>
+    <string name="one_time_action_confirmation_subtitle">Ask before enabling or skipping DND for the next event</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
     <string name="setup_required">⚠️ Setup required - missing permissions</string>
     <string name="complete_setup">Complete Setup</string>
     <string name="current_meeting">Current Meeting</string>
     <string name="next_meeting">Next Meeting</string>
+    <string name="next_event_enable_dnd">Enable DND for this event</string>
+    <string name="next_event_skip_dnd">Skip DND for this event</string>
+    <string name="next_event_enable_confirm_title">Enable DND for next event?</string>
+    <string name="next_event_enable_confirm_body">Do Not Disturb will be enabled only for the next event. You can change your mind before it starts.</string>
+    <string name="next_event_enable_confirm_action">Enable for this event</string>
+    <string name="next_event_skip_confirm_title">Skip DND for next event?</string>
+    <string name="next_event_skip_confirm_body">The next event will not activate Do Not Disturb. You can change your mind before it starts.</string>
+    <string name="next_event_skip_confirm_action">Skip this event</string>
+    <string name="next_event_clear_enable_title">Remove one-time DND?</string>
+    <string name="next_event_clear_enable_body">The next event will follow your normal automation settings.</string>
+    <string name="next_event_clear_enable_action">Remove for this event</string>
+    <string name="next_event_clear_skip_title">Remove skip for this event?</string>
+    <string name="next_event_clear_skip_body">The next event will follow your normal automation settings.</string>
+    <string name="next_event_clear_skip_action">Remove for this event</string>
     <string name="none">None</string>
     <string name="none_scheduled">None scheduled</string>
     <string name="dnd_status">DND Status</string>
@@ -108,6 +125,16 @@
     <string name="ignore_allday_description">Don\'t trigger DND for all-day events</string>
     <string name="skip_recurring_title">Skip Recurring Events</string>
     <string name="skip_recurring_description">Don\'t trigger DND for recurring events</string>
+    <string name="filter_days_title">Active days</string>
+    <string name="filter_days_description">Only trigger DND for events on selected days.</string>
+    <string name="day_filter_title">Day filter</string>
+    <string name="day_filter_section_title">Filter</string>
+    <string name="day_filter_enable_title">Enable day filter</string>
+    <string name="day_filter_enable_description">Only trigger DND on selected days.</string>
+    <string name="day_filter_days_title">Days</string>
+    <string name="day_filter_days_description">Choose which days should trigger DND.</string>
+    <string name="day_filter_all_days">All days</string>
+    <string name="day_filter_summary_selected">Selected: %1$s</string>
     <string name="require_location_title">Location Required</string>
     <string name="require_location_description">Only trigger DND when an event has a location.</string>
     <string name="min_duration_title">Minimum Event Duration</string>
@@ -161,6 +188,11 @@
     <string name="status_automation_paused_summary">Automation is off. DND will not change automatically.</string>
     <string name="status_dnd_active_summary">DND is active. Ends in %1$s.</string>
     <string name="status_automation_ready_summary">DND will activate automatically in %1$s mode.</string>
+    <string name="automation_summary_calendars_all">Calendars: All</string>
+    <string name="automation_summary_calendars_selected">Calendars: %d</string>
+    <string name="automation_summary_filters_none">Filters: None</string>
+    <string name="automation_summary_filters_count">Filters: %d</string>
+    <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
     <string name="dnd_mode_banner_message">DND will activate automatically in %1$s mode. Tap to change.</string>
     <string name="dnd_mode_banner_title">DND mode</string>
@@ -311,14 +343,26 @@
     <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_korean" translatable="false">한국어</string>
 
-    <string name="theme_title">Theme</string>
-    <string name="theme_description">Choose how Calendar DND looks.</string>
+    <string name="theme_title">Colors &amp; Theme</string>
+    <string name="theme_description">Choose your color mode and theme style.</string>
     <string name="theme_option_system">System</string>
     <string name="theme_option_light">Light</string>
     <string name="theme_option_dark">Dark</string>
     <string name="theme_option_system_subtitle">Match your device setting.</string>
     <string name="theme_option_light_subtitle">Always use light colors.</string>
     <string name="theme_option_dark_subtitle">Always use dark colors.</string>
+    <string name="theme_colors_section_title">Colors</string>
+    <string name="theme_section_title">Theme</string>
+    <string name="legacy_theme_title">Use legacy theme</string>
+    <string name="legacy_theme_subtitle">Switch back to the classic main view.</string>
+    <string name="theme_list_current_title">Current theme</string>
+    <string name="theme_list_current_subtitle">Currently active</string>
+    <string name="theme_list_official_title">Official themes</string>
+    <string name="theme_list_main_title">Main theme</string>
+    <string name="theme_list_main_subtitle">Default main view</string>
+    <string name="theme_list_legacy_title">Legacy theme</string>
+    <string name="theme_list_legacy_subtitle">Classic main view</string>
+    <string name="theme_list_other_title">Other themes</string>
 
     <string name="calendar_scope_title">Calendars to Monitor</string>
     <string name="calendar_scope_description">Choose whether to use all calendars or select specific ones.</string>
@@ -458,6 +502,41 @@
     <string name="debug_tools_restore_banners_subtitle">Show DND mode and refresh banners on the home screen again</string>
     <string name="debug_tools_reset_total_silence_title">Reset Total Silence confirmation</string>
     <string name="debug_tools_reset_total_silence_subtitle">Show the Total Silence warning dialog again when selecting it</string>
+    <string name="debug_tools_themes_title">Themes</string>
+    <string name="debug_tools_themes_list_title">Theme list</string>
+    <string name="debug_tools_themes_list_subtitle">Open the full theme list</string>
+    <string name="debug_tools_main_view_default_title">Main View - Default</string>
+    <string name="debug_tools_main_view_default_subtitle">Standard production status screen</string>
+    <string name="debug_tools_main_view_v2_title">Card Grid</string>
+    <string name="debug_tools_main_view_v2_subtitle">Compact cards with status and controls</string>
+    <string name="debug_tools_main_view_v3_title">Bento Grid</string>
+    <string name="debug_tools_main_view_v3_subtitle">Asymmetric tiles with ambient highlights</string>
+    <string name="debug_tools_main_view_v4_title">Pro Dashboard</string>
+    <string name="debug_tools_main_view_v4_subtitle">Structured layout with countdown focus</string>
+    <string name="debug_tools_main_view_v5_title">Playful Gradient</string>
+    <string name="debug_tools_main_view_v5_subtitle">Bold cards with soft gradient accents</string>
+    <string name="debug_tools_main_view_v6_title">Main View V6 - Minimal</string>
+    <string name="debug_tools_main_view_v6_subtitle">Clean layout with quick actions and subtle motion</string>
+    <string name="debug_tools_main_view_v7_title">Main View V7 - Bottom Controls</string>
+    <string name="debug_tools_main_view_v7_subtitle">V2-style layout with bottom automation controls</string>
+    <string name="debug_tools_main_view_v8_title">Main View V8 - Hybrid</string>
+    <string name="debug_tools_main_view_v8_subtitle">Hybrid of V4 and V7</string>
+    <string name="debug_tools_main_view_v10_title">Main View V10 - Refined V4</string>
+    <string name="debug_tools_main_view_v10_subtitle">Gradient status with filters and improved layout</string>
+    <string name="theme_debug_mode_title">Theme debugging</string>
+    <string name="theme_debug_mode_description">Choose what debug controls appear inside themes.</string>
+    <string name="theme_debug_mode_off">Off</string>
+    <string name="theme_debug_mode_off_subtitle">Hide all theme debugging UI</string>
+    <string name="theme_debug_mode_gradient">Gradient overview</string>
+    <string name="theme_debug_mode_gradient_subtitle">Show resolved gradient colors in V10</string>
+    <string name="theme_debug_mode_selector">Theme selector</string>
+    <string name="theme_debug_mode_selector_subtitle">Show a bottom bar to switch themes</string>
+    <string name="theme_debug_selector_title">Theme selector</string>
+    <string name="theme_debug_selector_subtitle">Switch to any theme preview</string>
+    <string name="theme_debug_selector_action">Choose</string>
+    <string name="close">Close</string>
+    <string name="debug_tools_gradient_debug_title">Gradient debug</string>
+    <string name="debug_tools_gradient_debug_subtitle">Show resolved gradient colors</string>
     <string name="dnd_priority_summary_title">Priority interruptions</string>
     <string name="dnd_priority_description">Choose which people and apps can still interrupt you while Priority Only is active.</string>
     <string name="dnd_priority_summary_format">Allowed: %1$s</string>
@@ -544,6 +623,22 @@
     <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
     <string name="meeting_overrun_restore">Restore</string>
 
+    <!-- Action status strip -->
+    <string name="action_status_dnd_skipped">DND will be skipped for this event</string>
+    <string name="action_status_dnd_enabled">DND enabled for this event</string>
+    <string name="action_status_dnd_enabled_tap">DND enabled for this event • Tap to remove</string>
+    <string name="action_status_dnd_skipped_tap">DND will be skipped for this event • Tap to remove</string>
+    <string name="action_status_undo">Undo</string>
+    <string name="action_strip_tap_to_skip">Tap to skip DND for this event</string>
+    <string name="action_strip_tap_to_enable">Tap to enable DND for this event</string>
+
+    <!-- New event before skipped notification -->
+    <string name="new_event_before_skipped_title">New meeting detected</string>
+    <string name="new_event_before_skipped_body">\"%1$s\" is scheduled before your skipped event</string>
+    <string name="new_event_before_skipped_body_generic">A new meeting is scheduled before your skipped event</string>
+    <string name="new_event_before_skipped_channel_name">New Event Alerts</string>
+    <string name="new_event_before_skipped_channel_description">Alerts when new meetings appear before skipped events</string>
+
     <!-- Debug tools -->
     <string name="debug_section_title">Debug</string>
     <string name="debug_tools_disabled">Debug tools hidden</string>
@@ -597,6 +692,9 @@
     <!-- Next meeting -->
     <string name="dnd_will_activate">DND will activate at %1$s</string>
     <string name="time_until_format">in %1$s</string>
+    <string name="time_unit_hours_short">h</string>
+    <string name="time_unit_minutes_short">m</string>
+    <string name="time_unit_seconds_short">s</string>
     <string name="time_until_now">now</string>
     <string name="untitled_meeting">Untitled meeting</string>
     <string name="event_overview_now_label">Now</string>

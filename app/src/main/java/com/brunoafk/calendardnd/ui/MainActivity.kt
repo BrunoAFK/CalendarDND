@@ -80,9 +80,11 @@ class MainActivity : AppCompatActivity() {
         playStoreUpdateLauncher = registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
-            if (result.resultCode != RESULT_OK) {
-                playStoreUpdateManager.checkForPlayStoreUpdate(this, playStoreUpdateLauncher)
-            }
+            playStoreUpdateManager.handleUpdateFlowResult(
+                result.resultCode,
+                this,
+                playStoreUpdateLauncher
+            )
         }
         tileHintState.value = isTilePreferencesIntent(intent)
         openUpdatesState.value = shouldOpenUpdates(intent)

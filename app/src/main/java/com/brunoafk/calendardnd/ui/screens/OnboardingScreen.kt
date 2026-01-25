@@ -122,6 +122,8 @@ fun OnboardingScreen(
 
     val preDndNotificationUserSet by settingsStore.preDndNotificationUserSet
         .collectAsState(initial = false)
+    val postMeetingNotificationEnabled by settingsStore.postMeetingNotificationEnabled
+        .collectAsState(initial = false)
 
     // Track if we've already auto-enabled notifications to prevent duplicate calls
     var hasAutoEnabledNotifications by remember { mutableStateOf(false) }
@@ -156,13 +158,17 @@ fun OnboardingScreen(
         AnalyticsTracker.logScreenView(context, "onboarding")
     }
 
-    // Auto-enable pre-DND notifications when permission is granted
-    LaunchedEffect(permissionsState.hasNotifications, preDndNotificationUserSet) {
+    // Auto-enable notifications when permission is granted
+    LaunchedEffect(permissionsState.hasNotifications, preDndNotificationUserSet, postMeetingNotificationEnabled) {
         if (permissionsState.hasNotifications &&
-            !preDndNotificationUserSet &&
             !hasAutoEnabledNotifications) {
-            settingsStore.setPreDndNotificationEnabled(true)
-            settingsStore.setPreDndNotificationUserSet(true)
+            if (!preDndNotificationUserSet) {
+                settingsStore.setPreDndNotificationEnabled(true)
+                settingsStore.setPreDndNotificationUserSet(true)
+            }
+            if (!postMeetingNotificationEnabled) {
+                settingsStore.setPostMeetingNotificationEnabled(true)
+            }
             hasAutoEnabledNotifications = true
         }
     }

@@ -17,4 +17,12 @@ class PlayStoreUpdateManagerNoOp : PlayStoreUpdateManager {
     ) {
         // No-op
     }
+
+    override fun handleUpdateFlowResult(
+        resultCode: Int,
+        activity: Activity,
+        launcher: ActivityResultLauncher<IntentSenderRequest>
+    ) {
+        // No-op
+    }
 }

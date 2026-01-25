@@ -13,4 +13,9 @@ interface PlayStoreUpdateManager {
         activity: Activity,
         launcher: ActivityResultLauncher<IntentSenderRequest>
     )
+    fun handleUpdateFlowResult(
+        resultCode: Int,
+        activity: Activity,
+        launcher: ActivityResultLauncher<IntentSenderRequest>
+    )
 }

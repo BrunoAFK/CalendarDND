@@ -16,6 +16,7 @@ import com.brunoafk.calendardnd.domain.engine.AutomationEngine
 import com.brunoafk.calendardnd.domain.engine.EngineInput
 import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.system.notifications.MeetingOverrunNotificationHelper
+import com.brunoafk.calendardnd.system.notifications.NewEventBeforeSkippedNotificationHelper
 import com.brunoafk.calendardnd.system.workers.Workers
 import com.brunoafk.calendardnd.util.AndroidTimeFormatter
 import com.brunoafk.calendardnd.util.AnalyticsTracker
@@ -66,6 +67,8 @@ object EngineRunner {
                 busyOnly = settingsSnapshot.busyOnly,
                 ignoreAllDay = settingsSnapshot.ignoreAllDay,
                 skipRecurring = settingsSnapshot.skipRecurring,
+                selectedDaysEnabled = settingsSnapshot.selectedDaysEnabled,
+                selectedDaysMask = settingsSnapshot.selectedDaysMask,
                 minEventMinutes = settingsSnapshot.minEventMinutes,
                 requireLocation = settingsSnapshot.requireLocation,
                 dndMode = settingsSnapshot.dndMode,
@@ -83,8 +86,13 @@ object EngineRunner {
                 dndSetByApp = runtimeSnapshot.dndSetByApp,
                 activeWindowEndMs = runtimeSnapshot.activeWindowEndMs,
                 userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs,
+                userSuppressedFromMs = runtimeSnapshot.userSuppressedFromMs,
                 manualDndUntilMs = runtimeSnapshot.manualDndUntilMs,
+                manualEventStartMs = runtimeSnapshot.manualEventStartMs,
+                manualEventEndMs = runtimeSnapshot.manualEventEndMs,
                 lastKnownDndFilter = runtimeSnapshot.lastKnownDndFilter,
+                skippedEventBeginMs = runtimeSnapshot.skippedEventBeginMs,
+                notifiedNewEventBeforeSkip = runtimeSnapshot.notifiedNewEventBeforeSkip,
                 hasCalendarPermission = hasCalendarPermission(context),
                 hasPolicyAccess = dndController.hasPolicyAccess(),
                 hasExactAlarms = alarmScheduler.canScheduleExactAlarms(),
@@ -191,11 +199,26 @@ object EngineRunner {
                 }
             }
 
+            // Check for new event before skipped notification
+            if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.NEW_EVENT_BEFORE_SKIPPED) {
+                if (PermissionUtils.hasNotificationPermission(context)) {
+                    NewEventBeforeSkippedNotificationHelper.showNotification(
+                        context,
+                        eventTitle = output.nextInstance?.title
+                    )
+                }
+            }
+
             // State updates
             decision.setDndSetByApp?.let { runtimeStateStore.setDndSetByApp(it) }
             decision.setUserSuppressedUntil?.let { runtimeStateStore.setUserSuppressedUntilMs(it) }
+            decision.setUserSuppressedFromMs?.let { runtimeStateStore.setUserSuppressedFromMs(it) }
             decision.setActiveWindowEnd?.let { runtimeStateStore.setActiveWindowEndMs(it) }
             decision.setManualDndUntilMs?.let { runtimeStateStore.setManualDndUntilMs(it) }
+            decision.setManualEventStartMs?.let { runtimeStateStore.setManualEventStartMs(it) }
+            decision.setManualEventEndMs?.let { runtimeStateStore.setManualEventEndMs(it) }
+            decision.setSkippedEventBeginMs?.let { runtimeStateStore.setSkippedEventBeginMs(it) }
+            decision.setNotifiedNewEventBeforeSkip?.let { runtimeStateStore.setNotifiedNewEventBeforeSkip(it) }
 
             // Update last run time
             runtimeStateStore.setLastEngineRunMs(System.currentTimeMillis())

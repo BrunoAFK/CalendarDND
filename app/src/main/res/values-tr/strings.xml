@@ -31,16 +31,33 @@
     <string name="battery_rationale">Bu ayar olmadan alarmlar gecikebilir veya atlanabilir.</string>
     <string name="open_app_settings">Uygulama ayarlarını aç</string>
     <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
 
     <!-- Status Screen -->
     <string name="automation">Otomatik DND</string>
     <string name="automation_description">Takviminize göre DND’yi açar ve kapatır</string>
+    <string name="one_time_action_confirmation_title">Tek seferlik işlemleri doğrula</string>
+    <string name="one_time_action_confirmation_subtitle">Sonraki etkinlik için DND’yi etkinleştirmeden veya atlamadan önce sor</string>
     <string name="active">Etkin</string>
     <string name="inactive">Kapalı</string>
     <string name="setup_required">⚠️ Kurulum gerekli - eksik izinler</string>
     <string name="complete_setup">Kurulumu tamamla</string>
     <string name="current_meeting">Mevcut toplantı</string>
     <string name="next_meeting">Sıradaki toplantı</string>
+    <string name="next_event_enable_dnd">Bu etkinlik için DND’yi etkinleştir</string>
+    <string name="next_event_skip_dnd">Bu etkinlikte DND’yi atla</string>
+    <string name="next_event_enable_confirm_title">Sonraki etkinlik için DND etkinleştirilsin mi?</string>
+    <string name="next_event_enable_confirm_body">Rahatsız Etmeyin yalnızca sonraki etkinlik için etkinleştirilecek. Başlamadan önce kararınızı değiştirebilirsiniz.</string>
+    <string name="next_event_enable_confirm_action">Bu etkinlik için etkinleştir</string>
+    <string name="next_event_skip_confirm_title">Sonraki etkinlikte DND atlansın mı?</string>
+    <string name="next_event_skip_confirm_body">Sonraki etkinlik Rahatsız Etmeyin’i etkinleştirmeyecek. Başlamadan önce kararınızı değiştirebilirsiniz.</string>
+    <string name="next_event_skip_confirm_action">Bu etkinliği atla</string>
+    <string name="next_event_clear_enable_title">Tek seferlik DND kaldırılsın mı?</string>
+    <string name="next_event_clear_enable_body">Sonraki etkinlik normal otomasyon ayarlarını izleyecek.</string>
+    <string name="next_event_clear_enable_action">Bu etkinlik için kaldır</string>
+    <string name="next_event_clear_skip_title">Bu etkinlikteki atlama kaldırılsın mı?</string>
+    <string name="next_event_clear_skip_body">Sonraki etkinlik normal otomasyon ayarlarını izleyecek.</string>
+    <string name="next_event_clear_skip_action">Bu etkinlik için kaldır</string>
     <string name="none">Yok</string>
     <string name="none_scheduled">Plan yok</string>
     <string name="dnd_status">DND durumu</string>
@@ -108,6 +125,16 @@
     <string name="ignore_allday_description">Tüm gün etkinlikleri için DND tetikleme</string>
     <string name="skip_recurring_title">Tekrarlayan etkinlikleri atla</string>
     <string name="skip_recurring_description">Tekrarlayan etkinlikler için DND tetikleme</string>
+    <string name="filter_days_title">Etkin günler</string>
+    <string name="filter_days_description">DND yalnızca seçili günlerdeki etkinliklerde tetiklenir.</string>
+    <string name="day_filter_title">Gün filtresi</string>
+    <string name="day_filter_section_title">Filtre</string>
+    <string name="day_filter_enable_title">Gün filtresini etkinleştir</string>
+    <string name="day_filter_enable_description">DND yalnızca seçili günlerde tetiklenir.</string>
+    <string name="day_filter_days_title">Günler</string>
+    <string name="day_filter_days_description">DND’nin tetikleneceği günleri seçin.</string>
+    <string name="day_filter_all_days">Tüm günler</string>
+    <string name="day_filter_summary_selected">Seçildi: %1$s</string>
     <string name="require_location_title">Konum gerekli</string>
     <string name="require_location_description">Etkinlikte konum varsa DND tetikle.</string>
     <string name="min_duration_title">Minimum etkinlik süresi</string>
@@ -161,6 +188,11 @@
     <string name="status_automation_paused_summary">Otomasyon kapalı. DND otomatik değişmez.</string>
     <string name="status_dnd_active_summary">DND etkin. %1$s içinde biter.</string>
     <string name="status_automation_ready_summary">DND %1$s modunda otomatik etkinleşecek.</string>
+    <string name="automation_summary_calendars_all">Takvimler: Tümü</string>
+    <string name="automation_summary_calendars_selected">Takvimler: %d</string>
+    <string name="automation_summary_filters_none">Filtreler: Yok</string>
+    <string name="automation_summary_filters_count">Filtreler: %d</string>
+    <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
     <string name="dnd_mode_banner_message">DND %1$s modunda otomatik etkinleşecek. Değiştirmek için dokunun.</string>
     <string name="dnd_mode_banner_title">DND modu</string>
@@ -311,14 +343,26 @@
     <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_korean" translatable="false">한국어</string>
 
-    <string name="theme_title">Tema</string>
-    <string name="theme_description">Calendar DND’nin görünümünü seçin.</string>
+    <string name="theme_title">Renkler ve Tema</string>
+    <string name="theme_description">Renk modu ve tema stilini seçin.</string>
     <string name="theme_option_system">Sistem</string>
     <string name="theme_option_light">Açık</string>
     <string name="theme_option_dark">Koyu</string>
     <string name="theme_option_system_subtitle">Cihaz ayarını takip eder.</string>
     <string name="theme_option_light_subtitle">Her zaman açık renkleri kullanır.</string>
     <string name="theme_option_dark_subtitle">Her zaman koyu renkleri kullanır.</string>
+    <string name="theme_colors_section_title">Renkler</string>
+    <string name="theme_section_title">Tema</string>
+    <string name="legacy_theme_title">Eski temayı kullan</string>
+    <string name="legacy_theme_subtitle">Klasik ana görünüme geri dön.</string>
+    <string name="theme_list_current_title">Geçerli tema</string>
+    <string name="theme_list_current_subtitle">Şu anda etkin</string>
+    <string name="theme_list_official_title">Resmi temalar</string>
+    <string name="theme_list_main_title">Ana tema</string>
+    <string name="theme_list_main_subtitle">Varsayılan ana görünüm</string>
+    <string name="theme_list_legacy_title">Eski tema</string>
+    <string name="theme_list_legacy_subtitle">Klasik ana görünüm</string>
+    <string name="theme_list_other_title">Diğer temalar</string>
 
     <string name="calendar_scope_title">İzlenecek takvimler</string>
     <string name="calendar_scope_description">Tüm takvimleri kullanmayı veya belirli takvimleri seçmeyi seçin.</string>
@@ -402,6 +446,21 @@
     <string name="debug_tools_open_title">Hata ayıklama araçları</string>
     <string name="debug_tools_open_subtitle">Yerelleştirilmiş dizgileri ve derleme bilgisini incele</string>
     <string name="debug_tools_languages_title">Diller</string>
+    <string name="debug_tools_themes_title">Temalar</string>
+    <string name="debug_tools_main_view_v2_title">Kart Izgarası</string>
+    <string name="debug_tools_main_view_v2_subtitle">Durum ve kontrollerle kompakt kartlar</string>
+    <string name="debug_tools_main_view_v3_title">Bento Izgara</string>
+    <string name="debug_tools_main_view_v3_subtitle">Ortam vurgulu asimetrik kutular</string>
+    <string name="debug_tools_main_view_v4_title">Pro Pano</string>
+    <string name="debug_tools_main_view_v4_subtitle">Geri sayım odaklı düzen</string>
+    <string name="debug_tools_main_view_v5_title">Neşeli Gradyan</string>
+    <string name="debug_tools_main_view_v5_subtitle">Yumuşak gradyan vurgulu canlı kartlar</string>
+    <string name="debug_tools_main_view_v6_title">Ana Görünüm V6 - Minimal</string>
+    <string name="debug_tools_main_view_v6_subtitle">Hızlı eylemler ve hafif hareketlerle temiz düzen</string>
+    <string name="debug_tools_main_view_v7_title">Ana Görünüm V7 - Alt kontroller</string>
+    <string name="debug_tools_main_view_v7_subtitle">V2 düzeni ve altta otomasyon kontrolleri</string>
+    <string name="debug_tools_main_view_v10_title">Ana Görünüm V10 - İyileştirilmiş V4</string>
+    <string name="debug_tools_main_view_v10_subtitle">Gradyan durum, filtreler ve geliştirilmiş düzen</string>
     <string name="debug_language_title">Dizgiler: %1$s</string>
     <string name="debug_tools_preview_title">Önizleme</string>
     <string name="debug_tools_splash_title">Açılış önizlemesi</string>
@@ -544,6 +603,22 @@
     <string name="meeting_overrun_channel_description">Toplantılar uzadığında bildirimler</string>
     <string name="meeting_overrun_restore">Geri getir</string>
 
+    <!-- Action status strip -->
+    <string name="action_status_dnd_skipped">Bu etkinlik için DND atlanacak</string>
+    <string name="action_status_dnd_enabled">Bu etkinlik için DND etkinleştirildi</string>
+    <string name="action_status_dnd_enabled_tap">Bu etkinlik için DND etkinleştirildi • Kaldırmak için dokun</string>
+    <string name="action_status_dnd_skipped_tap">Bu etkinlik için DND atlanacak • Kaldırmak için dokun</string>
+    <string name="action_status_undo">Geri al</string>
+    <string name="action_strip_tap_to_skip">Bu etkinlik için DND\'yi atlamak için dokunun</string>
+    <string name="action_strip_tap_to_enable">Bu etkinlik için DND\'yi etkinleştirmek için dokunun</string>
+
+    <!-- New event before skipped notification -->
+    <string name="new_event_before_skipped_title">Yeni toplantı algılandı</string>
+    <string name="new_event_before_skipped_body">\"%1$s\" atlanan etkinlikten önce planlandı</string>
+    <string name="new_event_before_skipped_body_generic">Atlanan etkinlikten önce yeni bir toplantı planlandı</string>
+    <string name="new_event_before_skipped_channel_name">Yeni Etkinlik Uyarıları</string>
+    <string name="new_event_before_skipped_channel_description">Atlanan etkinliklerden önce yeni toplantılar göründüğünde uyarılar</string>
+
     <!-- Debug tools -->
     <string name="debug_section_title">Hata ayıklama</string>
     <string name="debug_tools_disabled">Hata ayıklama araçları gizli</string>
@@ -597,6 +672,9 @@
     <!-- Next meeting -->
     <string name="dnd_will_activate">DND %1$s saatinde etkinleşecek</string>
     <string name="time_until_format">%1$s içinde</string>
+    <string name="time_unit_hours_short">sa</string>
+    <string name="time_unit_minutes_short">dk</string>
+    <string name="time_unit_seconds_short">sn</string>
     <string name="time_until_now">şimdi</string>
     <string name="untitled_meeting">Başlıksız toplantı</string>
     <string name="event_overview_now_label">Şimdi</string>
@@ -619,4 +697,24 @@
     <string name="empty_disabled_message">Takvim etkinlikleriniz sırasında DND’nin otomatik açılması için otomatik sessize almayı etkinleştirin.</string>
     <string name="enable_now">Şimdi etkinleştir</string>
 
+    <string name="debug_tools_gradient_debug_title">Gradyan hata ayıklama</string>
+    <string name="debug_tools_gradient_debug_subtitle">Çözümlenen gradyan renklerini göster</string>
+    <string name="debug_tools_themes_list_title">Tema listesi</string>
+    <string name="debug_tools_themes_list_subtitle">Tam tema listesini aç</string>
+    <string name="debug_tools_main_view_default_title">Ana Görünüm – Varsayılan</string>
+    <string name="debug_tools_main_view_default_subtitle">Tüm ayrıntılarla klasik düzen</string>
+    <string name="debug_tools_main_view_v8_title">Main View V8 - Hybrid</string>
+    <string name="debug_tools_main_view_v8_subtitle">Hybrid of V4 and V7</string>
+    <string name="theme_debug_mode_title">Tema hata ayıklama</string>
+    <string name="theme_debug_mode_description">Temalarda görünecek hata ayıklama kontrollerini seçin.</string>
+    <string name="theme_debug_mode_off">Kapalı</string>
+    <string name="theme_debug_mode_off_subtitle">Tema hata ayıklama UI\'sini gizle</string>
+    <string name="theme_debug_mode_gradient">Gradyan görünümü</string>
+    <string name="theme_debug_mode_gradient_subtitle">V10\'daki çözümlenmiş gradyan renklerini göster</string>
+    <string name="theme_debug_mode_selector">Tema seçici</string>
+    <string name="theme_debug_mode_selector_subtitle">Temalar arası geçiş çubuğu göster</string>
+    <string name="theme_debug_selector_title">Tema seçici</string>
+    <string name="theme_debug_selector_subtitle">Herhangi bir tema önizlemesine geç</string>
+    <string name="theme_debug_selector_action">Seç</string>
+    <string name="close">Kapat</string>
 </resources>

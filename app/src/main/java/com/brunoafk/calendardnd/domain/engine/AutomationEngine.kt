@@ -43,6 +43,8 @@ class AutomationEngine(
             busyOnly = input.busyOnly,
             ignoreAllDay = input.ignoreAllDay,
             skipRecurring = input.skipRecurring,
+            selectedDaysEnabled = input.selectedDaysEnabled,
+            selectedDaysMask = input.selectedDaysMask,
             minEventMinutes = input.minEventMinutes,
             requireLocation = input.requireLocation,
             requireTitleKeyword = input.requireTitleKeyword,
@@ -61,6 +63,8 @@ class AutomationEngine(
             input.busyOnly,
             input.ignoreAllDay,
             input.skipRecurring,
+            input.selectedDaysEnabled,
+            input.selectedDaysMask,
             input.minEventMinutes,
             input.requireLocation,
             input.requireTitleKeyword,
@@ -82,10 +86,16 @@ class AutomationEngine(
         // Check for user override (user manually turned off DND during DND window)
         val userOverrideDetected = detectUserOverride(input, dndWindow.isActive)
 
-        val isSuppressed = now < input.userSuppressedUntilMs || userOverrideDetected
+        val suppressionActive = input.userSuppressedUntilMs > 0L &&
+            now >= input.userSuppressedFromMs &&
+            now < input.userSuppressedUntilMs
+        val isSuppressed = suppressionActive || userOverrideDetected
+
+        // Check for new event before skipped event
+        val newEventBeforeSkipped = detectNewEventBeforeSkipped(input, nextInstance)
 
         // Make the decision
-        val decision = makeDecision(input, dndWindow, isSuppressed, userOverrideDetected, nextInstance)
+        val decision = makeDecision(input, dndWindow, isSuppressed, userOverrideDetected, nextInstance, newEventBeforeSkipped)
 
         // Plan next schedule
         val schedulePlan = SchedulePlanner.planNextSchedule(
@@ -118,15 +128,76 @@ class AutomationEngine(
     }
 
     private fun handleAutomationOff(input: EngineInput): EngineOutput {
-        val decision = Decision(
+        val now = input.now
+        val manualStart = input.manualEventStartMs
+        val manualEnd = input.manualEventEndMs
+        val hasManualEvent = manualStart > 0L && manualEnd > 0L && manualEnd > now
+        val shouldClearManualEvent = manualStart > 0L && manualEnd > 0L && manualEnd <= now
+
+        if (hasManualEvent) {
+            val isActive = now in manualStart until manualEnd
+            val dndWindow = DndWindow(
+                startMs = manualStart,
+                endMs = manualEnd,
+                isActive = isActive,
+                nextStartMs = if (!isActive && manualStart > now) manualStart else null
+            )
+            val schedulePlan = SchedulePlanner.planNextSchedule(
+                now,
+                dndWindow.startMs,
+                dndWindow.endMs,
+                dndWindow.isActive,
+                input.hasExactAlarms
+            )
+            val shouldEnable = dndWindow.isActive && !input.systemDndIsOn
+            val shouldDisable = !dndWindow.isActive && input.dndSetByApp
+            val baseDecision = Decision(
+                shouldEnableDnd = shouldEnable,
+                shouldDisableDnd = shouldDisable,
+                setDndSetByApp = when {
+                    shouldEnable -> true
+                    shouldDisable -> false
+                    else -> null
+                },
+                setUserSuppressedUntil = null,
+                setUserSuppressedFromMs = null,
+                setActiveWindowEnd = if (dndWindow.isActive) dndWindow.endMs else 0L,
+                setManualDndUntilMs = 0L,
+                setManualEventStartMs = null,
+                setManualEventEndMs = null,
+                setSkippedEventBeginMs = null,
+                setNotifiedNewEventBeforeSkip = null,
+                notificationNeeded = NotificationNeeded.NONE
+            )
+            val decision = applySuppressionClear(baseDecision, input)
+
+            return EngineOutput(
+                decision = decision,
+                activeWindow = null,
+                nextInstance = null,
+                schedulePlan = schedulePlan,
+                nextDndStartMs = dndWindow.nextStartMs,
+                dndWindowEndMs = dndWindow.endMs,
+                logMessage = "Automation OFF - manual event window scheduled",
+                userOverrideDetected = false
+            )
+        }
+
+        val baseDecision = Decision(
             shouldEnableDnd = false,
             shouldDisableDnd = input.dndSetByApp, // Turn off only if we own it
             setDndSetByApp = if (input.dndSetByApp) false else null,
             setUserSuppressedUntil = null,
+            setUserSuppressedFromMs = null,
             setActiveWindowEnd = 0L,
             setManualDndUntilMs = 0L,
+            setManualEventStartMs = if (shouldClearManualEvent) 0L else null,
+            setManualEventEndMs = if (shouldClearManualEvent) 0L else null,
+            setSkippedEventBeginMs = null,
+            setNotifiedNewEventBeforeSkip = null,
             notificationNeeded = NotificationNeeded.NONE
         )
+        val decision = applySuppressionClear(baseDecision, input)
 
         return EngineOutput(
             decision = decision,
@@ -146,8 +217,13 @@ class AutomationEngine(
             shouldDisableDnd = false,
             setDndSetByApp = null,
             setUserSuppressedUntil = null,
+            setUserSuppressedFromMs = null,
             setActiveWindowEnd = null,
             setManualDndUntilMs = 0L,
+            setManualEventStartMs = null,
+            setManualEventEndMs = null,
+            setSkippedEventBeginMs = null,
+            setNotifiedNewEventBeforeSkip = null,
             notificationNeeded = NotificationNeeded.SETUP_REQUIRED
         )
 
@@ -185,6 +261,21 @@ class AutomationEngine(
         return false
     }
 
+    private fun detectNewEventBeforeSkipped(
+        input: EngineInput,
+        nextInstance: com.brunoafk.calendardnd.domain.model.EventInstance?
+    ): Boolean {
+        // Only detect if automation is ON and there's an active suppression (skip)
+        if (!input.automationEnabled) return false
+        if (input.userSuppressedUntilMs <= input.now) return false
+        if (input.skippedEventBeginMs <= 0) return false
+        if (input.notifiedNewEventBeforeSkip) return false
+        if (nextInstance == null) return false
+
+        // Check if the next event starts before the skipped event
+        return nextInstance.begin < input.skippedEventBeginMs && nextInstance.begin > input.now
+    }
+
     private fun detectMeetingOverrun(
         now: Long,
         activeWindowEnd: Long,
@@ -206,27 +297,38 @@ class AutomationEngine(
         dndWindow: DndWindow,
         isSuppressed: Boolean,
         userOverrideDetected: Boolean,
-        nextInstance: com.brunoafk.calendardnd.domain.model.EventInstance?
+        nextInstance: com.brunoafk.calendardnd.domain.model.EventInstance?,
+        newEventBeforeSkipped: Boolean
     ): Decision {
         val shouldClearManual = input.manualDndUntilMs > 0L && input.manualDndUntilMs <= input.now
         val manualClearValue = if (shouldClearManual) 0L else null
+        val shouldClearSuppression = input.userSuppressedUntilMs > 0L && input.userSuppressedUntilMs <= input.now
+        val suppressionClearValue = if (shouldClearSuppression) 0L else null
 
         // RULE 3: Active DND window and NOT suppressed
         if (dndWindow.isActive && !isSuppressed) {
             val meetingOverrun = input.postMeetingNotificationEnabled &&
                 detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
-            return Decision(
+            return applySuppressionClear(
+                Decision(
                 shouldEnableDnd = !input.systemDndIsOn, // Turn on if not already on
                 shouldDisableDnd = false,
                 setDndSetByApp = if (!input.systemDndIsOn) true else null,
                 setUserSuppressedUntil = null,
+                setUserSuppressedFromMs = null,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
+                setManualEventStartMs = null,
+                setManualEventEndMs = null,
+                setSkippedEventBeginMs = null,
+                setNotifiedNewEventBeforeSkip = null,
                 notificationNeeded = when {
                     meetingOverrun -> NotificationNeeded.MEETING_OVERRUN
                     !input.hasExactAlarms -> NotificationNeeded.DEGRADED_MODE
                     else -> NotificationNeeded.NONE
                 }
+            ),
+                input
             )
         }
 
@@ -236,18 +338,26 @@ class AutomationEngine(
                 detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
             val newSuppressedUntil = if (userOverrideDetected) dndWindow.endMs else null
 
-            return Decision(
+            return applySuppressionClear(
+                Decision(
                 shouldEnableDnd = false,
                 shouldDisableDnd = false,
                 setDndSetByApp = if (userOverrideDetected) false else null,
                 setUserSuppressedUntil = newSuppressedUntil,
+                setUserSuppressedFromMs = if (userOverrideDetected) input.now else null,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
+                setManualEventStartMs = null,
+                setManualEventEndMs = null,
+                setSkippedEventBeginMs = null,
+                setNotifiedNewEventBeforeSkip = null,
                 notificationNeeded = if (meetingOverrun) {
                     NotificationNeeded.MEETING_OVERRUN
                 } else {
                     NotificationNeeded.NONE
                 }
+            ),
+                input
             )
         }
 
@@ -261,22 +371,44 @@ class AutomationEngine(
             input.now <= input.activeWindowEndMs +
             input.postMeetingNotificationOffsetMinutes.toLong() * 60 * 1000L +
             MEETING_OVERRUN_THRESHOLD_MS
-        val notificationForOverrun = if (meetingOverrun) {
-            NotificationNeeded.MEETING_OVERRUN
-        } else if (!input.hasExactAlarms) {
-            NotificationNeeded.DEGRADED_MODE
-        } else {
-            NotificationNeeded.NONE
+
+        // Determine notification needed - prioritize new event before skipped
+        val notificationNeeded = when {
+            newEventBeforeSkipped -> NotificationNeeded.NEW_EVENT_BEFORE_SKIPPED
+            meetingOverrun -> NotificationNeeded.MEETING_OVERRUN
+            !input.hasExactAlarms -> NotificationNeeded.DEGRADED_MODE
+            else -> NotificationNeeded.NONE
         }
 
-        return Decision(
+        return applySuppressionClear(
+            Decision(
             shouldEnableDnd = false,
             shouldDisableDnd = input.dndSetByApp, // Turn off only if we own it
             setDndSetByApp = if (input.dndSetByApp) false else null,
-            setUserSuppressedUntil = null,
+            setUserSuppressedUntil = suppressionClearValue,
+            setUserSuppressedFromMs = suppressionClearValue,
             setActiveWindowEnd = if (keepActiveWindowEnd) input.activeWindowEndMs else 0L,
             setManualDndUntilMs = manualClearValue,
-            notificationNeeded = notificationForOverrun
+            setManualEventStartMs = null,
+            setManualEventEndMs = null,
+            setSkippedEventBeginMs = null,
+            setNotifiedNewEventBeforeSkip = if (newEventBeforeSkipped) true else null,
+            notificationNeeded = notificationNeeded
+        ),
+            input
+        )
+    }
+
+    private fun applySuppressionClear(decision: Decision, input: EngineInput): Decision {
+        val shouldClearSuppression = input.userSuppressedUntilMs > 0L && input.userSuppressedUntilMs <= input.now
+        if (!shouldClearSuppression) {
+            return decision
+        }
+        return decision.copy(
+            setUserSuppressedUntil = 0L,
+            setUserSuppressedFromMs = 0L,
+            setSkippedEventBeginMs = 0L,
+            setNotifiedNewEventBeforeSkip = false
         )
     }
 

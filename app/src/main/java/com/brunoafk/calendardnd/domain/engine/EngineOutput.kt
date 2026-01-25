@@ -23,8 +23,13 @@ data class Decision(
     val shouldDisableDnd: Boolean, // true = turn OFF
     val setDndSetByApp: Boolean?, // new value for ownership flag, null = no change
     val setUserSuppressedUntil: Long?, // new suppression timestamp, null = no change
+    val setUserSuppressedFromMs: Long?, // new suppression start timestamp, null = no change
     val setActiveWindowEnd: Long?, // new active window end, null = no change
     val setManualDndUntilMs: Long?, // new manual override end, null = no change
+    val setManualEventStartMs: Long?, // new manual event start, null = no change
+    val setManualEventEndMs: Long?, // new manual event end, null = no change
+    val setSkippedEventBeginMs: Long?, // new skipped event begin, null = no change
+    val setNotifiedNewEventBeforeSkip: Boolean?, // set notification flag, null = no change
     val notificationNeeded: NotificationNeeded
 )
 
@@ -32,5 +37,6 @@ enum class NotificationNeeded {
     NONE,
     SETUP_REQUIRED,
     DEGRADED_MODE,
-    MEETING_OVERRUN
+    MEETING_OVERRUN,
+    NEW_EVENT_BEFORE_SKIPPED
 }

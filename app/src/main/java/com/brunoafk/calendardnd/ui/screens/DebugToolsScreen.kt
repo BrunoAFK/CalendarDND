@@ -61,6 +61,8 @@ fun DebugToolsScreen(
     onOpenDebugLogs: () -> Unit = {},
     onOpenLogSettings: () -> Unit = {},
     onOpenTelemetryLevel: () -> Unit = {},
+    onOpenThemeList: () -> Unit = {},
+    onOpenThemeDebugging: () -> Unit = {},
     signatureStatus: ManualUpdateManager.SignatureStatus = ManualUpdateManager.SignatureStatus(
         isAllowed = true,
         isPinned = true
@@ -496,6 +498,24 @@ fun DebugToolsScreen(
                                 SettingsDivider()
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                SettingsSection(title = stringResource(R.string.debug_tools_themes_title)) {
+                    Column {
+                        SettingsNavigationRow(
+                            title = stringResource(R.string.debug_tools_themes_list_title),
+                            subtitle = stringResource(R.string.debug_tools_themes_list_subtitle),
+                            onClick = onOpenThemeList
+                        )
+                        SettingsDivider()
+                        SettingsNavigationRow(
+                            title = stringResource(R.string.theme_debug_mode_title),
+                            subtitle = stringResource(R.string.theme_debug_mode_description),
+                            onClick = onOpenThemeDebugging
+                        )
                     }
                 }
             }

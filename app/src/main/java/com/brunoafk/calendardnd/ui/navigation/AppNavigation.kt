@@ -42,6 +42,7 @@ import com.brunoafk.calendardnd.ui.screens.DndModeScreen
 import com.brunoafk.calendardnd.ui.screens.DebugToolsScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLanguageScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLogSettingsScreen
+import com.brunoafk.calendardnd.ui.screens.DayFilterScreen
 import com.brunoafk.calendardnd.ui.screens.DebugSplashPreviewScreen
 import com.brunoafk.calendardnd.ui.screens.TelemetryLevelScreen
 import com.brunoafk.calendardnd.ui.screens.PermissionsScreen
@@ -50,6 +51,13 @@ import com.brunoafk.calendardnd.ui.screens.WhatsNewScreen
 import com.brunoafk.calendardnd.ui.screens.SettingsScreen
 import com.brunoafk.calendardnd.ui.screens.StartupScreen
 import com.brunoafk.calendardnd.ui.screens.StatusScreen
+import com.brunoafk.calendardnd.ui.screens.StatusScreenV2
+import com.brunoafk.calendardnd.ui.screens.StatusScreenV3
+import com.brunoafk.calendardnd.ui.screens.StatusScreenV4
+import com.brunoafk.calendardnd.ui.screens.StatusScreenV5
+import com.brunoafk.calendardnd.ui.screens.DebugThemeListScreen
+import com.brunoafk.calendardnd.ui.screens.DebugThemeModeScreen
+import com.brunoafk.calendardnd.ui.screens.StatusScreenV10
 import com.brunoafk.calendardnd.ui.screens.UpdateScreen
 import com.brunoafk.calendardnd.ui.screens.UpdateHistoryScreen
 import com.brunoafk.calendardnd.ui.screens.NotificationAdvancedScreen
@@ -82,11 +90,19 @@ object AppRoutes {
     const val DEBUG_SPLASH = "debug_splash"
     const val DEBUG_LOG_SETTINGS = "debug_log_settings"
     const val DEBUG_TELEMETRY_LEVEL = "debug_telemetry_level"
+    const val DEBUG_THEME_LIST = "debug_theme_list"
+    const val DEBUG_THEME_MODE = "debug_theme_mode"
     const val UPDATES = "updates"
     const val UPDATE_HISTORY = "update_history"
     const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
+    const val DAY_FILTER = "day_filter"
     const val NOTIFICATION_ADVANCED = "notification_advanced"
     const val THEMES = "themes"
+    const val STATUS_V2 = "status_v2"
+    const val STATUS_V3 = "status_v3"
+    const val STATUS_V4 = "status_v4"
+    const val STATUS_V5 = "status_v5"
+    const val STATUS_V10 = "status_v10"
 }
 
 @Composable
@@ -116,6 +132,7 @@ fun AppNavigation(
     val scope = rememberCoroutineScope()
     var lastNavEventMs by remember { mutableStateOf(0L) }
     val debugToolsUnlocked by settingsStore.debugToolsUnlocked.collectAsState(initial = false)
+    val legacyThemeEnabled by settingsStore.legacyThemeEnabled.collectAsState(initial = false)
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
     )
@@ -377,48 +394,97 @@ fun AppNavigation(
                     debugLoggingEnabled = debugToolsUnlocked,
                     lockedRoutes = lockedRoutes
                 ) {
-                    StatusScreen(
-                        showTileHint = showTileHint,
-                        onTileHintDismissed = onTileHintConsumed,
-                        updateStatus = updateStatus,
-                        signatureStatus = signatureStatus,
-                        onOpenUpdates = {
-                            updateStatus?.let { status ->
-                                scope.launch {
-                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                    if (legacyThemeEnabled) {
+                        StatusScreen(
+                            showTileHint = showTileHint,
+                            onTileHintDismissed = onTileHintConsumed,
+                            updateStatus = updateStatus,
+                            signatureStatus = signatureStatus,
+                            onOpenUpdates = {
+                                updateStatus?.let { status ->
+                                    scope.launch {
+                                        settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                    }
                                 }
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.UPDATES)
+                            },
+                            onOpenSettings = { highlight ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(
+                                    "settings?highlight=${if (highlight) "automation" else "none"}"
+                                )
+                            },
+                            onOpenDebugLogs = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_LOGS)
+                            },
+                            onOpenSetup = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.ONBOARDING)
+                            },
+                            onOpenDndMode = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DND_MODE)
+                            },
+                            onSelectTheme = { targetRoute ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(targetRoute)
                             }
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.UPDATES)
-                        },
-                        onOpenSettings = { highlight ->
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate("settings?highlight=${if (highlight) "1" else "0"}")
-                        },
-                        onOpenDebugLogs = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_LOGS)
-                        },
-                        onOpenSetup = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.ONBOARDING)
-                        },
-                        onOpenDndMode = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DND_MODE)
-                        }
-                    )
+                        )
+                    } else {
+                        StatusScreenV10(
+                            onNavigateBack = {},
+                            showTileHint = showTileHint,
+                            onTileHintDismissed = onTileHintConsumed,
+                            updateStatus = updateStatus,
+                            signatureStatus = signatureStatus,
+                            onOpenUpdates = {
+                                updateStatus?.let { status ->
+                                    scope.launch {
+                                        settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                    }
+                                }
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.UPDATES)
+                            },
+                            onOpenSettings = { highlight ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(
+                                    "settings?highlight=${if (highlight) "automation" else "none"}"
+                                )
+                            },
+                            onOpenSetup = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.ONBOARDING)
+                            },
+                            onOpenDndMode = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DND_MODE)
+                            },
+                            onOpenFilters = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate("settings?highlight=filters")
+                            },
+                            onSelectTheme = { targetRoute ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(targetRoute)
+                            }
+                        )
+                    }
                 }
             }
             composable(
                 route = AppRoutes.SETTINGS,
                 arguments = listOf(navArgument("highlight") {
                     type = NavType.StringType
-                    defaultValue = "0"
+                    defaultValue = "none"
                 })
             ) { backStackEntry ->
                 val route = AppRoutes.SETTINGS
-                val highlight = backStackEntry.arguments?.getString("highlight") == "1"
+                val highlightValue = backStackEntry.arguments?.getString("highlight") ?: "none"
+                val highlightAutomation = highlightValue == "automation"
+                val highlightEventFilters = highlightValue == "filters"
                 DestinationWrapper(
                     route = route,
                     currentRoute = currentRoute,
@@ -480,11 +546,16 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.EVENT_KEYWORD_FILTER)
                         },
+                        onNavigateToDayFilter = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DAY_FILTER)
+                        },
                         onNavigateToNotificationAdvanced = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.NOTIFICATION_ADVANCED)
                         },
-                        highlightAutomation = highlight,
+                        highlightAutomation = highlightAutomation,
+                        highlightEventFilters = highlightEventFilters,
                         showUpdatesMenu = updateStatus != null
                     )
                 }
@@ -503,6 +574,27 @@ fun AppNavigation(
                     }
                 ) {
                     com.brunoafk.calendardnd.ui.screens.EventKeywordFilterScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.DAY_FILTER) {
+                val route = AppRoutes.DAY_FILTER
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    DayFilterScreen(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
@@ -785,8 +877,7 @@ fun AppNavigation(
                         onOpenDebugLogs = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_LOGS)
-                        }
-                        ,
+                        },
                         onOpenLogSettings = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_LOG_SETTINGS)
@@ -795,7 +886,61 @@ fun AppNavigation(
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.navigate(AppRoutes.DEBUG_TELEMETRY_LEVEL)
                         },
+                        onOpenThemeList = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DEBUG_THEME_LIST)
+                        },
+                        onOpenThemeDebugging = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DEBUG_THEME_MODE)
+                        },
                         signatureStatus = signatureStatus
+                    )
+                }
+            }
+            composable(AppRoutes.DEBUG_THEME_LIST) {
+                val route = AppRoutes.DEBUG_THEME_LIST
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    DebugThemeListScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.DEBUG_THEME_MODE) {
+                val route = AppRoutes.DEBUG_THEME_MODE
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    DebugThemeModeScreen(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
                     )
                 }
             }
@@ -906,6 +1051,247 @@ fun AppNavigation(
                         onNavigateBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.STATUS_V2) {
+                val route = AppRoutes.STATUS_V2
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    StatusScreenV2(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        showTileHint = showTileHint,
+                        onTileHintDismissed = onTileHintConsumed,
+                        updateStatus = updateStatus,
+                        signatureStatus = signatureStatus,
+                        onOpenUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATES)
+                        },
+                        onOpenSettings = { highlight ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(
+                                "settings?highlight=${if (highlight) "automation" else "none"}"
+                            )
+                        },
+                        onOpenSetup = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.ONBOARDING)
+                        },
+                        onOpenDndMode = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DND_MODE)
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.STATUS_V3) {
+                val route = AppRoutes.STATUS_V3
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    StatusScreenV3(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        showTileHint = showTileHint,
+                        onTileHintDismissed = onTileHintConsumed,
+                        updateStatus = updateStatus,
+                        signatureStatus = signatureStatus,
+                        onOpenUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATES)
+                        },
+                        onOpenSettings = { highlight ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(
+                                "settings?highlight=${if (highlight) "automation" else "none"}"
+                            )
+                        },
+                        onOpenSetup = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.ONBOARDING)
+                        },
+                        onOpenDndMode = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DND_MODE)
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.STATUS_V4) {
+                val route = AppRoutes.STATUS_V4
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    StatusScreenV4(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        showTileHint = showTileHint,
+                        onTileHintDismissed = onTileHintConsumed,
+                        updateStatus = updateStatus,
+                        signatureStatus = signatureStatus,
+                        onOpenUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATES)
+                        },
+                        onOpenSettings = { highlight ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(
+                                "settings?highlight=${if (highlight) "automation" else "none"}"
+                            )
+                        },
+                        onOpenSetup = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.ONBOARDING)
+                        },
+                        onOpenDndMode = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DND_MODE)
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.STATUS_V5) {
+                val route = AppRoutes.STATUS_V5
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    StatusScreenV5(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        onOpenSettings = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate("settings?highlight=none")
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
+                        }
+                    )
+                }
+            }
+            composable(AppRoutes.STATUS_V10) {
+                val route = AppRoutes.STATUS_V10
+                DestinationWrapper(
+                    route = route,
+                    currentRoute = currentRoute,
+                    debugOverlayEnabled = debugOverlayEnabled,
+                    debugLoggingEnabled = debugToolsUnlocked,
+                    lockedRoutes = lockedRoutes,
+                    onSystemBack = {
+                        lockedRoutes.value = lockedRoutes.value + route
+                        navController.popBackStack()
+                    }
+                ) {
+                    StatusScreenV10(
+                        onNavigateBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        },
+                        showTileHint = showTileHint,
+                        onTileHintDismissed = onTileHintConsumed,
+                        updateStatus = updateStatus,
+                        signatureStatus = signatureStatus,
+                        onOpenUpdates = {
+                            updateStatus?.let { status ->
+                                scope.launch {
+                                    settingsStore.setLastSeenUpdateVersion(status.info.versionName)
+                                }
+                            }
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.UPDATES)
+                        },
+                        onOpenSettings = { highlight ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(
+                                "settings?highlight=${if (highlight) "automation" else "none"}"
+                            )
+                        },
+                        onOpenSetup = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.ONBOARDING)
+                        },
+                        onOpenDndMode = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(AppRoutes.DND_MODE)
+                        },
+                        onOpenFilters = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate("settings?highlight=filters")
+                        },
+                        onSelectTheme = { targetRoute ->
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.navigate(targetRoute)
                         }
                     )
                 }

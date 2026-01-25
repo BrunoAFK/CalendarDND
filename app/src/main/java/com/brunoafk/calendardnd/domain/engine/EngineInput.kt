@@ -17,6 +17,8 @@ data class EngineInput(
     val busyOnly: Boolean,
     val ignoreAllDay: Boolean,
     val skipRecurring: Boolean,
+    val selectedDaysEnabled: Boolean,
+    val selectedDaysMask: Int,
     val minEventMinutes: Int,
     val requireLocation: Boolean,
     val dndMode: DndMode,
@@ -36,8 +38,13 @@ data class EngineInput(
     val dndSetByApp: Boolean,
     val activeWindowEndMs: Long,
     val userSuppressedUntilMs: Long,
+    val userSuppressedFromMs: Long,
     val manualDndUntilMs: Long,
+    val manualEventStartMs: Long,
+    val manualEventEndMs: Long,
     val lastKnownDndFilter: Int,
+    val skippedEventBeginMs: Long,
+    val notifiedNewEventBeforeSkip: Boolean,
 
     // System state
     val hasCalendarPermission: Boolean,

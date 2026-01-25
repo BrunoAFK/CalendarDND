@@ -53,8 +53,8 @@ private val DarkColors = darkColorScheme(
 // - shapes.medium/large: WarningBanner.kt, InfoBanner.kt, DndModeBanner.kt
 private val AppShapes = Shapes(
     small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(8.dp),
-    large = RoundedCornerShape(8.dp)
+    medium = RoundedCornerShape(12.dp),
+    large = RoundedCornerShape(16.dp)
 )
 
 val LocalIsDarkTheme = staticCompositionLocalOf { false }

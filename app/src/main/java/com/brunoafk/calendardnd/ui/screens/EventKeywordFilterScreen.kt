@@ -30,11 +30,15 @@ import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.domain.model.Trigger
+import com.brunoafk.calendardnd.system.alarms.EngineRunner
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.components.SettingsDivider
 import com.brunoafk.calendardnd.ui.components.SettingsSection
 import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,6 +123,9 @@ fun EventKeywordFilterScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setRequireTitleKeyword(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                             }
                         }
                     )
@@ -163,6 +170,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.KEYWORDS)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -172,6 +182,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.WHOLE_WORD)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -181,6 +194,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.STARTS_WITH)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -190,6 +206,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.ENDS_WITH)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -199,6 +218,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.EXACT)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -208,6 +230,9 @@ fun EventKeywordFilterScreen(
                                     onClick = {
                                         scope.launch {
                                             settingsStore.setTitleKeywordMatchMode(KeywordMatchMode.REGEX)
+                                            withContext(Dispatchers.IO) {
+                                                EngineRunner.runEngine(context, Trigger.MANUAL)
+                                            }
                                         }
                                         modeMenuExpanded = false
                                     },
@@ -222,6 +247,9 @@ fun EventKeywordFilterScreen(
                                 keywordInput = value
                                 scope.launch {
                                     settingsStore.setTitleKeyword(value)
+                                    withContext(Dispatchers.IO) {
+                                        EngineRunner.runEngine(context, Trigger.MANUAL)
+                                    }
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
@@ -257,6 +285,9 @@ fun EventKeywordFilterScreen(
                             onCheckedChange = { enabled ->
                                 scope.launch {
                                     settingsStore.setTitleKeywordCaseSensitive(enabled)
+                                    withContext(Dispatchers.IO) {
+                                        EngineRunner.runEngine(context, Trigger.MANUAL)
+                                    }
                                 }
                             }
                         )
@@ -270,6 +301,9 @@ fun EventKeywordFilterScreen(
                             onCheckedChange = { enabled ->
                                 scope.launch {
                                     settingsStore.setTitleKeywordMatchAll(enabled)
+                                    withContext(Dispatchers.IO) {
+                                        EngineRunner.runEngine(context, Trigger.MANUAL)
+                                    }
                                 }
                             }
                         )
@@ -282,6 +316,9 @@ fun EventKeywordFilterScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setTitleKeywordExclude(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                             }
                         }
                     )

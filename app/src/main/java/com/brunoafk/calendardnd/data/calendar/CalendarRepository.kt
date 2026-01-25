@@ -6,6 +6,9 @@ import com.brunoafk.calendardnd.domain.model.EventInstance
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.util.EngineConstants.ACTIVE_INSTANCES_WINDOW_MS
 import com.brunoafk.calendardnd.util.EngineConstants.NEXT_INSTANCE_LOOKAHEAD_MS
+import com.brunoafk.calendardnd.util.WeekdayMask
+import java.time.Instant
+import java.time.ZoneId
 
 class CalendarRepository(private val context: Context) : ICalendarRepository {
 
@@ -19,6 +22,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         skipRecurring: Boolean,
+        selectedDaysEnabled: Boolean,
+        selectedDaysMask: Int,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -47,6 +52,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                         busyOnly,
                         ignoreAllDay,
                         skipRecurring,
+                        selectedDaysEnabled,
+                        selectedDaysMask,
                         minEventMinutes,
                         requireLocation,
                         requireTitleKeyword,
@@ -69,6 +76,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         skipRecurring: Boolean,
+        selectedDaysEnabled: Boolean,
+        selectedDaysMask: Int,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -97,6 +106,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                         busyOnly,
                         ignoreAllDay,
                         skipRecurring,
+                        selectedDaysEnabled,
+                        selectedDaysMask,
                         minEventMinutes,
                         requireLocation,
                         requireTitleKeyword,
@@ -121,6 +132,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         skipRecurring: Boolean,
+        selectedDaysEnabled: Boolean,
+        selectedDaysMask: Int,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -143,6 +156,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                 busyOnly,
                 ignoreAllDay,
                 skipRecurring,
+                selectedDaysEnabled,
+                selectedDaysMask,
                 minEventMinutes,
                 requireLocation,
                 requireTitleKeyword,
@@ -171,6 +186,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         busyOnly: Boolean,
         ignoreAllDay: Boolean,
         skipRecurring: Boolean,
+        selectedDaysEnabled: Boolean,
+        selectedDaysMask: Int,
         minEventMinutes: Int,
         requireLocation: Boolean,
         requireTitleKeyword: Boolean,
@@ -199,6 +216,15 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
         // Recurring filter
         if (skipRecurring && instance.isRecurring) {
             return false
+        }
+
+        if (selectedDaysEnabled) {
+            val startDay = Instant.ofEpochMilli(instance.begin)
+                .atZone(ZoneId.systemDefault())
+                .dayOfWeek
+            if (!WeekdayMask.isDayAllowed(selectedDaysMask, startDay)) {
+                return false
+            }
         }
 
         // Minimum duration filter

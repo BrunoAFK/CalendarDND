@@ -6,7 +6,10 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,6 +61,11 @@ import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.AppConfig
 import com.brunoafk.calendardnd.util.TelemetryController
 import com.brunoafk.calendardnd.data.dnd.DndController
+import com.brunoafk.calendardnd.util.WeekdayMask
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
+import java.util.Locale
 import com.brunoafk.calendardnd.domain.model.Trigger
 import com.brunoafk.calendardnd.system.alarms.EngineRunner
 import com.brunoafk.calendardnd.ui.components.AppError
@@ -71,9 +79,10 @@ import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import com.brunoafk.calendardnd.util.PermissionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.text.withStyle
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
@@ -86,9 +95,11 @@ fun SettingsScreen(
     onNavigateToDndMode: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToEventKeywordFilter: () -> Unit,
+    onNavigateToDayFilter: () -> Unit,
     onNavigateToNotificationAdvanced: () -> Unit,
     onNavigateToThemes: () -> Unit,
     highlightAutomation: Boolean,
+    highlightEventFilters: Boolean,
     showUpdatesMenu: Boolean
 ) {
     val context = LocalContext.current
@@ -136,6 +147,10 @@ fun SettingsScreen(
     val busyOnly by settingsStore.busyOnly.collectAsState(initial = true)
     val ignoreAllDay by settingsStore.ignoreAllDay.collectAsState(initial = true)
     val skipRecurring by settingsStore.skipRecurring.collectAsState(initial = false)
+    val selectedDaysEnabled by settingsStore.selectedDaysEnabled.collectAsState(initial = false)
+    val selectedDaysMask by settingsStore.selectedDaysMask.collectAsState(
+        initial = WeekdayMask.ALL_DAYS_MASK
+    )
     val minEventMinutes by settingsStore.minEventMinutes.collectAsState(initial = 10)
     val requireLocation by settingsStore.requireLocation.collectAsState(initial = false)
     val dndMode by settingsStore.dndMode.collectAsState(initial = DndMode.PRIORITY)
@@ -151,6 +166,7 @@ fun SettingsScreen(
     val analyticsOptIn by settingsStore.analyticsOptIn.collectAsState(initial = false)
     val crashlyticsOptIn by settingsStore.crashlyticsOptIn.collectAsState(initial = true)
     val automationEnabled by settingsStore.automationEnabled.collectAsState(initial = false)
+    val oneTimeActionConfirmation by settingsStore.oneTimeActionConfirmation.collectAsState(initial = true)
     val debugToolsUnlocked by settingsStore.debugToolsUnlocked.collectAsState(initial = false)
     var hasCalendarPermission by remember {
         mutableStateOf(PermissionUtils.hasCalendarPermission(context))
@@ -192,6 +208,30 @@ fun SettingsScreen(
         append(" ")
         append(eventKeywordSubtitle)
     }
+    val locale = remember(context) {
+        context.resources.configuration.locales[0] ?: Locale.getDefault()
+    }
+    val dayLabels = remember(locale) {
+        val firstDay = WeekFields.of(Locale.getDefault()).firstDayOfWeek
+        val orderedDays = (0..6).map { offset -> firstDay.plus(offset.toLong()) }
+        orderedDays.map { day ->
+            day to day.getDisplayName(TextStyle.FULL, locale)
+        }
+    }
+    val selectedDayLabels = remember(dayLabels, selectedDaysMask) {
+        dayLabels.filter { (day, _) ->
+            (selectedDaysMask and WeekdayMask.dayToMask(day)) != 0
+        }.map { it.second }
+    }
+    val dayFilterSummary = when {
+        !selectedDaysEnabled || selectedDayLabels.size == 7 ->
+            stringResource(com.brunoafk.calendardnd.R.string.day_filter_all_days)
+        else ->
+            stringResource(
+                com.brunoafk.calendardnd.R.string.day_filter_summary_selected,
+                selectedDayLabels.joinToString(", ")
+            )
+    }
     val dndOffsetHelpText = when {
         dndStartOffsetMinutes == 0 -> stringResource(
             com.brunoafk.calendardnd.R.string.dnd_timing_help_on_time
@@ -228,9 +268,12 @@ fun SettingsScreen(
     val showDebugTools = debugToolsUnlocked
     var permissionErrorDismissed by remember { mutableStateOf(false) }
     val highlightAlpha = remember { Animatable(0f) }
+    val highlightFiltersAlpha = remember { Animatable(0f) }
     var highlightPlayed by rememberSaveable { mutableStateOf(false) }
+    var highlightFiltersPlayed by rememberSaveable { mutableStateOf(false) }
     var isCheckingDnd by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val eventFiltersRequester = remember { BringIntoViewRequester() }
 
     fun refreshPermissions() {
         hasCalendarPermission = PermissionUtils.hasCalendarPermission(context)
@@ -256,6 +299,20 @@ fun SettingsScreen(
             repeat(2) { index ->
                 highlightAlpha.snapTo(1f)
                 highlightAlpha.animateTo(0f, animationSpec = tween(durationMillis = 700))
+                if (index == 0) {
+                    kotlinx.coroutines.delay(120L)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(highlightEventFilters) {
+        if (highlightEventFilters && !highlightFiltersPlayed) {
+            highlightFiltersPlayed = true
+            eventFiltersRequester.bringIntoView()
+            repeat(2) { index ->
+                highlightFiltersAlpha.snapTo(1f)
+                highlightFiltersAlpha.animateTo(0f, animationSpec = tween(durationMillis = 700))
                 if (index == 0) {
                     kotlinx.coroutines.delay(120L)
                 }
@@ -414,8 +471,20 @@ fun SettingsScreen(
             }
 
             item {
-                SettingsSection(title = stringResource(com.brunoafk.calendardnd.R.string.event_filters)) {
-                    SettingsSwitchRow(
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .bringIntoViewRequester(eventFiltersRequester)
+                ) {
+                    SettingsSection(title = stringResource(com.brunoafk.calendardnd.R.string.event_filters)) {
+                        SettingsSwitchRow(
+                            modifier = Modifier
+                                .background(
+                                    MaterialTheme.colorScheme.primary.copy(
+                                        alpha = 0.14f * highlightFiltersAlpha.value
+                                    ),
+                                    MaterialTheme.shapes.small
+                                ),
                         title = stringResource(com.brunoafk.calendardnd.R.string.busy_only_title),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.busy_only_description),
                         helpText = if (!busyOnly) {
@@ -427,6 +496,9 @@ fun SettingsScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setBusyOnly(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
                                     "busy_only",
@@ -434,7 +506,7 @@ fun SettingsScreen(
                                 )
                             }
                         }
-                    )
+                        )
                     SettingsDivider()
                     SettingsSwitchRow(
                         title = stringResource(com.brunoafk.calendardnd.R.string.ignore_allday_title),
@@ -443,6 +515,9 @@ fun SettingsScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setIgnoreAllDay(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
                                     "ignore_all_day",
@@ -459,6 +534,9 @@ fun SettingsScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setSkipRecurring(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
                                     "skip_recurring",
@@ -466,6 +544,12 @@ fun SettingsScreen(
                                 )
                             }
                         }
+                    )
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.filter_days_title),
+                        subtitle = dayFilterSummary,
+                        onClick = onNavigateToDayFilter
                     )
                     SettingsDivider()
                     SettingsSwitchRow(
@@ -477,6 +561,9 @@ fun SettingsScreen(
                         onCheckedChange = { enabled ->
                             scope.launch {
                                 settingsStore.setRequireLocation(enabled)
+                                withContext(Dispatchers.IO) {
+                                    EngineRunner.runEngine(context, Trigger.MANUAL)
+                                }
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
                                     "require_location",
@@ -512,6 +599,11 @@ fun SettingsScreen(
                                     "min_event_minutes",
                                     minEventMinutes.toString()
                                 )
+                                scope.launch {
+                                    withContext(Dispatchers.IO) {
+                                        EngineRunner.runEngine(context, Trigger.MANUAL)
+                                    }
+                                }
                             },
                             valueRange = 5f..60f,
                             steps = 10
@@ -561,6 +653,7 @@ fun SettingsScreen(
                         onClick = onNavigateToEventKeywordFilter
                     )
                 }
+            }
             }
 
             item {
@@ -665,6 +758,22 @@ fun SettingsScreen(
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.notifications_advanced_subtitle),
                         onClick = onNavigateToNotificationAdvanced
                     )
+                    SettingsDivider()
+                    SettingsSwitchRow(
+                        title = stringResource(com.brunoafk.calendardnd.R.string.one_time_action_confirmation_title),
+                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.one_time_action_confirmation_subtitle),
+                        checked = oneTimeActionConfirmation,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                settingsStore.setOneTimeActionConfirmation(enabled)
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "one_time_action_confirmation",
+                                    enabled.toString()
+                                )
+                            }
+                        }
+                    )
                 }
             }
 
@@ -754,7 +863,6 @@ fun SettingsScreen(
         }
     }
 }
-
 }
 
 private enum class NotificationPermissionRequest {

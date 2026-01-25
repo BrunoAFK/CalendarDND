@@ -2,78 +2,96 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Summary
+
+Calendar DND is an Android app that automatically manages Do Not Disturb mode based on calendar events. Built with Kotlin/Jetpack Compose following Clean Architecture.
+
 ## Build Commands
 
 ```bash
-./gradlew assembleDebug                # Debug build
-./gradlew assemblePlayRelease          # Play Store release
-./gradlew assembleAltstoreRelease      # AltStore release
-./gradlew assembleManualRelease        # Manual distribution release
-./gradlew test                         # JVM unit tests
-./gradlew connectedAndroidTest         # Instrumented tests (requires device)
-./gradlew lint                         # Static analysis
+./gradlew assembleDebug          # Debug APK
+./gradlew assemblePlayRelease    # Play Store release
+./gradlew assembleFdroidRelease  # F-Droid release (no Firebase)
+./gradlew assembleManualRelease  # Manual distribution
+./gradlew installDebug           # Install on device
+./gradlew test                   # Unit tests
+./gradlew test --tests "ClassName"  # Single test class
+./gradlew connectedAndroidTest   # Instrumented tests
+./gradlew lint                   # Code quality
 ```
-
-Build toggles (pass via `-P` or add to `gradle.properties`):
-- `crashlyticsEnabled=false` - Disable Firebase Crashlytics
-- `analyticsEnabled=false` - Disable Firebase Analytics
-- `debugToolsEnabled=true` - Enable debug tools in release
 
 ## Architecture
 
-Calendar DND uses clean architecture with four layers:
+Four-layer Clean Architecture:
 
 ```
-UI Layer (Compose)
-    ↓
-Domain Layer (Pure Kotlin)
-    ↓
-Data Layer (Repositories + DataStore)
-    ↓
-System Layer (Alarms, Workers, Receivers)
+UI Layer (Compose) → Domain Layer (Pure Kotlin) → Data Layer → System Layer
 ```
 
-### Key Components
+- **UI** (`ui/`): Compose screens, navigation, components
+- **Domain** (`domain/`): Pure Kotlin business logic - no Android dependencies
+- **Data** (`data/`): Repositories for calendar, DND, preferences (DataStore)
+- **System** (`system/`): AlarmManager, WorkManager, BroadcastReceivers
 
-- **AutomationEngine** (`domain/engine/AutomationEngine.kt`): Pure Kotlin decision-making logic. Can be unit tested without Android dependencies. Takes `EngineInput`, returns `EngineOutput`.
+### Core Flow
 
-- **MeetingWindowResolver** (`domain/planning/MeetingWindowResolver.kt`): Merges overlapping/touching calendar events into single windows to prevent DND flickering between back-to-back meetings.
+All background triggers → `EngineRunner.runEngine()` → `AutomationEngine.run(EngineInput)` → `EngineOutput` → apply DND changes → schedule next alarm
 
-- **EngineRunner** (`system/alarms/EngineRunner.kt`): Centralized entry point for all background execution. Called by AlarmReceiver, Workers, and BroadcastReceivers.
+### Key Files
 
-- **SettingsStore** (`data/prefs/SettingsStore.kt`): User preferences (persisted).
+| File | Purpose |
+|------|---------|
+| `domain/engine/AutomationEngine.kt` | Decision-making brain (pure Kotlin, deterministic) |
+| `domain/engine/EngineInput.kt` | All inputs: settings, permissions, current state |
+| `system/alarms/EngineRunner.kt` | Orchestration - gathers input, runs engine, applies output |
+| `domain/planning/MeetingWindowResolver.kt` | Merges overlapping/consecutive meetings |
+| `data/calendar/CalendarRepository.kt` | Calendar queries via ContentResolver |
+| `data/prefs/SettingsStore.kt` | Persistent user preferences |
+| `data/prefs/RuntimeStateStore.kt` | Transient automation state |
+| `data/dnd/DndController.kt` | Android DND system interface |
 
-- **RuntimeStateStore** (`data/prefs/RuntimeStateStore.kt`): App runtime state including `dndSetByApp` ownership flag (ephemeral).
+### Background Scheduling (3 tiers)
 
-### Background Scheduling Strategy
+1. **Exact Alarms** (primary): `AlarmManager.setExactAndAllowWhileIdle()` at meeting boundaries
+2. **WorkManager Guards** (fallback): 2 min before/after boundaries when exact alarms unavailable
+3. **SanityWorker** (safety net): Periodic 15-minute checks
 
-1. **Primary**: Exact alarms at meeting boundaries (`setExactAndAllowWhileIdle`)
-2. **Fallback**: WorkManager near-term guards (when exact alarms unavailable)
-3. **Safety net**: 15-minute periodic SanityWorker
+### User Override Detection
 
-### DND Ownership Model
+App tracks `dndSetByApp` in RuntimeStateStore. If user manually disables DND during a meeting, the app sets `userSuppressedUntilMs` and stops interfering until meeting ends.
 
-The app tracks whether it "owns" the current DND state via `RuntimeStateStore.dndSetByApp`. If user manually changes DND during a meeting, the app detects this (dndSetByApp=true but system DND differs) and sets `userSuppressedUntilMs` to stop interfering until meeting ends.
+## Product Flavors
 
-## Build Flavors
+| Flavor | Firebase | Updates | Notes |
+|--------|----------|---------|-------|
+| `play` | Full | Play Store | Google Play distribution |
+| `fdroid` | Disabled | None | F-Droid distribution |
+| `manual` | Full | In-app/GitHub | Direct APK |
 
-Three distribution variants (`distribution` dimension):
-- `play` - Google Play Store
-- `altstore` - AltStore
-- `manual` - Direct download with built-in update checker (checks `update.json` from GitHub Releases)
+Flavor-specific code in `src/play/`, `src/fdroid/`, `src/manual/`.
+
+## Code Style
+
+- Kotlin with JVM target 11, 4-space indentation
+- Packages: `lowercase`, Classes: `PascalCase`, Functions/vars: `camelCase`, Constants: `UPPER_SNAKE_CASE`
+- Domain layer must remain pure Kotlin (no Android imports)
+- All DND/system operations wrapped in try-catch (Samsung compatibility)
 
 ## Testing
 
-Unit tests live in `app/src/test/java/`. The `AutomationEngine` and `MeetingWindowResolver` are pure Kotlin and designed for testability.
+Domain layer is pure Kotlin and easily unit tested. Run `./gradlew test` before marking tasks complete.
 
-Run a single test:
-```bash
-./gradlew test --tests "com.brunoafk.calendardnd.domain.planning.SchedulePlannerTest"
-```
+Key test: `AutomationEngineTest.kt` covers the decision logic.
 
-## Samsung-Specific Notes
+## SDK Requirements
 
-This app is optimized for Samsung devices. Key considerations:
-- Always wrap DND operations in try-catch (Samsung can throw even with permission)
-- Multiple scheduling strategies compensate for aggressive battery management
-- Guide users to disable battery optimization for reliability
+- minSdk: 26 (Android 8.0)
+- targetSdk/compileSdk: 36
+
+## Detailed Documentation
+
+See `docs/` folder:
+- `architecture.md` - Full system design
+- `getting-started.md` - Development setup
+- `configuration.md` - Build toggles and signing
+- `testing.md` - Test strategy

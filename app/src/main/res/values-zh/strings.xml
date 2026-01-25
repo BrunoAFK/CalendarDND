@@ -31,16 +31,33 @@
     <string name="battery_rationale">没有该权限时闹钟可能延迟或错过。</string>
     <string name="open_app_settings">打开应用设置</string>
     <string name="ok">确定</string>
+    <string name="cancel">取消</string>
 
     <!-- Status Screen -->
     <string name="automation">自动免打扰</string>
     <string name="automation_description">根据日历自动开启/关闭免打扰</string>
+    <string name="one_time_action_confirmation_title">确认一次性操作</string>
+    <string name="one_time_action_confirmation_subtitle">在为下一个事件启用或跳过免打扰前进行确认</string>
     <string name="active">已启用</string>
     <string name="inactive">未启用</string>
     <string name="setup_required">⚠️ 需要设置 - 权限缺失</string>
     <string name="complete_setup">完成设置</string>
     <string name="current_meeting">当前会议</string>
     <string name="next_meeting">下一个会议</string>
+    <string name="next_event_enable_dnd">仅为此事件开启免打扰</string>
+    <string name="next_event_skip_dnd">此事件不启用免打扰</string>
+    <string name="next_event_enable_confirm_title">为下一个事件开启免打扰？</string>
+    <string name="next_event_enable_confirm_body">免打扰只会在下一个事件期间开启。开始前你可以更改决定。</string>
+    <string name="next_event_enable_confirm_action">为此事件开启</string>
+    <string name="next_event_skip_confirm_title">跳过下一个事件的免打扰？</string>
+    <string name="next_event_skip_confirm_body">下一个事件不会启用免打扰。开始前你可以更改决定。</string>
+    <string name="next_event_skip_confirm_action">跳过此事件</string>
+    <string name="next_event_clear_enable_title">移除一次性免打扰？</string>
+    <string name="next_event_clear_enable_body">下一个事件将按常规自动化设置运行。</string>
+    <string name="next_event_clear_enable_action">为此事件移除</string>
+    <string name="next_event_clear_skip_title">移除对此事件的跳过？</string>
+    <string name="next_event_clear_skip_body">下一个事件将按常规自动化设置运行。</string>
+    <string name="next_event_clear_skip_action">为此事件移除</string>
     <string name="none">无</string>
     <string name="none_scheduled">无安排</string>
     <string name="dnd_status">免打扰状态</string>
@@ -108,6 +125,16 @@
     <string name="ignore_allday_description">全天事件不触发免打扰</string>
     <string name="skip_recurring_title">跳过重复事件</string>
     <string name="skip_recurring_description">重复事件不触发免打扰</string>
+    <string name="filter_days_title">启用的星期</string>
+    <string name="filter_days_description">仅在所选日期的事件上触发免打扰。</string>
+    <string name="day_filter_title">星期过滤</string>
+    <string name="day_filter_section_title">过滤</string>
+    <string name="day_filter_enable_title">启用星期过滤</string>
+    <string name="day_filter_enable_description">仅在所选日期触发免打扰。</string>
+    <string name="day_filter_days_title">日期</string>
+    <string name="day_filter_days_description">选择触发免打扰的日期。</string>
+    <string name="day_filter_all_days">所有日期</string>
+    <string name="day_filter_summary_selected">已选择：%1$s</string>
     <string name="require_location_title">需要位置</string>
     <string name="require_location_description">仅在事件包含位置时触发 DND。</string>
     <string name="min_duration_title">最短事件时长</string>
@@ -137,6 +164,11 @@
     <string name="status_dnd_active_summary">免打扰已开启，将在 %1$s 后结束。</string>
     <string name="status_automation_ready">自动静音就绪</string>
     <string name="status_automation_ready_summary">免打扰将以 %1$s 模式自动开启。</string>
+    <string name="automation_summary_calendars_all">日历：全部</string>
+    <string name="automation_summary_calendars_selected">日历：%d</string>
+    <string name="automation_summary_filters_none">过滤器：无</string>
+    <string name="automation_summary_filters_count">过滤器：%d</string>
+    <string name="automation_summary_format">%1$s \u2022 %2$s</string>
     <string name="status_automation_hint">免打扰将自动开启</string>
     <string name="status_dnd_mode_format">免打扰模式：%1$s</string>
     <string name="status_in_meeting">正在：%1$s</string>
@@ -244,14 +276,26 @@
     <string name="language_italian" translatable="false">Italiano</string>
     <string name="language_korean" translatable="false">한국어</string>
 
-    <string name="theme_title">主题</string>
-    <string name="theme_description">选择 Calendar DND 的外观。</string>
+    <string name="theme_title">颜色与主题</string>
+    <string name="theme_description">选择颜色模式和主题风格。</string>
     <string name="theme_option_system">系统</string>
     <string name="theme_option_light">浅色</string>
     <string name="theme_option_dark">深色</string>
     <string name="theme_option_system_subtitle">跟随设备设置。</string>
     <string name="theme_option_light_subtitle">始终使用浅色主题。</string>
     <string name="theme_option_dark_subtitle">始终使用深色主题。</string>
+    <string name="theme_colors_section_title">颜色</string>
+    <string name="theme_section_title">主题</string>
+    <string name="legacy_theme_title">使用旧版主题</string>
+    <string name="legacy_theme_subtitle">切换回经典主界面。</string>
+    <string name="theme_list_current_title">当前主题</string>
+    <string name="theme_list_current_subtitle">当前启用</string>
+    <string name="theme_list_official_title">官方主题</string>
+    <string name="theme_list_main_title">主主题</string>
+    <string name="theme_list_main_subtitle">默认主界面</string>
+    <string name="theme_list_legacy_title">旧版主题</string>
+    <string name="theme_list_legacy_subtitle">经典主界面</string>
+    <string name="theme_list_other_title">其他主题</string>
 
     <!-- Calendar Picker -->
     <string name="select_calendars">选择日历</string>
@@ -423,6 +467,21 @@
     <string name="debug_tools_open_title">调试工具</string>
     <string name="debug_tools_open_subtitle">检查本地化字符串和构建信息</string>
     <string name="debug_tools_languages_title">语言</string>
+    <string name="debug_tools_themes_title">主题</string>
+    <string name="debug_tools_main_view_v2_title">卡片网格</string>
+    <string name="debug_tools_main_view_v2_subtitle">紧凑卡片，含状态与控制</string>
+    <string name="debug_tools_main_view_v3_title">便当网格</string>
+    <string name="debug_tools_main_view_v3_subtitle">非对称卡片与环境高光</string>
+    <string name="debug_tools_main_view_v4_title">专业仪表盘</string>
+    <string name="debug_tools_main_view_v4_subtitle">结构化布局，强调倒计时</string>
+    <string name="debug_tools_main_view_v5_title">活力渐变</string>
+    <string name="debug_tools_main_view_v5_subtitle">醒目卡片与柔和渐变点缀</string>
+    <string name="debug_tools_main_view_v6_title">主界面 V6 - 极简</string>
+    <string name="debug_tools_main_view_v6_subtitle">简洁布局，快速操作与细腻动效</string>
+    <string name="debug_tools_main_view_v7_title">主界面 V7 - 底部控制</string>
+    <string name="debug_tools_main_view_v7_subtitle">V2 布局，底部自动化控制</string>
+    <string name="debug_tools_main_view_v10_title">主界面 V10 - 改进版 V4</string>
+    <string name="debug_tools_main_view_v10_subtitle">渐变状态、过滤器与改进布局</string>
     <string name="debug_language_title">字符串：%1$s</string>
     <string name="debug_tools_preview_title">预览</string>
     <string name="debug_tools_splash_title">启动画面预览</string>
@@ -512,6 +571,22 @@
     <string name="meeting_overrun_channel_name">会议超时</string>
     <string name="meeting_overrun_channel_description">会议超时时的通知</string>
 
+    <!-- Action status strip -->
+    <string name="action_status_dnd_skipped">此事件将跳过免打扰</string>
+    <string name="action_status_dnd_enabled">已为此事件启用免打扰</string>
+    <string name="action_status_dnd_enabled_tap">已为此事件启用免打扰 • 点击移除</string>
+    <string name="action_status_dnd_skipped_tap">此事件将跳过免打扰 • 点击移除</string>
+    <string name="action_status_undo">撤销</string>
+    <string name="action_strip_tap_to_skip">点击跳过此事件的免打扰</string>
+    <string name="action_strip_tap_to_enable">点击为此事件启用免打扰</string>
+
+    <!-- New event before skipped notification -->
+    <string name="new_event_before_skipped_title">检测到新会议</string>
+    <string name="new_event_before_skipped_body">\"%1$s\" 安排在跳过的事件之前</string>
+    <string name="new_event_before_skipped_body_generic">新会议安排在跳过的事件之前</string>
+    <string name="new_event_before_skipped_channel_name">新事件提醒</string>
+    <string name="new_event_before_skipped_channel_description">当新会议出现在跳过的事件之前时发出提醒</string>
+
     <!-- Settings help text -->
     <string name="settings_busy_only_help">标记为"空闲"或"暂定"的事件也会触发免打扰。</string>
     <string name="settings_min_duration_help">较短的会议不会触发免打扰。适用于快速签到。</string>
@@ -550,6 +625,9 @@
     <!-- Next meeting -->
     <string name="dnd_will_activate">免打扰将在 %1$s 开启</string>
     <string name="time_until_format">%1$s 后</string>
+    <string name="time_unit_hours_short">时</string>
+    <string name="time_unit_minutes_short">分</string>
+    <string name="time_unit_seconds_short">秒</string>
     <string name="time_until_now">现在</string>
     <string name="untitled_meeting">无标题会议</string>
     <string name="event_overview_now_label">当前</string>
@@ -630,4 +708,24 @@
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
     <string name="meeting_overrun_channel_name_silent">会议延长（静音）</string>
+    <string name="debug_tools_gradient_debug_title">渐变调试</string>
+    <string name="debug_tools_gradient_debug_subtitle">显示解析后的渐变颜色</string>
+    <string name="debug_tools_themes_list_title">主题列表</string>
+    <string name="debug_tools_themes_list_subtitle">打开完整主题列表</string>
+    <string name="debug_tools_main_view_default_title">主界面－默认</string>
+    <string name="debug_tools_main_view_default_subtitle">经典布局，包含完整信息</string>
+    <string name="debug_tools_main_view_v8_title">Main View V8 - Hybrid</string>
+    <string name="debug_tools_main_view_v8_subtitle">Hybrid of V4 and V7</string>
+    <string name="theme_debug_mode_title">主题调试</string>
+    <string name="theme_debug_mode_description">选择主题内显示的调试控件。</string>
+    <string name="theme_debug_mode_off">关闭</string>
+    <string name="theme_debug_mode_off_subtitle">隐藏所有主题调试界面</string>
+    <string name="theme_debug_mode_gradient">渐变概览</string>
+    <string name="theme_debug_mode_gradient_subtitle">显示 V10 中解析的渐变色</string>
+    <string name="theme_debug_mode_selector">主题选择器</string>
+    <string name="theme_debug_mode_selector_subtitle">显示用于切换主题的底栏</string>
+    <string name="theme_debug_selector_title">主题选择器</string>
+    <string name="theme_debug_selector_subtitle">切换到任意主题预览</string>
+    <string name="theme_debug_selector_action">选择</string>
+    <string name="close">关闭</string>
 </resources>

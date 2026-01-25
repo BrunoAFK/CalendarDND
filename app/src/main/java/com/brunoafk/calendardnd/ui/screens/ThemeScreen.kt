@@ -5,13 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -30,8 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.ThemeMode
+import com.brunoafk.calendardnd.ui.components.SettingsDivider
+import com.brunoafk.calendardnd.ui.components.SettingsSection
+import com.brunoafk.calendardnd.ui.components.SettingsSwitchRow
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
-import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
 import kotlinx.coroutines.launch
 
 data class ThemeOption(
@@ -48,8 +46,8 @@ fun ThemeScreen(
     val context = LocalContext.current
     val settingsStore = remember { SettingsStore(context) }
     val themeMode by settingsStore.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
+    val legacyThemeEnabled by settingsStore.legacyThemeEnabled.collectAsState(initial = false)
     val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
 
     val options = listOf(
         ThemeOption(
@@ -91,51 +89,65 @@ fun ThemeScreen(
             )
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                state = listState,
-                contentPadding = PaddingValues(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(options) { option ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = surfaceColorAtElevation(1.dp)
-                        ),
-                        onClick = {
-                            scope.launch {
-                                settingsStore.setThemeMode(option.mode)
+                item {
+                    SettingsSection(title = stringResource(R.string.theme_colors_section_title)) {
+                        Column {
+                            options.forEachIndexed { index, option ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            scope.launch {
+                                                settingsStore.setThemeMode(option.mode)
+                                            }
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = option.label,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = option.subtitle,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    RadioButton(
+                                        selected = themeMode == option.mode,
+                                        onClick = {
+                                            scope.launch {
+                                                settingsStore.setThemeMode(option.mode)
+                                            }
+                                        }
+                                    )
+                                }
+                                if (index < options.lastIndex) {
+                                    SettingsDivider()
+                                }
                             }
                         }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = option.label,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                RadioButton(
-                                    selected = themeMode == option.mode,
-                                    onClick = {
-                                        scope.launch {
-                                            settingsStore.setThemeMode(option.mode)
-                                        }
+                    }
+                }
+
+                item {
+                    SettingsSection(title = stringResource(R.string.theme_section_title)) {
+                        Column {
+                            SettingsSwitchRow(
+                                title = stringResource(R.string.legacy_theme_title),
+                                subtitle = stringResource(R.string.legacy_theme_subtitle),
+                                checked = legacyThemeEnabled,
+                                onCheckedChange = { enabled ->
+                                    scope.launch {
+                                        settingsStore.setLegacyThemeEnabled(enabled)
                                     }
-                                )
-                            }
-                            Text(
-                                text = option.subtitle,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                }
                             )
                         }
                     }

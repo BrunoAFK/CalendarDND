@@ -38,6 +38,8 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -760,17 +762,45 @@ fun StatusScreenV10(
                 ) {
                     Spacer(modifier = Modifier.height(24.dp))
                     nextInstance?.let { next ->
+                        val compactActiveActionType = determineActiveAction(next)
+                        val compactActionData = run {
+                            val (startMs, endMs) = buildManualWindow(next)
+                            if (automationEnabled) {
+                                OneTimeAction.SkipEvent(next, startMs, endMs)
+                            } else {
+                                OneTimeAction.EnableForEvent(next, startMs, endMs)
+                            }
+                        }
                         UpNextCompactCard(
                             title = next.title.takeIf { it.isNotBlank() }
                                 ?: stringResource(R.string.untitled_meeting),
                             time = TimeUtils.formatTime(context, next.begin),
                             startsIn = TimeUtils.formatDuration((next.begin - nowMs).coerceAtLeast(0L)),
-                            onClick = {
+                            activeActionType = compactActiveActionType,
+                            automationEnabled = automationEnabled,
+                            actionEnabled = nextActionEnabled,
+                            onCardClick = {
                                 StatusScreenIntents.openCalendarEvent(
                                     context,
                                     next.eventId,
                                     next.begin
                                 )
+                            },
+                            onSetAction = {
+                                if (oneTimeActionConfirmation) {
+                                    pendingOneTimeDialog = OneTimeDialog.Set(compactActionData)
+                                } else {
+                                    applyOneTimeAction(compactActionData)
+                                }
+                            },
+                            onClearAction = {
+                                compactActiveActionType?.let { type ->
+                                    if (oneTimeActionConfirmation) {
+                                        pendingOneTimeDialog = OneTimeDialog.Clear(type)
+                                    } else {
+                                        clearOneTimeAction()
+                                    }
+                                }
                             }
                         )
                     }
@@ -1147,53 +1177,124 @@ private fun UpNextCompactCard(
     title: String,
     time: String,
     startsIn: String,
-    onClick: () -> Unit
+    activeActionType: OneTimeActionType?,
+    automationEnabled: Boolean,
+    actionEnabled: Boolean,
+    onCardClick: () -> Unit,
+    onSetAction: () -> Unit,
+    onClearAction: () -> Unit
 ) {
-    Surface(
+    var expanded by remember { mutableStateOf(false) }
+    val isDarkTheme = LocalIsDarkTheme.current
+
+    // Yellow/gold color when action is active (same as NextMeetingCardV10)
+    val highlightColor = if (isDarkTheme) Color(0xFFB38B00) else Color(0xFFFFC107)
+    val isHighlighted = activeActionType != null
+
+    val cardBackgroundColor = if (isHighlighted) {
+        highlightColor.copy(alpha = 0.85f)
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f)
+    }
+
+    val primaryTextColor = if (isHighlighted) Color.Black else MaterialTheme.colorScheme.onSurface
+    val secondaryTextColor = if (isHighlighted) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
+    val iconTint = if (isHighlighted) Color.Black else MaterialTheme.colorScheme.primary
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 32.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f)
+            .padding(horizontal = 16.dp)
+            .animateContentSize()
     ) {
-        Row(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .clickable(onClick = onCardClick),
+            shape = RoundedCornerShape(
+                topStart = 12.dp,
+                topEnd = 12.dp,
+                bottomStart = if (expanded) 0.dp else 12.dp,
+                bottomEnd = if (expanded) 0.dp else 12.dp
+            ),
+            color = cardBackgroundColor
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Schedule,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Column {
-                    Text(
-                        text = stringResource(R.string.next_meeting),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
+                // Main content area
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Schedule,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = iconTint
                     )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.next_meeting),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = iconTint
+                        )
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = primaryTextColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     Text(
-                        text = title,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        text = stringResource(R.string.time_until_format, startsIn),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = secondaryTextColor
+                    )
+                }
+
+                // Expand/collapse arrow button - intercepts its own clicks
+                Surface(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .clickable(onClick = { expanded = !expanded }),
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (isHighlighted) {
+                        Color.Black.copy(alpha = 0.1f)
+                    } else {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = if (expanded) "Collapse" else "Expand",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        tint = iconTint
                     )
                 }
             }
-            Text(
-                text = stringResource(R.string.time_until_format, startsIn),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+        }
+
+        // Expandable action strip
+        AnimatedVisibility(
+            visible = expanded,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            ActionStrip(
+                activeActionType = activeActionType,
+                automationEnabled = automationEnabled,
+                enabled = actionEnabled,
+                onSetAction = onSetAction,
+                onClearAction = onClearAction,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

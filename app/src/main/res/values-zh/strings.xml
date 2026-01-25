@@ -655,9 +655,9 @@
     <string name="about_version_label">Version</string>
     <string name="about_version_section_title">Version</string>
     <string name="debug_logs_share">Share debug summary</string>
-    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
-    <string name="debug_tools_dry_run_title">Test run (dry)</string>
-    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_dry_run_subtitle">在不更改勿扰或日程的情况下模拟下一次决策</string>
+    <string name="debug_tools_dry_run_title">试运行（干跑）</string>
+    <string name="debug_tools_dry_run_toast">试运行完成</string>
     <string name="debug_tools_updates_title">更新</string>
     <string name="debug_tools_force_update_title">强制更新</string>
     <string name="debug_tools_force_update_subtitle">下载并启动最新版本的安装程序</string>

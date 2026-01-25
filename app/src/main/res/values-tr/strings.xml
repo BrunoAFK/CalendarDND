@@ -492,9 +492,9 @@
     <string name="debug_tools_reviews_force_title">Yorumu zorla goster</string>
     <string name="debug_tools_reviews_force_subtitle">Uygulama ici yorum dialogunu simdi goster.</string>
     <string name="debug_tools_reviews_no_activity">Yorum dialogu baslatilamadi.</string>
-    <string name="debug_tools_dry_run_title">Deneme çalıştırması (dry)</string>
+    <string name="debug_tools_dry_run_title">Kuru çalışma</string>
     <string name="debug_tools_dry_run_subtitle">DND veya zamanlamaları değiştirmeden bir sonraki kararı simüle et</string>
-    <string name="debug_tools_dry_run_toast">Dry run tamamlandı</string>
+    <string name="debug_tools_dry_run_toast">Kuru çalışma tamamlandı</string>
     <string name="debug_tools_updates_title">Güncellemeler</string>
     <string name="debug_tools_force_update_title">Güncellemeyi zorla</string>
     <string name="debug_tools_force_update_subtitle">En son sürümü indir ve yükleyiciyi başlat</string>

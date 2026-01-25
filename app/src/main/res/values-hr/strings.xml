@@ -583,9 +583,9 @@
     <string name="debug_tools_dnd_preview_subtitle">Privremeno primijeni DND na %1$d sekundi</string>
     <string name="debug_tools_dnd_preview_title">Pregled DND-a</string>
     <string name="debug_tools_dnd_preview_total_title">Pregled potpune tišine</string>
-    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
-    <string name="debug_tools_dry_run_title">Test run (dry)</string>
-    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_dry_run_subtitle">Simuliraj sljedeću odluku bez promjene DND-a ili rasporeda</string>
+    <string name="debug_tools_dry_run_title">Suhi test</string>
+    <string name="debug_tools_dry_run_toast">Suhi test završen</string>
     <string name="debug_tools_updates_title">Ažuriranja</string>
     <string name="debug_tools_force_update_title">Prisili ažuriranje</string>
     <string name="debug_tools_force_update_subtitle">Preuzmi i pokreni instalacijski program za najnovije izdanje</string>

@@ -583,9 +583,9 @@
     <string name="debug_tools_dnd_preview_subtitle">DND를 %1$d초 동안 임시 적용</string>
     <string name="debug_tools_dnd_preview_title">DND 미리보기</string>
     <string name="debug_tools_dnd_preview_total_title">완전 무음 미리보기</string>
-    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
-    <string name="debug_tools_dry_run_title">Test run (dry)</string>
-    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_dry_run_subtitle">DND나 일정 변경 없이 다음 결정을 시뮬레이션합니다.</string>
+    <string name="debug_tools_dry_run_title">드라이 런(테스트)</string>
+    <string name="debug_tools_dry_run_toast">드라이 런 완료</string>
     <string name="debug_tools_updates_title">업데이트</string>
     <string name="debug_tools_force_update_title">강제 업데이트</string>
     <string name="debug_tools_force_update_subtitle">최신 릴리스의 설치 프로그램을 다운로드해 실행합니다</string>

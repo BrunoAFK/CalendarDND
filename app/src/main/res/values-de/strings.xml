@@ -583,9 +583,9 @@
     <string name="debug_tools_dnd_preview_subtitle">DND vorübergehend für %1$d Sekunden aktivieren</string>
     <string name="debug_tools_dnd_preview_title">DND-Vorschau</string>
     <string name="debug_tools_dnd_preview_total_title">Komplett stumm testen</string>
-    <string name="debug_tools_dry_run_subtitle">Simulate the next decision without changing DND or schedules</string>
-    <string name="debug_tools_dry_run_title">Test run (dry)</string>
-    <string name="debug_tools_dry_run_toast">Dry run complete</string>
+    <string name="debug_tools_dry_run_subtitle">Nächste Entscheidung simulieren, ohne DND oder Zeitpläne zu ändern</string>
+    <string name="debug_tools_dry_run_title">Testlauf (trocken)</string>
+    <string name="debug_tools_dry_run_toast">Testlauf abgeschlossen</string>
     <string name="debug_tools_updates_title">Updates</string>
     <string name="debug_tools_force_update_title">Update erzwingen</string>
     <string name="debug_tools_force_update_subtitle">Installer der neuesten Version herunterladen und starten</string>

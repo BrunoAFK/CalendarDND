@@ -58,7 +58,11 @@ object FcmNotificationHelper {
         }
 
         val notificationId = (System.currentTimeMillis() and 0xFFFFFFF).toInt()
-        NotificationManagerCompat.from(context).notify(notificationId, builder.build())
+        try {
+            NotificationManagerCompat.from(context).notify(notificationId, builder.build())
+        } catch (_: SecurityException) {
+            // Permission can be revoked at runtime even after the pre-check.
+        }
     }
 
     private fun buildOpenIntent(context: Context, openUrl: String?): Intent {

@@ -1,0 +1,2 @@
+Improvements:
+- Fix language switcher

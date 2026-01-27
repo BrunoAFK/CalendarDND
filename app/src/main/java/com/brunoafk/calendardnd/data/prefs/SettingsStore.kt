@@ -1,6 +1,7 @@
 package com.brunoafk.calendardnd.data.prefs
 
 import android.content.Context
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
@@ -12,6 +13,7 @@ import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.TelemetryLevel
 import com.brunoafk.calendardnd.domain.model.ThemeMode
 import com.brunoafk.calendardnd.domain.model.ThemeDebugMode
+import com.brunoafk.calendardnd.domain.model.EventHighlightPreset
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -63,6 +65,10 @@ class SettingsStore(private val context: Context) {
         private val LOG_LEVEL_CAPTURE = stringPreferencesKey("log_level_capture")
         private val DEBUG_LOG_INCLUDE_DETAILS = booleanPreferencesKey("debug_log_include_details")
         private val THEME_DEBUG_MODE = stringPreferencesKey("theme_debug_mode")
+        private val DEBUG_EVENT_HIGHLIGHT_PRESET = stringPreferencesKey("debug_event_highlight_preset")
+        private val DEBUG_EVENT_HIGHLIGHT_HISTORY = stringPreferencesKey("debug_event_highlight_history")
+        private val DEBUG_EVENT_HIGHLIGHT_FAVORITES = stringPreferencesKey("debug_event_highlight_favorites")
+        private val DEBUG_EVENT_HIGHLIGHT_BAR_HIDDEN = booleanPreferencesKey("debug_event_highlight_bar_hidden")
         private val SIGNING_CERT_FINGERPRINT = stringPreferencesKey("signing_cert_fingerprint")
         private val POST_MEETING_NOTIFICATION_ENABLED = booleanPreferencesKey("post_meeting_notification_enabled")
         private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
@@ -182,7 +188,7 @@ class SettingsStore(private val context: Context) {
     }
 
     val legacyThemeEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[LEGACY_THEME_ENABLED] ?: false
+        prefs[LEGACY_THEME_ENABLED] ?: (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R)
     }
 
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -260,6 +266,34 @@ class SettingsStore(private val context: Context) {
     val themeDebugMode: Flow<ThemeDebugMode> = dataStore.data.map { prefs ->
         val raw = prefs[THEME_DEBUG_MODE] ?: ThemeDebugMode.OFF.name
         runCatching { ThemeDebugMode.valueOf(raw) }.getOrDefault(ThemeDebugMode.OFF)
+    }
+
+    val debugEventHighlightPreset: Flow<EventHighlightPreset> = dataStore.data.map { prefs ->
+        EventHighlightPreset.fromString(prefs[DEBUG_EVENT_HIGHLIGHT_PRESET])
+    }
+
+    val debugEventHighlightHistory: Flow<List<EventHighlightPreset>> = dataStore.data.map { prefs ->
+        val raw = prefs[DEBUG_EVENT_HIGHLIGHT_HISTORY].orEmpty()
+        if (raw.isBlank()) {
+            emptyList()
+        } else {
+            raw.split(",")
+                .mapNotNull { name -> runCatching { EventHighlightPreset.valueOf(name) }.getOrNull() }
+        }
+    }
+
+    val debugEventHighlightFavorites: Flow<List<EventHighlightPreset>> = dataStore.data.map { prefs ->
+        val raw = prefs[DEBUG_EVENT_HIGHLIGHT_FAVORITES].orEmpty()
+        if (raw.isBlank()) {
+            emptyList()
+        } else {
+            raw.split(",")
+                .mapNotNull { name -> runCatching { EventHighlightPreset.valueOf(name) }.getOrNull() }
+        }
+    }
+
+    val debugEventHighlightBarHidden: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[DEBUG_EVENT_HIGHLIGHT_BAR_HIDDEN] ?: false
     }
 
     val postMeetingNotificationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -702,6 +736,34 @@ class SettingsStore(private val context: Context) {
             prefs[THEME_DEBUG_MODE] = mode.name
         }
         logSettingChange("Theme debug mode", mode.name.lowercase())
+    }
+
+    suspend fun setDebugEventHighlightPreset(preset: EventHighlightPreset) {
+        dataStore.edit { prefs ->
+            prefs[DEBUG_EVENT_HIGHLIGHT_PRESET] = preset.name
+        }
+        logSettingChange("Debug event highlight preset", preset.name.lowercase())
+    }
+
+    suspend fun setDebugEventHighlightHistory(presets: List<EventHighlightPreset>) {
+        dataStore.edit { prefs ->
+            prefs[DEBUG_EVENT_HIGHLIGHT_HISTORY] = presets.joinToString(",") { it.name }
+        }
+        logSettingChange("Debug event highlight history", presets.joinToString(",") { it.name.lowercase() })
+    }
+
+    suspend fun setDebugEventHighlightFavorites(presets: List<EventHighlightPreset>) {
+        dataStore.edit { prefs ->
+            prefs[DEBUG_EVENT_HIGHLIGHT_FAVORITES] = presets.joinToString(",") { it.name }
+        }
+        logSettingChange("Debug event highlight favorites", presets.joinToString(",") { it.name.lowercase() })
+    }
+
+    suspend fun setDebugEventHighlightBarHidden(hidden: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[DEBUG_EVENT_HIGHLIGHT_BAR_HIDDEN] = hidden
+        }
+        logSettingChange("Debug event highlight bar", if (hidden) "hidden" else "shown")
     }
 
     private suspend fun logSettingChange(label: String, value: String) {

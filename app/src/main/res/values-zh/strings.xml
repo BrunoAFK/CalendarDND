@@ -413,6 +413,30 @@
     <string name="help_item_pull_refresh_title">下拉刷新</string>
     <string name="help_item_pull_refresh_summary">在主屏幕下拉刷新状态。</string>
     <string name="help_item_pull_refresh_details">在主屏幕下拉以手动刷新会议状态并重新检查免打扰状态。如果你的日历最近有变化，想立即查看更新状态时很有用。</string>
+    <string name="help_item_event_title_filters_title">事件标题筛选</string>
+    <string name="help_item_event_title_filters_summary">选择自动化时事件标题的匹配方式。</string>
+    <string name="help_item_event_title_filters_details">可使用关键词、整词、开头/结尾、完全匹配或正则。示例和校验显示在筛选页面，正则模式标记为实验性。</string>
+    <string name="help_item_location_required_title">位置必填筛选</string>
+    <string name="help_item_location_required_summary">仅当会议有位置信息时运行自动化。</string>
+    <string name="help_item_location_required_details">启用此筛选以忽略没有位置字段的事件。</string>
+    <string name="help_item_skip_recurring_title">跳过重复事件</string>
+    <string name="help_item_skip_recurring_summary">自动化时忽略重复会议。</string>
+    <string name="help_item_skip_recurring_details">启用后，重复事件不会触发免打扰。</string>
+    <string name="help_item_day_filter_title">星期筛选</string>
+    <string name="help_item_day_filter_summary">选择自动化运行的星期。</string>
+    <string name="help_item_day_filter_details">选择日期（例如仅工作日）来控制免打扰自动化何时激活。</string>
+    <string name="help_item_one_time_actions_title">一次性事件操作</string>
+    <string name="help_item_one_time_actions_summary">为单个即将到来的事件启用或跳过免打扰。</string>
+    <string name="help_item_one_time_actions_details">使用下一个事件卡片仅对该事件启用免打扰，或在不更改全局自动化的情况下跳过它。</string>
+    <string name="help_item_advanced_notifications_title">高级通知</string>
+    <string name="help_item_advanced_notifications_summary">微调会议前/后的提醒。</string>
+    <string name="help_item_advanced_notifications_details">调整免打扰前通知和会议后通知的时间，并可选择将会议后提醒设为静默。</string>
+    <string name="help_item_post_meeting_title">会议后通知行为</string>
+    <string name="help_item_post_meeting_summary">了解会议后提醒何时出现。</string>
+    <string name="help_item_post_meeting_details">会议后提示可在会议结束时、结束前或结束后触发，取决于你的时间设置。</string>
+    <string name="help_item_themes_title">主题与外观</string>
+    <string name="help_item_themes_summary">切换颜色模式和主题风格。</string>
+    <string name="help_item_themes_details">选择系统/浅色/深色，切换旧版主题，或用主题选择器预览其他布局。</string>
 
     <!-- Common -->
     <string name="back">返回</string>
@@ -724,8 +748,18 @@
     <string name="theme_debug_mode_gradient_subtitle">显示 V10 中解析的渐变色</string>
     <string name="theme_debug_mode_selector">主题选择器</string>
     <string name="theme_debug_mode_selector_subtitle">显示用于切换主题的底栏</string>
+    <string name="theme_debug_mode_event_colors">单个事件卡片颜色</string>
+    <string name="theme_debug_mode_event_colors_subtitle">显示单次事件高亮色选择器</string>
     <string name="theme_debug_selector_title">主题选择器</string>
     <string name="theme_debug_selector_subtitle">切换到任意主题预览</string>
     <string name="theme_debug_selector_action">选择</string>
+    <string name="event_color_selector_title">事件颜色</string>
+    <string name="event_color_selector_action">选择</string>
+    <string name="event_color_selector_dialog_title">事件高亮颜色</string>
+    <string name="event_color_preset_title">预设 %1$d</string>
+    <string name="event_color_preset_subtitle">浅色 %1$s • 深色 %2$s</string>
+    <string name="event_color_section_current">当前</string>
+    <string name="event_color_section_favorites">收藏</string>
+    <string name="event_color_section_all">其他颜色</string>
     <string name="close">关闭</string>
 </resources>

@@ -96,12 +96,6 @@ fun PrivacyScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Text(
-                        text = stringResource(R.string.privacy_defaults_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
                     if (BuildConfig.FIREBASE_ENABLED) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),

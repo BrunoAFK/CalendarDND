@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -46,6 +50,7 @@ import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.EventInstance
+import com.brunoafk.calendardnd.domain.model.EventHighlightPreset
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.ThemeDebugMode
@@ -70,11 +75,14 @@ import com.brunoafk.calendardnd.ui.components.WarningBanner
 import com.brunoafk.calendardnd.util.AnalyticsTracker
 import com.brunoafk.calendardnd.util.PermissionUtils
 import com.brunoafk.calendardnd.util.TimeUtils
+import com.brunoafk.calendardnd.ui.theme.LocalIsDarkTheme
+import com.brunoafk.calendardnd.ui.theme.eventHighlightColors
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -140,6 +148,8 @@ fun StatusScreen(
     var refreshBannerDismissed by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     var themeDebugMode by remember { mutableStateOf(ThemeDebugMode.OFF) }
+    var eventHighlightPreset by remember { mutableStateOf(EventHighlightPreset.PRESET_1) }
+    var eventHighlightBarHidden by remember { mutableStateOf(false) }
     var tileHintVisible by remember { mutableStateOf(false) }
     var lastSeenUpdateVersion by remember { mutableStateOf("") }
     var userSuppressedUntilMs by remember { mutableStateOf(0L) }
@@ -320,6 +330,24 @@ fun StatusScreen(
         val job = scope.launch {
             settingsStore.themeDebugMode.collectLatest { mode ->
                 themeDebugMode = mode
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.debugEventHighlightPreset.collectLatest { preset ->
+                eventHighlightPreset = preset
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            settingsStore.debugEventHighlightBarHidden.collectLatest { hidden ->
+                eventHighlightBarHidden = hidden
             }
         }
         onDispose { job.cancel() }
@@ -645,37 +673,39 @@ fun StatusScreen(
     }
 
     pendingOneTimeDialog?.let { dialog ->
-        val (titleRes, bodyRes, confirmRes) = when (dialog) {
+        // Resolve strings at composable level to ensure correct locale context
+        val (titleText, bodyText, confirmText) = when (dialog) {
             is OneTimeDialog.Set -> when (dialog.action) {
                 is OneTimeAction.EnableForEvent -> Triple(
-                    R.string.next_event_enable_confirm_title,
-                    R.string.next_event_enable_confirm_body,
-                    R.string.next_event_enable_confirm_action
+                    stringResource(R.string.next_event_enable_confirm_title),
+                    stringResource(R.string.next_event_enable_confirm_body),
+                    stringResource(R.string.next_event_enable_confirm_action)
                 )
                 is OneTimeAction.SkipEvent -> Triple(
-                    R.string.next_event_skip_confirm_title,
-                    R.string.next_event_skip_confirm_body,
-                    R.string.next_event_skip_confirm_action
+                    stringResource(R.string.next_event_skip_confirm_title),
+                    stringResource(R.string.next_event_skip_confirm_body),
+                    stringResource(R.string.next_event_skip_confirm_action)
                 )
             }
             is OneTimeDialog.Clear -> when (dialog.activeType) {
                 OneTimeActionType.ENABLE -> Triple(
-                    R.string.next_event_clear_enable_title,
-                    R.string.next_event_clear_enable_body,
-                    R.string.next_event_clear_enable_action
+                    stringResource(R.string.next_event_clear_enable_title),
+                    stringResource(R.string.next_event_clear_enable_body),
+                    stringResource(R.string.next_event_clear_enable_action)
                 )
                 OneTimeActionType.SKIP -> Triple(
-                    R.string.next_event_clear_skip_title,
-                    R.string.next_event_clear_skip_body,
-                    R.string.next_event_clear_skip_action
+                    stringResource(R.string.next_event_clear_skip_title),
+                    stringResource(R.string.next_event_clear_skip_body),
+                    stringResource(R.string.next_event_clear_skip_action)
                 )
             }
         }
+        val cancelText = stringResource(R.string.cancel)
 
         AlertDialog(
             onDismissRequest = { pendingOneTimeDialog = null },
-            title = { Text(text = stringResource(titleRes)) },
-            text = { Text(text = stringResource(bodyRes)) },
+            title = { Text(text = titleText) },
+            text = { Text(text = bodyText) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -686,16 +716,18 @@ fun StatusScreen(
                         }
                     }
                 ) {
-                    Text(text = stringResource(confirmRes))
+                    Text(text = confirmText)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { pendingOneTimeDialog = null }) {
-                    Text(text = stringResource(R.string.cancel))
+                    Text(text = cancelText)
                 }
             }
         )
     }
+
+    var suppressSettingsClick by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -707,8 +739,30 @@ fun StatusScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
-                    onClick = { onOpenSettings(false) },
-                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (suppressSettingsClick) {
+                            suppressSettingsClick = false
+                        } else {
+                            onOpenSettings(false)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pointerInput(eventHighlightBarHidden) {
+                            awaitEachGesture {
+                                awaitFirstDown()
+                                val up = withTimeoutOrNull(2000L) {
+                                    waitForUpOrCancellation()
+                                }
+                                if (up == null) {
+                                    suppressSettingsClick = true
+                                    scope.launch {
+                                        settingsStore.setDebugEventHighlightBarHidden(!eventHighlightBarHidden)
+                                    }
+                                    waitForUpOrCancellation()
+                                }
+                            }
+                        },
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                 ) {
                     Text(stringResource(R.string.settings))
@@ -716,6 +770,9 @@ fun StatusScreen(
 
                 if (themeDebugMode == ThemeDebugMode.THEME_SELECTOR) {
                     ThemeSelectorBottomBar(onSelectTheme = onSelectTheme)
+                }
+                if (themeDebugMode == ThemeDebugMode.EVENT_CARD_COLORS && !eventHighlightBarHidden) {
+                    EventColorSelectorBottomBar()
                 }
             }
         }
@@ -885,6 +942,9 @@ fun StatusScreen(
                 }
 
                 if (eventOverview.current != null || eventOverview.next != null) {
+                    val isDarkTheme = LocalIsDarkTheme.current
+                    val highlightPalette = eventHighlightColors(eventHighlightPreset)
+                    val highlightColor = if (isDarkTheme) highlightPalette.dark else highlightPalette.light
                     EventOverviewCard(
                         state = eventOverview,
                         onCurrentClick = activeWindow?.events?.firstOrNull()?.let { current ->
@@ -895,6 +955,7 @@ fun StatusScreen(
                         },
                         highlightNext = activeActionType != null,
                         actionStripActive = activeActionType != null,
+                        highlightColor = highlightColor,
                         nextActionLabel = nextActionData?.let { nextActionLabel },
                         nextActionEnabled = nextActionEnabled,
                         onNextAction = if (nextInstance != null) {

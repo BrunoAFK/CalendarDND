@@ -310,6 +310,30 @@
     <string name="help_item_pull_refresh_title">Yenilemek için çek</string>
     <string name="help_item_pull_refresh_summary">Ana ekranda aşağı çekerek durumu yenileyin.</string>
     <string name="help_item_pull_refresh_details">Ana ekranda aşağı çekerek toplantı durumunuzu manuel yenileyin ve DND durumunu tekrar kontrol edin. Takviminiz yeni değiştiyse durumu hemen görmek için kullanışlıdır.</string>
+    <string name="help_item_event_title_filters_title">Etkinlik başlığı filtreleri</string>
+    <string name="help_item_event_title_filters_summary">Otomasyon için etkinlik başlıklarının nasıl eşleştirileceğini seçin.</string>
+    <string name="help_item_event_title_filters_details">Anahtar kelime, tam kelime, başlangıç/bitiş, tam eşleşme veya regex kullanın. Örnekler ve doğrulama filtre ekranında görünür, regex modu deneysel olarak işaretlenir.</string>
+    <string name="help_item_location_required_title">Konum gerektiren filtre</string>
+    <string name="help_item_location_required_summary">Otomasyonu yalnızca toplantının konumu olduğunda çalıştırın.</string>
+    <string name="help_item_location_required_details">Bu filtreyi etkinleştirerek konum alanı olmayan etkinlikleri yok sayın.</string>
+    <string name="help_item_skip_recurring_title">Yinelenen etkinlikleri atla</string>
+    <string name="help_item_skip_recurring_summary">Otomasyon için yinelenen toplantıları yok say.</string>
+    <string name="help_item_skip_recurring_details">Etkinleştirildiğinde yinelenen etkinlikler DND’yi tetiklemez.</string>
+    <string name="help_item_day_filter_title">Haftanın günü filtresi</string>
+    <string name="help_item_day_filter_summary">Otomasyonun hangi günlerde çalışacağını seçin.</string>
+    <string name="help_item_day_filter_details">DND otomasyonunun ne zaman etkin olacağını kontrol etmek için günleri seçin (ör. yalnızca hafta içi).</string>
+    <string name="help_item_one_time_actions_title">Tek seferlik etkinlik işlemleri</string>
+    <string name="help_item_one_time_actions_summary">Tek bir yaklaşan etkinlik için DND’yi etkinleştir veya atla.</string>
+    <string name="help_item_one_time_actions_details">Bir sonraki etkinlik kartını kullanarak DND’yi yalnızca o etkinlik için etkinleştir veya genel otomasyonu değiştirmeden atla.</string>
+    <string name="help_item_advanced_notifications_title">Gelişmiş bildirimler</string>
+    <string name="help_item_advanced_notifications_summary">Toplantı öncesi/sonrası uyarıları ince ayarla.</string>
+    <string name="help_item_advanced_notifications_details">DND öncesi ve toplantı sonrası bildirimlerin zamanlamasını ayarla, istersen toplantı sonrası uyarıları sessiz yap.</string>
+    <string name="help_item_post_meeting_title">Toplantı sonrası bildirim davranışı</string>
+    <string name="help_item_post_meeting_summary">Toplantı sonrası uyarıların ne zaman göründüğünü öğrenin.</string>
+    <string name="help_item_post_meeting_details">Toplantı sonrası istemler zamanlama ayarlarına göre toplantı sonunda, bitmeden önce veya bittikten sonra görünebilir.</string>
+    <string name="help_item_themes_title">Temalar ve görünüm</string>
+    <string name="help_item_themes_summary">Renk modunu ve tema stilini değiştirin.</string>
+    <string name="help_item_themes_details">Sistem/Açık/Koyu seçin, eski temayı aç/kapatın veya tema seçiciyi kullanarak diğer düzenleri önizleyin.</string>
 
     <!-- Common -->
     <string name="back">Geri</string>
@@ -713,8 +737,18 @@
     <string name="theme_debug_mode_gradient_subtitle">V10\'daki çözümlenmiş gradyan renklerini göster</string>
     <string name="theme_debug_mode_selector">Tema seçici</string>
     <string name="theme_debug_mode_selector_subtitle">Temalar arası geçiş çubuğu göster</string>
+    <string name="theme_debug_mode_event_colors">Tek etkinlik kartı renkleri</string>
+    <string name="theme_debug_mode_event_colors_subtitle">Tek etkinlik vurgu rengi seçiciyi göster</string>
     <string name="theme_debug_selector_title">Tema seçici</string>
     <string name="theme_debug_selector_subtitle">Herhangi bir tema önizlemesine geç</string>
     <string name="theme_debug_selector_action">Seç</string>
+    <string name="event_color_selector_title">Etkinlik renkleri</string>
+    <string name="event_color_selector_action">Seç</string>
+    <string name="event_color_selector_dialog_title">Etkinlik vurgu renkleri</string>
+    <string name="event_color_preset_title">Ön ayar %1$d</string>
+    <string name="event_color_preset_subtitle">Açık %1$s • Koyu %2$s</string>
+    <string name="event_color_section_current">Mevcut</string>
+    <string name="event_color_section_favorites">Favoriler</string>
+    <string name="event_color_section_all">Diğer renkler</string>
     <string name="close">Kapat</string>
 </resources>

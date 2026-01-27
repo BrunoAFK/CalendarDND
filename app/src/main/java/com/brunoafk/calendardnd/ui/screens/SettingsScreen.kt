@@ -49,10 +49,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.delay
-import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
+import com.brunoafk.calendardnd.BuildConfig
 import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -265,7 +265,7 @@ fun SettingsScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val showDebugTools = debugToolsUnlocked
+    val showDebugTools = debugToolsUnlocked && BuildConfig.DEBUG_TOOLS_ENABLED
     var permissionErrorDismissed by remember { mutableStateOf(false) }
     val highlightAlpha = remember { Animatable(0f) }
     val highlightFiltersAlpha = remember { Animatable(0f) }

@@ -53,6 +53,10 @@ fun DebugThemeModeScreen(
         ThemeDebugMode.THEME_SELECTOR to Pair(
             stringResource(R.string.theme_debug_mode_selector),
             stringResource(R.string.theme_debug_mode_selector_subtitle)
+        ),
+        ThemeDebugMode.EVENT_CARD_COLORS to Pair(
+            stringResource(R.string.theme_debug_mode_event_colors),
+            stringResource(R.string.theme_debug_mode_event_colors_subtitle)
         )
     )
 

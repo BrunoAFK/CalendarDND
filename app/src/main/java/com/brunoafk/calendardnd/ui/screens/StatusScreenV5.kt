@@ -446,6 +446,10 @@ fun StatusScreenV5(
                 Spacer(modifier = Modifier.height(12.dp))
                 ThemeSelectorBottomBar(onSelectTheme = onSelectTheme)
             }
+            if (themeDebugMode == ThemeDebugMode.EVENT_CARD_COLORS) {
+                Spacer(modifier = Modifier.height(12.dp))
+                EventColorSelectorBottomBar()
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
         }

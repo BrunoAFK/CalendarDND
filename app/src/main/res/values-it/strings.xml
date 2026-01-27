@@ -300,6 +300,30 @@
     <string name="help_item_pull_refresh_title">Scorri per aggiornare</string>
     <string name="help_item_pull_refresh_summary">Scorri verso il basso nella schermata principale per aggiornare lo stato.</string>
     <string name="help_item_pull_refresh_details">Trascina verso il basso nella schermata principale per aggiornare manualmente lo stato delle riunioni e ricontrollare lo stato DND. Utile se il calendario è cambiato di recente e vuoi vedere immediatamente lo stato aggiornato.</string>
+    <string name="help_item_event_title_filters_title">Filtri titolo evento</string>
+    <string name="help_item_event_title_filters_summary">Scegli come i titoli degli eventi vengono confrontati per l\'automazione.</string>
+    <string name="help_item_event_title_filters_details">Usa parole chiave, parole intere, inizia/finisce con, corrispondenza esatta o regex. Esempi e convalida compaiono nella schermata dei filtri e la modalità regex è contrassegnata come sperimentale.</string>
+    <string name="help_item_location_required_title">Filtro posizione richiesta</string>
+    <string name="help_item_location_required_summary">Esegui l\'automazione solo quando una riunione ha una posizione.</string>
+    <string name="help_item_location_required_details">Abilita questo filtro per ignorare gli eventi senza campo posizione.</string>
+    <string name="help_item_skip_recurring_title">Salta eventi ricorrenti</string>
+    <string name="help_item_skip_recurring_summary">Ignora le riunioni ricorrenti per l\'automazione.</string>
+    <string name="help_item_skip_recurring_details">Se attivato, gli eventi ricorrenti non attivano DND.</string>
+    <string name="help_item_day_filter_title">Filtro giorni della settimana</string>
+    <string name="help_item_day_filter_summary">Scegli in quali giorni deve essere attiva l\'automazione.</string>
+    <string name="help_item_day_filter_details">Seleziona i giorni (es. solo giorni feriali) per controllare quando si attiva l\'automazione DND.</string>
+    <string name="help_item_one_time_actions_title">Azioni evento una tantum</string>
+    <string name="help_item_one_time_actions_summary">Attiva o salta DND per un singolo evento imminente.</string>
+    <string name="help_item_one_time_actions_details">Usa la scheda del prossimo evento per attivare DND solo per quell\'evento, oppure saltarlo senza cambiare l\'automazione globale.</string>
+    <string name="help_item_advanced_notifications_title">Notifiche avanzate</string>
+    <string name="help_item_advanced_notifications_summary">Regola con precisione gli avvisi prima/dopo la riunione.</string>
+    <string name="help_item_advanced_notifications_details">Regola la tempistica delle notifiche pre-DND e post-riunione e, se vuoi, rendi silenziose quelle post-riunione.</string>
+    <string name="help_item_post_meeting_title">Comportamento delle notifiche post-riunione</string>
+    <string name="help_item_post_meeting_summary">Scopri quando compaiono gli avvisi post-riunione.</string>
+    <string name="help_item_post_meeting_details">Le richieste post-riunione possono apparire alla fine, prima della fine o dopo la riunione in base alle impostazioni di temporizzazione.</string>
+    <string name="help_item_themes_title">Temi e aspetto</string>
+    <string name="help_item_themes_summary">Cambia modalità colore e stile tema.</string>
+    <string name="help_item_themes_details">Scegli Sistema/Chiaro/Scuro, attiva/disattiva il tema legacy o usa il selettore temi per visualizzare altri layout.</string>
 
     <!-- Common -->
     <string name="back">Indietro</string>
@@ -701,8 +725,18 @@
     <string name="theme_debug_mode_gradient_subtitle">Mostra i colori del gradiente risolti in V10</string>
     <string name="theme_debug_mode_selector">Selettore tema</string>
     <string name="theme_debug_mode_selector_subtitle">Mostra una barra per cambiare tema</string>
+    <string name="theme_debug_mode_event_colors">Colori scheda evento singolo</string>
+    <string name="theme_debug_mode_event_colors_subtitle">Mostra il selettore dei colori per l’evidenziazione del singolo evento</string>
     <string name="theme_debug_selector_title">Selettore tema</string>
     <string name="theme_debug_selector_subtitle">Passa a qualsiasi anteprima tema</string>
     <string name="theme_debug_selector_action">Scegli</string>
+    <string name="event_color_selector_title">Colori evento</string>
+    <string name="event_color_selector_action">Scegli</string>
+    <string name="event_color_selector_dialog_title">Colori evidenziazione evento</string>
+    <string name="event_color_preset_title">Preset %1$d</string>
+    <string name="event_color_preset_subtitle">Chiaro %1$s • Scuro %2$s</string>
+    <string name="event_color_section_current">Attuale</string>
+    <string name="event_color_section_favorites">Preferiti</string>
+    <string name="event_color_section_all">Altri colori</string>
     <string name="close">Chiudi</string>
 </resources>

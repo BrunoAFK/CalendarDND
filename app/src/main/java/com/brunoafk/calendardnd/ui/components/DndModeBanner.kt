@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -122,6 +123,11 @@ fun DndModeBanner(
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .scale(scale.value)
                 .alpha(alpha.value * swipeAlpha)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
+                    shape = MaterialTheme.shapes.small
+                )
                 .draggable(
                     state = draggableState,
                     orientation = Orientation.Horizontal,
@@ -145,7 +151,7 @@ fun DndModeBanner(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ),
             shape = MaterialTheme.shapes.small,
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             onClick = { dismiss(navigateAfter = true) }
         ) {
             Row(

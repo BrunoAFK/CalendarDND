@@ -40,6 +40,7 @@ import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.ui.components.PrimaryActionButton
 import com.brunoafk.calendardnd.ui.components.OneUiTopAppBar
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
+import com.brunoafk.calendardnd.util.TelemetryController
 import kotlinx.coroutines.launch
 
 data class LanguageOption(
@@ -53,7 +54,8 @@ fun LanguageScreen(
     onNavigateBack: () -> Unit,
     onContinue: () -> Unit,
     showBack: Boolean = true,
-    showContinue: Boolean = true
+    showContinue: Boolean = true,
+    showDescription: Boolean = true
 ) {
     val context = LocalContext.current
     val settingsStore = remember { SettingsStore(context) }
@@ -105,9 +107,10 @@ fun LanguageScreen(
                     .padding(bottom = contentBottomPadding),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val textBlockHeight = with(LocalDensity.current) {
-                    MaterialTheme.typography.bodyMedium.lineHeight.toDp() * 3
-                }
+                if (showDescription) {
+                    val textBlockHeight = with(LocalDensity.current) {
+                        MaterialTheme.typography.bodyMedium.lineHeight.toDp() * 3
+                    }
                     Box(modifier = Modifier.height(textBlockHeight)) {
                         Text(
                             text = stringResource(R.string.language_description),
@@ -115,6 +118,7 @@ fun LanguageScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         state = listState,
@@ -130,6 +134,7 @@ fun LanguageScreen(
                                 onClick = {
                                     val tag = option.tag
                                     scope.launch {
+                                        TelemetryController.updateLanguageTopic(selectedTag, tag)
                                         settingsStore.setPreferredLanguageTag(tag)
                                     }
                                 }

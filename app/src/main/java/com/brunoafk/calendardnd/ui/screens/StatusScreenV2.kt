@@ -443,7 +443,9 @@ fun StatusScreenV2(
         }
     )
 
-    val selectorBottomPadding = if (themeDebugMode == ThemeDebugMode.THEME_SELECTOR) 96.dp else 0.dp
+    val selectorBottomPadding = if (
+        themeDebugMode == ThemeDebugMode.THEME_SELECTOR || themeDebugMode == ThemeDebugMode.EVENT_CARD_COLORS
+    ) 96.dp else 0.dp
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -566,6 +568,14 @@ fun StatusScreenV2(
         if (themeDebugMode == ThemeDebugMode.THEME_SELECTOR) {
             ThemeSelectorBottomBar(
                 onSelectTheme = onSelectTheme,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            )
+        }
+        if (themeDebugMode == ThemeDebugMode.EVENT_CARD_COLORS) {
+            EventColorSelectorBottomBar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()

@@ -300,6 +300,30 @@
     <string name="help_item_pull_refresh_title">아래로 당겨 새로고침</string>
     <string name="help_item_pull_refresh_summary">메인 화면에서 아래로 당겨 상태를 새로고침하세요.</string>
     <string name="help_item_pull_refresh_details">홈 화면에서 아래로 당겨 회의 상태를 수동으로 새로고침하고 DND 상태를 다시 확인합니다. 캘린더가 최근에 변경되었고 업데이트된 상태를 즉시 보고 싶을 때 유용합니다.</string>
+    <string name="help_item_event_title_filters_title">이벤트 제목 필터</string>
+    <string name="help_item_event_title_filters_summary">자동화를 위해 이벤트 제목 매칭 방식을 선택합니다.</string>
+    <string name="help_item_event_title_filters_details">키워드, 전체 단어, 시작/끝, 정확히 일치, 정규식으로 필터링할 수 있습니다. 예시와 검증은 필터 화면에 표시되며, 정규식 모드는 실험적으로 표시됩니다.</string>
+    <string name="help_item_location_required_title">위치 필수 필터</string>
+    <string name="help_item_location_required_summary">회의에 위치가 있을 때만 자동화를 실행합니다.</string>
+    <string name="help_item_location_required_details">이 필터를 켜면 위치 필드가 없는 이벤트를 무시합니다.</string>
+    <string name="help_item_skip_recurring_title">반복 이벤트 건너뛰기</string>
+    <string name="help_item_skip_recurring_summary">자동화에서 반복 회의를 무시합니다.</string>
+    <string name="help_item_skip_recurring_details">켜면 반복 이벤트는 DND를 트리거하지 않습니다.</string>
+    <string name="help_item_day_filter_title">요일 필터</string>
+    <string name="help_item_day_filter_summary">자동화를 실행할 요일을 선택하세요.</string>
+    <string name="help_item_day_filter_details">DND 자동화가 활성화될 요일(예: 평일만)을 선택하세요.</string>
+    <string name="help_item_one_time_actions_title">일회성 이벤트 동작</string>
+    <string name="help_item_one_time_actions_summary">단일 예정 이벤트에 대해 DND를 켜거나 건너뜁니다.</string>
+    <string name="help_item_one_time_actions_details">다음 이벤트 카드에서 해당 이벤트에만 DND를 켜거나, 전역 자동화를 바꾸지 않고 건너뛰세요.</string>
+    <string name="help_item_advanced_notifications_title">고급 알림</string>
+    <string name="help_item_advanced_notifications_summary">회의 전/후 알림을 세밀하게 조정합니다.</string>
+    <string name="help_item_advanced_notifications_details">사전 DND 및 회의 후 알림의 타이밍을 조정하고, 필요하면 회의 후 알림을 무음으로 설정하세요.</string>
+    <string name="help_item_post_meeting_title">회의 후 알림 동작</string>
+    <string name="help_item_post_meeting_summary">회의 후 알림이 언제 표시되는지 확인합니다.</string>
+    <string name="help_item_post_meeting_details">회의 후 알림은 설정한 타이밍에 따라 회의 종료 시점, 종료 전, 또는 종료 후에 표시될 수 있습니다.</string>
+    <string name="help_item_themes_title">테마 및 모양</string>
+    <string name="help_item_themes_summary">색상 모드와 테마 스타일을 전환합니다.</string>
+    <string name="help_item_themes_details">시스템/라이트/다크를 선택하고, 레거시 테마를 토글하거나 테마 선택기에서 다른 레이아웃을 미리볼 수 있습니다.</string>
 
     <!-- Common -->
     <string name="back">뒤로</string>
@@ -701,8 +725,18 @@
     <string name="theme_debug_mode_gradient_subtitle">V10의 계산된 그라데이션 색상 표시</string>
     <string name="theme_debug_mode_selector">테마 선택기</string>
     <string name="theme_debug_mode_selector_subtitle">테마 전환 바 표시</string>
+    <string name="theme_debug_mode_event_colors">단일 이벤트 카드 색상</string>
+    <string name="theme_debug_mode_event_colors_subtitle">단일 이벤트 강조 색상 선택기 표시</string>
     <string name="theme_debug_selector_title">테마 선택기</string>
     <string name="theme_debug_selector_subtitle">모든 테마 미리보기로 전환</string>
     <string name="theme_debug_selector_action">선택</string>
+    <string name="event_color_selector_title">이벤트 색상</string>
+    <string name="event_color_selector_action">선택</string>
+    <string name="event_color_selector_dialog_title">이벤트 강조 색상</string>
+    <string name="event_color_preset_title">프리셋 %1$d</string>
+    <string name="event_color_preset_subtitle">라이트 %1$s • 다크 %2$s</string>
+    <string name="event_color_section_current">현재</string>
+    <string name="event_color_section_favorites">즐겨찾기</string>
+    <string name="event_color_section_all">다른 색상</string>
     <string name="close">닫기</string>
 </resources>

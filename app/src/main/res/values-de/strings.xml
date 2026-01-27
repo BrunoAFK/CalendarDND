@@ -300,6 +300,30 @@
     <string name="help_item_pull_refresh_title">Nach unten ziehen</string>
     <string name="help_item_pull_refresh_summary">Ziehe auf dem Hauptbildschirm nach unten, um den Status zu aktualisieren.</string>
     <string name="help_item_pull_refresh_details">Ziehe auf dem Startbildschirm nach unten, um deinen Meetingstatus manuell zu aktualisieren und den DND-Zustand erneut zu prüfen. Das ist nützlich, wenn sich dein Kalender kürzlich geändert hat und du den aktualisierten Status sofort sehen möchtest.</string>
+    <string name="help_item_event_title_filters_title">Ereignistitel-Filter</string>
+    <string name="help_item_event_title_filters_summary">Lege fest, wie Ereignistitel für die Automatisierung abgeglichen werden.</string>
+    <string name="help_item_event_title_filters_details">Verwende Keywords, ganze Wörter, beginnt/endet mit, exakte Übereinstimmung oder Regex. Beispiele und Validierung erscheinen im Filterbildschirm, und der Regex-Modus ist als experimentell markiert.</string>
+    <string name="help_item_location_required_title">Filter: Ort erforderlich</string>
+    <string name="help_item_location_required_summary">Automatisierung nur ausführen, wenn ein Termin einen Ort hat.</string>
+    <string name="help_item_location_required_details">Aktiviere diesen Filter, um Ereignisse ohne Ortsangabe zu ignorieren.</string>
+    <string name="help_item_skip_recurring_title">Wiederkehrende Termine überspringen</string>
+    <string name="help_item_skip_recurring_summary">Wiederkehrende Meetings für die Automatisierung ignorieren.</string>
+    <string name="help_item_skip_recurring_details">Wenn aktiviert, lösen wiederkehrende Termine kein DND aus.</string>
+    <string name="help_item_day_filter_title">Wochentagsfilter</string>
+    <string name="help_item_day_filter_summary">Wähle, an welchen Tagen die Automatisierung laufen soll.</string>
+    <string name="help_item_day_filter_details">Wähle die Tage (z. B. nur Wochentage), um zu steuern, wann die DND-Automatisierung aktiv wird.</string>
+    <string name="help_item_one_time_actions_title">Einmalige Ereignisaktionen</string>
+    <string name="help_item_one_time_actions_summary">DND für ein einzelnes bevorstehendes Ereignis aktivieren oder überspringen.</string>
+    <string name="help_item_one_time_actions_details">Nutze die Karte des nächsten Ereignisses, um DND nur für dieses Ereignis zu aktivieren oder es zu überspringen, ohne die globale Automatisierung zu ändern.</string>
+    <string name="help_item_advanced_notifications_title">Erweiterte Benachrichtigungen</string>
+    <string name="help_item_advanced_notifications_summary">Vor- und Nach-Meeting-Hinweise feinabstimmen.</string>
+    <string name="help_item_advanced_notifications_details">Passe das Timing für Vor-DND- und Nach-Meeting-Benachrichtigungen an und schalte Nach-Meeting-Hinweise optional stumm.</string>
+    <string name="help_item_post_meeting_title">Verhalten der Nach-Meeting-Benachrichtigung</string>
+    <string name="help_item_post_meeting_summary">Verstehen, wann Nach-Meeting-Hinweise erscheinen.</string>
+    <string name="help_item_post_meeting_details">Nach-Meeting-Prompts können am Ende, vor dem Ende oder nach dem Meeting erscheinen – abhängig von deinen Timing-Einstellungen.</string>
+    <string name="help_item_themes_title">Designs und Erscheinungsbild</string>
+    <string name="help_item_themes_summary">Farbmodus und Designstil wechseln.</string>
+    <string name="help_item_themes_details">Wähle System/Hell/Dunkel, schalte das Legacy-Design um oder nutze die Designauswahl, um andere Layouts vorzuschauen.</string>
 
     <!-- Common -->
     <string name="back">Zurück</string>
@@ -701,8 +725,18 @@
     <string name="theme_debug_mode_gradient_subtitle">Aufgelöste Verlauf-Farben in V10 anzeigen</string>
     <string name="theme_debug_mode_selector">Theme-Auswahl</string>
     <string name="theme_debug_mode_selector_subtitle">Leiste zum Wechseln der Themes anzeigen</string>
+    <string name="theme_debug_mode_event_colors">Farben für einzelne Event-Karte</string>
+    <string name="theme_debug_mode_event_colors_subtitle">Picker für Highlight-Farben von Einmal-Events anzeigen</string>
     <string name="theme_debug_selector_title">Theme-Auswahl</string>
     <string name="theme_debug_selector_subtitle">Zu einem Theme-Preview wechseln</string>
     <string name="theme_debug_selector_action">Auswählen</string>
+    <string name="event_color_selector_title">Eventfarben</string>
+    <string name="event_color_selector_action">Auswählen</string>
+    <string name="event_color_selector_dialog_title">Event-Highlight-Farben</string>
+    <string name="event_color_preset_title">Preset %1$d</string>
+    <string name="event_color_preset_subtitle">Hell %1$s • Dunkel %2$s</string>
+    <string name="event_color_section_current">Aktuell</string>
+    <string name="event_color_section_favorites">Favoriten</string>
+    <string name="event_color_section_all">Weitere Farben</string>
     <string name="close">Schließen</string>
 </resources>

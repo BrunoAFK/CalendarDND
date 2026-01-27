@@ -16,11 +16,12 @@ class App : Application() {
         val settingsStore = SettingsStore(this)
         val crashlyticsOptIn = runBlocking { settingsStore.crashlyticsOptIn.first() }
         val analyticsOptIn = runBlocking { settingsStore.analyticsOptIn.first() }
+        val preferredLanguageTag = runBlocking { settingsStore.preferredLanguageTag.first() }
 
         TelemetryController.setCrashlyticsEnabled(AppConfig.crashlyticsEnabled && crashlyticsOptIn)
         TelemetryController.setPerformanceEnabled(AppConfig.crashlyticsEnabled && crashlyticsOptIn)
         TelemetryController.setAnalyticsEnabled(this, AppConfig.analyticsEnabled && analyticsOptIn)
-        TelemetryController.subscribeToUpdatesTopic()
+        TelemetryController.subscribeToFcmTopics(preferredLanguageTag)
     }
 
     companion object {

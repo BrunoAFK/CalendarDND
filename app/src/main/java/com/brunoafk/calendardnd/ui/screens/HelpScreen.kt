@@ -7,6 +7,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,44 +83,34 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_automation_details)
         ),
         HelpItem(
-            id = "permissions",
-            title = stringResource(R.string.help_item_permissions_title),
-            summary = stringResource(R.string.help_item_permissions_summary),
-            details = stringResource(R.string.help_item_permissions_details)
+            id = "dnd_mode",
+            title = stringResource(R.string.help_item_dnd_mode_title),
+            summary = stringResource(R.string.help_item_dnd_mode_summary),
+            details = stringResource(R.string.help_item_dnd_mode_details)
         ),
         HelpItem(
-            id = "language",
-            title = stringResource(R.string.help_item_language_title),
-            summary = stringResource(R.string.help_item_language_summary),
-            details = stringResource(R.string.help_item_language_details)
+            id = "dnd_timing",
+            title = stringResource(R.string.help_item_dnd_timing_title),
+            summary = stringResource(R.string.help_item_dnd_timing_summary),
+            details = stringResource(R.string.help_item_dnd_timing_details)
         ),
         HelpItem(
-            id = "privacy",
-            title = stringResource(R.string.help_item_privacy_title),
-            summary = stringResource(R.string.help_item_privacy_summary),
-            details = stringResource(R.string.help_item_privacy_details)
-        ),
-        if (BuildConfig.MANUAL_UPDATE_ENABLED) {
-            HelpItem(
-                id = "updates",
-                title = stringResource(R.string.help_item_updates_title),
-                summary = stringResource(R.string.help_item_updates_summary),
-                details = stringResource(R.string.help_item_updates_details)
-            )
-        } else {
-            null
-        },
-        HelpItem(
-            id = "exact_alarms",
-            title = stringResource(R.string.help_item_exact_alarms_title),
-            summary = stringResource(R.string.help_item_exact_alarms_summary),
-            details = stringResource(R.string.help_item_exact_alarms_details)
+            id = "one_time_actions",
+            title = stringResource(R.string.help_item_one_time_actions_title),
+            summary = stringResource(R.string.help_item_one_time_actions_summary),
+            details = stringResource(R.string.help_item_one_time_actions_details)
         ),
         HelpItem(
-            id = "battery",
-            title = stringResource(R.string.help_item_battery_title),
-            summary = stringResource(R.string.help_item_battery_summary),
-            details = stringResource(R.string.help_item_battery_details)
+            id = "day_filter",
+            title = stringResource(R.string.help_item_day_filter_title),
+            summary = stringResource(R.string.help_item_day_filter_summary),
+            details = stringResource(R.string.help_item_day_filter_details)
+        ),
+        HelpItem(
+            id = "skip_recurring",
+            title = stringResource(R.string.help_item_skip_recurring_title),
+            summary = stringResource(R.string.help_item_skip_recurring_summary),
+            details = stringResource(R.string.help_item_skip_recurring_details)
         ),
         HelpItem(
             id = "busy_only",
@@ -132,16 +125,16 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_ignore_all_day_details)
         ),
         HelpItem(
-            id = "require_location",
-            title = stringResource(R.string.help_item_require_location_title),
-            summary = stringResource(R.string.help_item_require_location_summary),
-            details = stringResource(R.string.help_item_require_location_details)
-        ),
-        HelpItem(
             id = "min_duration",
             title = stringResource(R.string.help_item_min_duration_title),
             summary = stringResource(R.string.help_item_min_duration_summary),
             details = stringResource(R.string.help_item_min_duration_details)
+        ),
+        HelpItem(
+            id = "location_required",
+            title = stringResource(R.string.help_item_location_required_title),
+            summary = stringResource(R.string.help_item_location_required_summary),
+            details = stringResource(R.string.help_item_location_required_details)
         ),
         HelpItem(
             id = "title_filters",
@@ -150,16 +143,10 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_title_filters_details)
         ),
         HelpItem(
-            id = "dnd_mode",
-            title = stringResource(R.string.help_item_dnd_mode_title),
-            summary = stringResource(R.string.help_item_dnd_mode_summary),
-            details = stringResource(R.string.help_item_dnd_mode_details)
-        ),
-        HelpItem(
-            id = "dnd_timing",
-            title = stringResource(R.string.help_item_dnd_timing_title),
-            summary = stringResource(R.string.help_item_dnd_timing_summary),
-            details = stringResource(R.string.help_item_dnd_timing_details)
+            id = "event_title_filters",
+            title = stringResource(R.string.help_item_event_title_filters_title),
+            summary = stringResource(R.string.help_item_event_title_filters_summary),
+            details = stringResource(R.string.help_item_event_title_filters_details)
         ),
         HelpItem(
             id = "pre_dnd_notification",
@@ -168,10 +155,52 @@ fun HelpScreen(
             details = stringResource(R.string.help_item_pre_dnd_notification_details)
         ),
         HelpItem(
+            id = "advanced_notifications",
+            title = stringResource(R.string.help_item_advanced_notifications_title),
+            summary = stringResource(R.string.help_item_advanced_notifications_summary),
+            details = stringResource(R.string.help_item_advanced_notifications_details)
+        ),
+        HelpItem(
+            id = "post_meeting_notification",
+            title = stringResource(R.string.help_item_post_meeting_title),
+            summary = stringResource(R.string.help_item_post_meeting_summary),
+            details = stringResource(R.string.help_item_post_meeting_details)
+        ),
+        HelpItem(
+            id = "permissions",
+            title = stringResource(R.string.help_item_permissions_title),
+            summary = stringResource(R.string.help_item_permissions_summary),
+            details = stringResource(R.string.help_item_permissions_details)
+        ),
+        HelpItem(
+            id = "exact_alarms",
+            title = stringResource(R.string.help_item_exact_alarms_title),
+            summary = stringResource(R.string.help_item_exact_alarms_summary),
+            details = stringResource(R.string.help_item_exact_alarms_details)
+        ),
+        HelpItem(
+            id = "battery",
+            title = stringResource(R.string.help_item_battery_title),
+            summary = stringResource(R.string.help_item_battery_summary),
+            details = stringResource(R.string.help_item_battery_details)
+        ),
+        HelpItem(
+            id = "themes",
+            title = stringResource(R.string.help_item_themes_title),
+            summary = stringResource(R.string.help_item_themes_summary),
+            details = stringResource(R.string.help_item_themes_details)
+        ),
+        HelpItem(
             id = "tile",
             title = stringResource(R.string.help_item_tile_title),
             summary = stringResource(R.string.help_item_tile_summary),
             details = stringResource(R.string.help_item_tile_details)
+        ),
+        HelpItem(
+            id = "pull_refresh",
+            title = stringResource(R.string.help_item_pull_refresh_title),
+            summary = stringResource(R.string.help_item_pull_refresh_summary),
+            details = stringResource(R.string.help_item_pull_refresh_details)
         ),
         HelpItem(
             id = "debug_logs",
@@ -179,11 +208,27 @@ fun HelpScreen(
             summary = stringResource(R.string.help_item_debug_logs_summary),
             details = stringResource(R.string.help_item_debug_logs_details)
         ),
+        if (BuildConfig.MANUAL_UPDATE_ENABLED) {
+            HelpItem(
+                id = "updates",
+                title = stringResource(R.string.help_item_updates_title),
+                summary = stringResource(R.string.help_item_updates_summary),
+                details = stringResource(R.string.help_item_updates_details)
+            )
+        } else {
+            null
+        },
         HelpItem(
-            id = "pull_refresh",
-            title = stringResource(R.string.help_item_pull_refresh_title),
-            summary = stringResource(R.string.help_item_pull_refresh_summary),
-            details = stringResource(R.string.help_item_pull_refresh_details)
+            id = "privacy",
+            title = stringResource(R.string.help_item_privacy_title),
+            summary = stringResource(R.string.help_item_privacy_summary),
+            details = stringResource(R.string.help_item_privacy_details)
+        ),
+        HelpItem(
+            id = "language",
+            title = stringResource(R.string.help_item_language_title),
+            summary = stringResource(R.string.help_item_language_summary),
+            details = stringResource(R.string.help_item_language_details)
         )
     )
 
@@ -274,10 +319,24 @@ fun HelpScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = item.title,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Icon(
+                                imageVector = if (isExpanded) {
+                                    Icons.Default.ExpandLess
+                                } else {
+                                    Icons.Default.ExpandMore
+                                },
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         Text(
                             text = item.summary,
                             style = MaterialTheme.typography.bodySmall,

@@ -26,6 +26,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -92,6 +96,7 @@ import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.EventInstance
+import com.brunoafk.calendardnd.domain.model.EventHighlightPreset
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
 import com.brunoafk.calendardnd.domain.model.Trigger
@@ -103,12 +108,14 @@ import com.brunoafk.calendardnd.system.update.ManualUpdateManager
 import com.brunoafk.calendardnd.util.PermissionUtils
 import com.brunoafk.calendardnd.util.TimeUtils
 import com.brunoafk.calendardnd.ui.theme.LocalIsDarkTheme
+import com.brunoafk.calendardnd.ui.theme.eventHighlightColors
 import com.brunoafk.calendardnd.ui.theme.surfaceColorAtElevation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * V10 with:
@@ -170,12 +177,17 @@ fun StatusScreenV10(
     var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var isRefreshing by remember { mutableStateOf(false) }
     var themeDebugMode by remember { mutableStateOf(ThemeDebugMode.OFF) }
+    var eventHighlightPreset by remember { mutableStateOf(EventHighlightPreset.PRESET_1) }
+    var eventHighlightBarHidden by remember { mutableStateOf(false) }
     var userSuppressedUntilMs by remember { mutableLongStateOf(0L) }
     var userSuppressedFromMs by remember { mutableLongStateOf(0L) }
     var manualEventStartMs by remember { mutableLongStateOf(0L) }
     var manualEventEndMs by remember { mutableLongStateOf(0L) }
     var oneTimeActionConfirmation by remember { mutableStateOf(true) }
     var pendingOneTimeDialog by remember { mutableStateOf<OneTimeDialog?>(null) }
+    val isDarkThemeForHighlight = LocalIsDarkTheme.current
+    val highlightPalette = eventHighlightColors(eventHighlightPreset)
+    val eventHighlightColor = if (isDarkThemeForHighlight) highlightPalette.dark else highlightPalette.light
 
     fun buildManualWindow(instance: EventInstance): Pair<Long, Long> {
         val offsetMs = dndStartOffsetMinutes * 60_000L
@@ -335,6 +347,16 @@ fun StatusScreenV10(
 
     DisposableEffect(Unit) {
         val job = scope.launch { settingsStore.themeDebugMode.collectLatest { themeDebugMode = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch { settingsStore.debugEventHighlightPreset.collectLatest { eventHighlightPreset = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch { settingsStore.debugEventHighlightBarHidden.collectLatest { eventHighlightBarHidden = it } }
         onDispose { job.cancel() }
     }
 
@@ -507,37 +529,39 @@ fun StatusScreenV10(
     val gradientEndColor = gradientColors.last()
 
     pendingOneTimeDialog?.let { dialog ->
-        val (titleRes, bodyRes, confirmRes) = when (dialog) {
+        // Resolve strings at composable level to ensure correct locale context
+        val (titleText, bodyText, confirmText) = when (dialog) {
             is OneTimeDialog.Set -> when (dialog.action) {
                 is OneTimeAction.EnableForEvent -> Triple(
-                    R.string.next_event_enable_confirm_title,
-                    R.string.next_event_enable_confirm_body,
-                    R.string.next_event_enable_confirm_action
+                    stringResource(R.string.next_event_enable_confirm_title),
+                    stringResource(R.string.next_event_enable_confirm_body),
+                    stringResource(R.string.next_event_enable_confirm_action)
                 )
                 is OneTimeAction.SkipEvent -> Triple(
-                    R.string.next_event_skip_confirm_title,
-                    R.string.next_event_skip_confirm_body,
-                    R.string.next_event_skip_confirm_action
+                    stringResource(R.string.next_event_skip_confirm_title),
+                    stringResource(R.string.next_event_skip_confirm_body),
+                    stringResource(R.string.next_event_skip_confirm_action)
                 )
             }
             is OneTimeDialog.Clear -> when (dialog.activeType) {
                 OneTimeActionType.ENABLE -> Triple(
-                    R.string.next_event_clear_enable_title,
-                    R.string.next_event_clear_enable_body,
-                    R.string.next_event_clear_enable_action
+                    stringResource(R.string.next_event_clear_enable_title),
+                    stringResource(R.string.next_event_clear_enable_body),
+                    stringResource(R.string.next_event_clear_enable_action)
                 )
                 OneTimeActionType.SKIP -> Triple(
-                    R.string.next_event_clear_skip_title,
-                    R.string.next_event_clear_skip_body,
-                    R.string.next_event_clear_skip_action
+                    stringResource(R.string.next_event_clear_skip_title),
+                    stringResource(R.string.next_event_clear_skip_body),
+                    stringResource(R.string.next_event_clear_skip_action)
                 )
             }
         }
+        val cancelText = stringResource(R.string.cancel)
 
         AlertDialog(
             onDismissRequest = { pendingOneTimeDialog = null },
-            title = { Text(text = stringResource(titleRes)) },
-            text = { Text(text = stringResource(bodyRes)) },
+            title = { Text(text = titleText) },
+            text = { Text(text = bodyText) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -548,12 +572,12 @@ fun StatusScreenV10(
                         }
                     }
                 ) {
-                    Text(text = stringResource(confirmRes))
+                    Text(text = confirmText)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { pendingOneTimeDialog = null }) {
-                    Text(text = stringResource(R.string.cancel))
+                    Text(text = cancelText)
                 }
             }
         )
@@ -779,6 +803,7 @@ fun StatusScreenV10(
                             activeActionType = compactActiveActionType,
                             automationEnabled = automationEnabled,
                             actionEnabled = nextActionEnabled,
+                            highlightColor = eventHighlightColor,
                             onCardClick = {
                                 StatusScreenIntents.openCalendarEvent(
                                     context,
@@ -822,6 +847,7 @@ fun StatusScreenV10(
                             endTime = TimeUtils.formatTime(context, next.end),
                             startsIn = TimeUtils.formatDuration((next.begin - nowMs).coerceAtLeast(0L)),
                             highlightCard = activeActionType != null,
+                            highlightColor = eventHighlightColor,
                             hasActionStrip = true,
                             onClick = { StatusScreenIntents.openCalendarEvent(context, next.eventId, next.begin) }
                         )
@@ -829,6 +855,7 @@ fun StatusScreenV10(
                             activeActionType = activeActionType,
                             automationEnabled = automationEnabled,
                             enabled = nextActionEnabled,
+                            activeHighlightColor = eventHighlightColor,
                             onSetAction = {
                                 nextActionData?.let { action ->
                                     if (oneTimeActionConfirmation) {
@@ -1025,14 +1052,37 @@ fun StatusScreenV10(
                     }
                 }
 
-                // Settings button
-                Surface(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable(onClick = { onOpenSettings(false) }),
-                    shape = RoundedCornerShape(12.dp),
-                    color = surfaceColorAtElevation(1.dp)
-                ) {
+            var suppressSettingsClick by remember { mutableStateOf(false) }
+
+            // Settings button
+            Surface(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = {
+                        if (suppressSettingsClick) {
+                            suppressSettingsClick = false
+                        } else {
+                            onOpenSettings(false)
+                        }
+                    })
+                    .pointerInput(eventHighlightBarHidden) {
+                        awaitEachGesture {
+                            awaitFirstDown()
+                            val up = withTimeoutOrNull(2000L) {
+                                waitForUpOrCancellation()
+                            }
+                            if (up == null) {
+                                suppressSettingsClick = true
+                                scope.launch {
+                                    settingsStore.setDebugEventHighlightBarHidden(!eventHighlightBarHidden)
+                                }
+                                waitForUpOrCancellation()
+                            }
+                        }
+                    },
+                shape = RoundedCornerShape(12.dp),
+                color = surfaceColorAtElevation(1.dp)
+            ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -1098,6 +1148,13 @@ fun StatusScreenV10(
             if (themeDebugMode == ThemeDebugMode.THEME_SELECTOR) {
                 ThemeSelectorBottomBar(
                     onSelectTheme = onSelectTheme,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (themeDebugMode == ThemeDebugMode.EVENT_CARD_COLORS && !eventHighlightBarHidden) {
+                EventColorSelectorBottomBar(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1180,15 +1237,12 @@ private fun UpNextCompactCard(
     activeActionType: OneTimeActionType?,
     automationEnabled: Boolean,
     actionEnabled: Boolean,
+    highlightColor: Color,
     onCardClick: () -> Unit,
     onSetAction: () -> Unit,
     onClearAction: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val isDarkTheme = LocalIsDarkTheme.current
-
-    // Yellow/gold color when action is active (same as NextMeetingCardV10)
-    val highlightColor = if (isDarkTheme) Color(0xFFB38B00) else Color(0xFFFFC107)
     val isHighlighted = activeActionType != null
 
     val cardBackgroundColor = if (isHighlighted) {
@@ -1292,6 +1346,7 @@ private fun UpNextCompactCard(
                 activeActionType = activeActionType,
                 automationEnabled = automationEnabled,
                 enabled = actionEnabled,
+                activeHighlightColor = highlightColor,
                 onSetAction = onSetAction,
                 onClearAction = onClearAction,
                 modifier = Modifier.fillMaxWidth()
@@ -1307,12 +1362,11 @@ private fun NextMeetingCardV10(
     endTime: String,
     startsIn: String,
     highlightCard: Boolean,
+    highlightColor: Color,
     hasActionStrip: Boolean = true,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val isDarkTheme = LocalIsDarkTheme.current
-    val highlightColor = if (isDarkTheme) Color(0xFFB38B00) else Color(0xFFFFC107)
     val primaryText = if (highlightCard) Color.Black else MaterialTheme.colorScheme.onSurface
     val secondaryText = if (highlightCard) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
     val chipBackground = if (highlightCard) Color.Black.copy(alpha = 0.08f) else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
@@ -1405,6 +1459,7 @@ private fun ActionStrip(
     activeActionType: OneTimeActionType?,
     automationEnabled: Boolean,
     enabled: Boolean,
+    activeHighlightColor: Color,
     onSetAction: () -> Unit,
     onClearAction: () -> Unit,
     modifier: Modifier = Modifier
@@ -1412,17 +1467,17 @@ private fun ActionStrip(
     val isDarkTheme = LocalIsDarkTheme.current
     val isActive = activeActionType != null
 
-    // Yellow when no action is set, gray when action is active
+    // Neutral gray when active, blue as default
     val backgroundColor = if (isActive) {
         if (isDarkTheme) Color(0xFF3A3A3A) else Color(0xFFE8E8E8)
     } else {
-        if (isDarkTheme) Color(0xFFB38B00) else Color(0xFFFFC107)
+        activeHighlightColor
     }
 
     val contentColor = if (isActive) {
         if (isDarkTheme) Color.White.copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.8f)
     } else {
-        Color.Black.copy(alpha = 0.9f)
+        Color.Black.copy(alpha = 0.85f)
     }
 
     val onClick = when {
@@ -1434,6 +1489,7 @@ private fun ActionStrip(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .height(48.dp)
             .then(
                 if (onClick != null) {
                     Modifier.clickable(onClick = onClick)
@@ -1452,12 +1508,7 @@ private fun ActionStrip(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
-                ),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

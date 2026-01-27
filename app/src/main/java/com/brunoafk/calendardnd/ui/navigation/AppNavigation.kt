@@ -300,7 +300,8 @@ fun AppNavigation(
                             navController.popBackStack()
                         },
                         showBack = true,
-                        showContinue = false
+                        showContinue = false,
+                        showDescription = false
                     )
                 }
             }
@@ -810,27 +811,6 @@ fun AppNavigation(
                     )
                 }
             }
-            composable(AppRoutes.DEBUG_LOGS) {
-                val route = AppRoutes.DEBUG_LOGS
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugLogScreen(
-                        onNavigateBack = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.popBackStack()
-                        }
-                    )
-                }
-            }
             composable(AppRoutes.HELP) {
                 val route = AppRoutes.HELP
                 DestinationWrapper(
@@ -852,186 +832,223 @@ fun AppNavigation(
                     )
                 }
             }
-            composable(AppRoutes.DEBUG_TOOLS) {
-                val route = AppRoutes.DEBUG_TOOLS
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugToolsScreen(
-                        onNavigateBack = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.popBackStack()
-                        },
-                        onOpenLanguage = { tag ->
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate("debug_language/$tag")
-                        },
-                        onOpenDebugLogs = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_LOGS)
-                        },
-                        onOpenLogSettings = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_LOG_SETTINGS)
-                        },
-                        onOpenTelemetryLevel = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_TELEMETRY_LEVEL)
-                        },
-                        onOpenThemeList = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_THEME_LIST)
-                        },
-                        onOpenThemeDebugging = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(AppRoutes.DEBUG_THEME_MODE)
-                        },
-                        signatureStatus = signatureStatus
-                    )
-                }
-            }
-            composable(AppRoutes.DEBUG_THEME_LIST) {
-                val route = AppRoutes.DEBUG_THEME_LIST
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugThemeListScreen(
-                        onNavigateBack = {
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.popBackStack()
-                        },
-                        onSelectTheme = { targetRoute ->
-                            lockedRoutes.value = lockedRoutes.value + route
-                            navController.navigate(targetRoute)
-                        }
-                    )
-                }
-            }
-            composable(AppRoutes.DEBUG_THEME_MODE) {
-                val route = AppRoutes.DEBUG_THEME_MODE
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugThemeModeScreen(
-                        onNavigateBack = {
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_LOGS) {
+                    val route = AppRoutes.DEBUG_LOGS
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
                         }
-                    )
+                    ) {
+                        DebugLogScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
-            composable(AppRoutes.DEBUG_LOG_SETTINGS) {
-                val route = AppRoutes.DEBUG_LOG_SETTINGS
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugLogSettingsScreen(
-                        onNavigateBack = {
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_TOOLS) {
+                    val route = AppRoutes.DEBUG_TOOLS
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
                         }
-                    )
+                    ) {
+                        DebugToolsScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            },
+                            onOpenLanguage = { tag ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate("debug_language/$tag")
+                            },
+                            onOpenDebugLogs = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_LOGS)
+                            },
+                            onOpenLogSettings = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_LOG_SETTINGS)
+                            },
+                            onOpenTelemetryLevel = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_TELEMETRY_LEVEL)
+                            },
+                            onOpenThemeList = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_THEME_LIST)
+                            },
+                            onOpenThemeDebugging = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_THEME_MODE)
+                            },
+                            signatureStatus = signatureStatus
+                        )
+                    }
                 }
             }
-            composable(AppRoutes.DEBUG_TELEMETRY_LEVEL) {
-                val route = AppRoutes.DEBUG_TELEMETRY_LEVEL
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    TelemetryLevelScreen(
-                        onNavigateBack = {
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_THEME_LIST) {
+                    val route = AppRoutes.DEBUG_THEME_LIST
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
                         }
-                    )
+                    ) {
+                        DebugThemeListScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            },
+                            onSelectTheme = { targetRoute ->
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(targetRoute)
+                            }
+                        )
+                    }
                 }
             }
-            composable(
-                route = AppRoutes.DEBUG_LANGUAGE,
-                arguments = listOf(navArgument("tag") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val tag = backStackEntry.arguments?.getString("tag").orEmpty()
-                val routeLabel = backStackEntry.destination.route ?: AppRoutes.DEBUG_LANGUAGE
-                val route = routeLabel
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugLanguageScreen(
-                        languageTag = tag,
-                        onNavigateBack = {
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_THEME_MODE) {
+                    val route = AppRoutes.DEBUG_THEME_MODE
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
                         }
-                    )
+                    ) {
+                        DebugThemeModeScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
-            composable(AppRoutes.DEBUG_SPLASH) {
-                val route = AppRoutes.DEBUG_SPLASH
-                DestinationWrapper(
-                    route = route,
-                    currentRoute = currentRoute,
-                    debugOverlayEnabled = debugOverlayEnabled,
-                    debugLoggingEnabled = debugToolsUnlocked,
-                    lockedRoutes = lockedRoutes,
-                    onSystemBack = {
-                        lockedRoutes.value = lockedRoutes.value + route
-                        navController.popBackStack()
-                    }
-                ) {
-                    DebugSplashPreviewScreen(
-                        onNavigateBack = {
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_LOG_SETTINGS) {
+                    val route = AppRoutes.DEBUG_LOG_SETTINGS
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
                             lockedRoutes.value = lockedRoutes.value + route
                             navController.popBackStack()
                         }
-                    )
+                    ) {
+                        DebugLogSettingsScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
+            }
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_TELEMETRY_LEVEL) {
+                    val route = AppRoutes.DEBUG_TELEMETRY_LEVEL
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    ) {
+                        TelemetryLevelScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
+            }
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(
+                    route = AppRoutes.DEBUG_LANGUAGE,
+                    arguments = listOf(navArgument("tag") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val tag = backStackEntry.arguments?.getString("tag").orEmpty()
+                    val routeLabel = backStackEntry.destination.route ?: AppRoutes.DEBUG_LANGUAGE
+                    val route = routeLabel
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    ) {
+                        DebugLanguageScreen(
+                            languageTag = tag,
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
+            }
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_SPLASH) {
+                    val route = AppRoutes.DEBUG_SPLASH
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    ) {
+                        DebugSplashPreviewScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
             composable(AppRoutes.UPDATES) {

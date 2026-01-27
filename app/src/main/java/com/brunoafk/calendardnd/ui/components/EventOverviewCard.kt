@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,10 +47,10 @@ fun EventOverviewCard(
     nextActionEnabled: Boolean = true,
     onNextAction: (() -> Unit)? = null,
     highlightNext: Boolean = false,
-    actionStripActive: Boolean = false
+    actionStripActive: Boolean = false,
+    highlightColor: androidx.compose.ui.graphics.Color
 ) {
     val isDarkTheme = LocalIsDarkTheme.current
-    val highlightColor = if (isDarkTheme) androidx.compose.ui.graphics.Color(0xFFB38B00) else androidx.compose.ui.graphics.Color(0xFFFFC107)
     val highlightText = androidx.compose.ui.graphics.Color.Black
     val highlightSubText = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f)
 
@@ -146,33 +148,29 @@ fun EventOverviewCard(
                     val stripColor = if (actionStripActive) {
                         if (isDarkTheme) androidx.compose.ui.graphics.Color(0xFF3A3A3A) else androidx.compose.ui.graphics.Color(0xFFE8E8E8)
                     } else {
-                        if (isDarkTheme) androidx.compose.ui.graphics.Color(0xFFB38B00) else androidx.compose.ui.graphics.Color(0xFFFFC107)
+                        highlightColor
                     }
                     val stripTextColor = if (actionStripActive) {
                         if (isDarkTheme) androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
                         else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.8f)
                     } else {
-                        androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.9f)
+                        androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.85f)
                     }
 
-                    androidx.compose.material3.Surface(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .then(if (nextActionEnabled) Modifier.clickable(onClick = onNextAction) else Modifier),
-                        color = stripColor
+                            .requiredHeight(64.dp)
+                            .background(stripColor)
+                            .then(if (nextActionEnabled) Modifier.clickable(onClick = onNextAction) else Modifier)
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = nextActionLabel,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = stripTextColor.copy(alpha = if (nextActionEnabled) 1f else 0.5f)
-                            )
-                        }
+                        Text(
+                            text = nextActionLabel,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = stripTextColor.copy(alpha = if (nextActionEnabled) 1f else 0.5f)
+                        )
                     }
                 }
             }

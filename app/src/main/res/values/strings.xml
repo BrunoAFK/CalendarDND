@@ -194,7 +194,7 @@
     <string name="automation_summary_filters_count">Filters: %d</string>
     <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
-    <string name="dnd_mode_banner_message">DND will activate automatically in %1$s mode. Tap to change.</string>
+    <string name="dnd_mode_banner_message">DND selected mode: %1$s. Tap to change.</string>
     <string name="dnd_mode_banner_title">DND mode</string>
     <string name="refresh_banner_title">Refresh status</string>
     <string name="refresh_banner_message">Pull down to refresh. Manual checks are also available in Settings.</string>
@@ -310,6 +310,30 @@
     <string name="help_item_pull_refresh_title">Pull to Refresh</string>
     <string name="help_item_pull_refresh_summary">Swipe down on the main screen to refresh status.</string>
     <string name="help_item_pull_refresh_details">Pull down on the home screen to manually refresh your meeting status and re-check the DND state. This is useful if your calendar has changed recently and you want to see the updated status immediately.</string>
+    <string name="help_item_event_title_filters_title">Event title filters</string>
+    <string name="help_item_event_title_filters_summary">Choose how event titles are matched for automation.</string>
+    <string name="help_item_event_title_filters_details">Use keywords, whole words, starts/ends with, exact match, or regex. Examples and validation appear in the filter screen, and regex mode is marked experimental.</string>
+    <string name="help_item_location_required_title">Location-required filter</string>
+    <string name="help_item_location_required_summary">Only run automation when a meeting has a location.</string>
+    <string name="help_item_location_required_details">Enable this filter to ignore events without a location field.</string>
+    <string name="help_item_skip_recurring_title">Skip recurring events</string>
+    <string name="help_item_skip_recurring_summary">Ignore recurring meetings for automation.</string>
+    <string name="help_item_skip_recurring_details">When enabled, recurring events won’t trigger DND.</string>
+    <string name="help_item_day_filter_title">Day-of-week filter</string>
+    <string name="help_item_day_filter_summary">Choose which days automation should run.</string>
+    <string name="help_item_day_filter_details">Select the days (e.g., weekdays only) to control when DND automation activates.</string>
+    <string name="help_item_one_time_actions_title">One-time event actions</string>
+    <string name="help_item_one_time_actions_summary">Enable or skip DND for a single upcoming event.</string>
+    <string name="help_item_one_time_actions_details">Use the next event card to enable DND just for that event, or skip it without changing global automation.</string>
+    <string name="help_item_advanced_notifications_title">Advanced notifications</string>
+    <string name="help_item_advanced_notifications_summary">Fine-tune pre/post meeting alerts.</string>
+    <string name="help_item_advanced_notifications_details">Adjust timing for pre-DND and post-meeting notifications, and optionally make post-meeting alerts silent.</string>
+    <string name="help_item_post_meeting_title">Post-meeting notification behavior</string>
+    <string name="help_item_post_meeting_summary">Understand when post-meeting alerts appear.</string>
+    <string name="help_item_post_meeting_details">Post-meeting prompts can fire at the end, before the end, or after the meeting based on your timing settings.</string>
+    <string name="help_item_themes_title">Themes and appearance</string>
+    <string name="help_item_themes_summary">Switch color mode and theme style.</string>
+    <string name="help_item_themes_details">Choose System/Light/Dark, toggle the legacy theme, or use the theme selector to preview other layouts.</string>
 
     <!-- Common -->
     <string name="back">Back</string>
@@ -531,9 +555,19 @@
     <string name="theme_debug_mode_gradient_subtitle">Show resolved gradient colors in V10</string>
     <string name="theme_debug_mode_selector">Theme selector</string>
     <string name="theme_debug_mode_selector_subtitle">Show a bottom bar to switch themes</string>
+    <string name="theme_debug_mode_event_colors">Single event card colors</string>
+    <string name="theme_debug_mode_event_colors_subtitle">Show a picker for one-time event highlight colors</string>
     <string name="theme_debug_selector_title">Theme selector</string>
     <string name="theme_debug_selector_subtitle">Switch to any theme preview</string>
     <string name="theme_debug_selector_action">Choose</string>
+    <string name="event_color_selector_title">Event colors</string>
+    <string name="event_color_selector_action">Choose</string>
+    <string name="event_color_selector_dialog_title">Event highlight colors</string>
+    <string name="event_color_preset_title">Preset %1$d</string>
+    <string name="event_color_preset_subtitle">Light %1$s • Dark %2$s</string>
+    <string name="event_color_section_current">Current</string>
+    <string name="event_color_section_favorites">Favorites</string>
+    <string name="event_color_section_all">Other colors</string>
     <string name="close">Close</string>
     <string name="debug_tools_gradient_debug_title">Gradient debug</string>
     <string name="debug_tools_gradient_debug_subtitle">Show resolved gradient colors</string>
@@ -626,8 +660,8 @@
     <!-- Action status strip -->
     <string name="action_status_dnd_skipped">DND will be skipped for this event</string>
     <string name="action_status_dnd_enabled">DND enabled for this event</string>
-    <string name="action_status_dnd_enabled_tap">DND enabled for this event • Tap to remove</string>
-    <string name="action_status_dnd_skipped_tap">DND will be skipped for this event • Tap to remove</string>
+    <string name="action_status_dnd_enabled_tap">DND enabled • Tap to cancel</string>
+    <string name="action_status_dnd_skipped_tap">DND skipped • Tap to cancel</string>
     <string name="action_status_undo">Undo</string>
     <string name="action_strip_tap_to_skip">Tap to skip DND for this event</string>
     <string name="action_strip_tap_to_enable">Tap to enable DND for this event</string>

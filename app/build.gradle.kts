@@ -32,13 +32,13 @@ android {
             ?.toBooleanStrictOrNull() ?: true
         buildConfigField("boolean", "ANALYTICS_ENABLED", analyticsEnabled.toString())
 
-        val debugToolsEnabled = (project.findProperty("debugToolsEnabled") as String?)
-            ?.toBooleanStrictOrNull() ?: false
-        buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", debugToolsEnabled.toString())
-
         val telemetryDefaultEnabled = (project.findProperty("telemetryDefaultEnabled") as String?)
             ?.toBooleanStrictOrNull() ?: true
         buildConfigField("boolean", "TELEMETRY_DEFAULT_ENABLED", telemetryDefaultEnabled.toString())
+
+        val debugToolsEnabled = (project.findProperty("debugToolsEnabled") as String?)
+            ?.toBooleanStrictOrNull() ?: true
+        buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", debugToolsEnabled.toString())
 
         val telemetryDefaultLevel = (project.findProperty("telemetryDefaultLevel") as String?)
             ?.trim()
@@ -129,12 +129,22 @@ android {
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "Calendar DND (Debug)")
             buildConfigField("boolean", "TELEMETRY_DEFAULT_ENABLED", "false")
+            buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", "true")
+        }
+        create("debugNoTools") {
+            initWith(getByName("debug"))
+            matchingFallbacks += listOf("debug")
+            applicationIdSuffix = ".debug.notools"
+            versionNameSuffix = "-debug-notools"
+            resValue("string", "app_name", "Calendar DND (Debug No Tools)")
+            buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", "false")
         }
         release {
             isMinifyEnabled = true
             ndk {
                 debugSymbolLevel = "FULL"
             }
+            buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", "true")
             signingConfigs.findByName("release")?.let { signingConfig = it }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -170,7 +180,7 @@ android {
     }
 
     applicationVariants.all {
-        if (flavorName == "fdroid") {
+        if (flavorName == "fdroid" || buildType.name == "debugNoTools") {
             val variantName = name.replaceFirstChar { it.uppercaseChar() }
             tasks.matching { it.name == "process${variantName}GoogleServices" }
                 .configureEach { enabled = false }

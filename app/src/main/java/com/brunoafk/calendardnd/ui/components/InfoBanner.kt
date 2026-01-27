@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -136,6 +137,11 @@ fun InfoBanner(
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .scale(scale.value)
                 .alpha(alpha.value * swipeAlpha)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
+                    shape = MaterialTheme.shapes.small
+                )
                 .let { base ->
                     if (onClick != null) {
                         base.clickable(onClick = onClick)
@@ -166,7 +172,7 @@ fun InfoBanner(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ),
             shape = MaterialTheme.shapes.small,
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Row(
                 modifier = Modifier

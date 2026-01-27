@@ -2,9 +2,18 @@ package com.brunoafk.calendardnd.util
 
 import android.content.Context
 import android.os.Bundle
+import java.util.Locale
 import com.brunoafk.calendardnd.BuildConfig
 
 object TelemetryController {
+
+    private val VERSION_GATES = listOf(
+        11200,
+        11300,
+        11400,
+        11500,
+        11600
+    )
 
     fun setAnalyticsEnabled(context: Context, enabled: Boolean) {
         if (!BuildConfig.FIREBASE_ENABLED || !AppConfig.analyticsEnabled) {
@@ -53,7 +62,7 @@ object TelemetryController {
         }
     }
 
-    fun subscribeToUpdatesTopic() {
+    fun subscribeToFcmTopics(languageTag: String) {
         if (!BuildConfig.FIREBASE_ENABLED) {
             return
         }
@@ -62,10 +71,55 @@ object TelemetryController {
             val instance = messagingClass
                 .getMethod("getInstance")
                 .invoke(null)
-            messagingClass
-                .getMethod("subscribeToTopic", String::class.java)
-                .invoke(instance, "updates")
+            val subscribe = messagingClass.getMethod("subscribeToTopic", String::class.java)
+            val topics = mutableSetOf(
+                "all",
+                "updates",
+                "flavor_${BuildConfig.FLAVOR}",
+                "v_${BuildConfig.VERSION_CODE}",
+                languageTopic(languageTag)
+            )
+            topics += if (BuildConfig.DEBUG) "build_debug" else "build_release"
+            VERSION_GATES.filter { BuildConfig.VERSION_CODE >= it }
+                .forEach { gate ->
+                    topics += "v_ge_${gate}"
+                }
+            topics.forEach { topic ->
+                subscribe.invoke(instance, topic)
+            }
         }
+    }
+
+    fun updateLanguageTopic(previousTag: String, currentTag: String) {
+        if (!BuildConfig.FIREBASE_ENABLED) {
+            return
+        }
+        val previous = languageTopic(previousTag)
+        val current = languageTopic(currentTag)
+        if (previous == current) {
+            return
+        }
+        runCatching {
+            val messagingClass = Class.forName("com.google.firebase.messaging.FirebaseMessaging")
+            val instance = messagingClass
+                .getMethod("getInstance")
+                .invoke(null)
+            val subscribe = messagingClass.getMethod("subscribeToTopic", String::class.java)
+            val unsubscribe = messagingClass.getMethod("unsubscribeFromTopic", String::class.java)
+            if (previous.isNotBlank()) {
+                unsubscribe.invoke(instance, previous)
+            }
+            if (current.isNotBlank()) {
+                subscribe.invoke(instance, current)
+            }
+        }
+    }
+
+    private fun languageTopic(tag: String): String {
+        val normalized = tag.ifBlank { Locale.getDefault().language }
+            .lowercase(Locale.ROOT)
+            .replace('-', '_')
+        return "lang_${normalized}"
     }
 
     fun logEvent(context: Context, name: String, params: Bundle?) {

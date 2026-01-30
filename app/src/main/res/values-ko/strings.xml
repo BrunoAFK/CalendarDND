@@ -41,6 +41,9 @@
     <string name="complete_setup">설정 완료</string>
     <string name="current_meeting">현재 회의</string>
     <string name="next_meeting">다음 회의</string>
+    <string name="active_meeting_overlap_chip">일정 %1$d개</string>
+    <string name="active_meetings_title">활성 일정</string>
+    <string name="upcoming_meetings_title">예정된 일정</string>
     <string name="next_event_enable_dnd">이 일정에만 DND 켜기</string>
     <string name="next_event_skip_dnd">이 일정에서 DND 건너뛰기</string>
     <string name="next_event_enable_confirm_title">다음 일정에서 DND를 켤까요?</string>
@@ -620,8 +623,12 @@
     <string name="debug_tools_reviews_force_title">리뷰 강제 표시</string>
     <string name="debug_tools_reviews_force_subtitle">인앱 리뷰 대화상자를 지금 표시합니다.</string>
     <string name="debug_tools_reviews_no_activity">리뷰 대화상자를 열 수 없습니다.</string>
+    <string name="debug_tools_reviews_state_title">리뷰 프롬프트 상태</string>
+    <string name="debug_tools_reviews_state_subtitle">표시됨: %1$s • 실행 횟수: %2$d • 첫 실행: %3$s • 대상: %4$s</string>
     <string name="debug_tools_nav_overlay_subtitle">현재 경로와 탭 로그를 표시</string>
     <string name="debug_tools_nav_overlay_title">내비게이션 디버그 오버레이 표시</string>
+    <string name="debug_tools_status_debug_panel_title">상태 화면 디버그 패널</string>
+    <string name="debug_tools_status_debug_panel_subtitle">메인 화면에서 앱 이름을 탭하면 새로고침 상태, DND 상태, 이벤트 창 정보가 포함된 라이브 디버그 패널을 표시합니다</string>
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
     <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
@@ -697,8 +704,13 @@
     <string name="post_meeting_notification_timing_before">종료 %d분 전</string>
     <string name="post_meeting_notification_timing_after">종료 %d분 후</string>
     <string name="post_meeting_notification_timing_help">회의 종료 전후에 연장 안내가 표시되는 시간을 조정합니다.</string>
-    <string name="post_meeting_notification_silent_title">종료 알림 무음</string>
-    <string name="post_meeting_notification_silent_subtitle">낮은 중요도(무음). 진동은 시스템 설정에 따라 다릅니다.</string>
+    <string name="vibration_cooldown_section_title">진동 쿨다운</string>
+    <string name="vibration_cooldown_toggle_title">진동 쿨다운 활성화</string>
+    <string name="vibration_cooldown_toggle_subtitle">DND 종료 후 진동 모드로 전환한 다음 이전 벨소리 모드를 복원합니다.</string>
+    <string name="vibration_cooldown_duration_title">쿨다운 시간</string>
+    <string name="vibration_cooldown_duration_value">%d분</string>
+    <string name="vibration_cooldown_duration_until_notification">알림까지</string>
+    <string name="vibration_cooldown_help">DND가 꺼진 후 진동 모드를 유지합니다. \"알림까지\"는 회의 종료 알림이 표시되면 벨소리를 복원합니다(최대 1분). 더 높은 값은 해당 시간 동안 진동을 유지합니다.</string>
     <string name="notifications_permission_banner_title">알림이 비활성화됨</string>
     <string name="notifications_permission_banner_message">이 설정을 조정하려면 알림 권한을 허용하세요.</string>
     <string name="notifications_permission_banner_action">알림 허용</string>
@@ -708,7 +720,6 @@
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
-    <string name="meeting_overrun_channel_name_silent">회의 지연(무음)</string>
     <string name="debug_tools_gradient_debug_title">그라데이션 디버그</string>
     <string name="debug_tools_gradient_debug_subtitle">해석된 그라데이션 색상 표시</string>
     <string name="debug_tools_themes_list_title">테마 목록</string>

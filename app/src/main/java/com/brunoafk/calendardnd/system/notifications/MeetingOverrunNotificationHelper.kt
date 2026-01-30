@@ -17,22 +17,20 @@ import com.brunoafk.calendardnd.util.PermissionUtils
 object MeetingOverrunNotificationHelper {
 
     private const val CHANNEL_ID = "meeting_overrun"
-    private const val CHANNEL_ID_SILENT = "meeting_overrun_silent"
     private const val NOTIFICATION_ID = 1002
 
-    fun showOverrunNotification(context: Context, silent: Boolean) {
+    fun showOverrunNotification(context: Context) {
         if (!PermissionUtils.hasNotificationPermission(context)) {
             return
         }
 
-        val channelId = if (silent) CHANNEL_ID_SILENT else CHANNEL_ID
-        createNotificationChannel(context, silent)
+        createNotificationChannel(context)
 
-        val notification = NotificationCompat.Builder(context, channelId)
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.meeting_overrun_title))
             .setContentText(context.getString(R.string.meeting_overrun_message))
-            .setPriority(if (silent) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .addAction(createExtendAction(context, 5))
             .addAction(createExtendAction(context, 15))
@@ -83,28 +81,13 @@ object MeetingOverrunNotificationHelper {
         ).build()
     }
 
-    private fun createNotificationChannel(context: Context, silent: Boolean) {
-        val channelId = if (silent) CHANNEL_ID_SILENT else CHANNEL_ID
-        val channelNameRes = if (silent) {
-            R.string.meeting_overrun_channel_name_silent
-        } else {
-            R.string.meeting_overrun_channel_name
-        }
-        val importance = if (silent) {
-            NotificationManager.IMPORTANCE_LOW
-        } else {
-            NotificationManager.IMPORTANCE_HIGH
-        }
+    private fun createNotificationChannel(context: Context) {
         val channel = NotificationChannel(
-            channelId,
-            context.getString(channelNameRes),
-            importance
+            CHANNEL_ID,
+            context.getString(R.string.meeting_overrun_channel_name),
+            NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = context.getString(R.string.meeting_overrun_channel_description)
-            if (silent) {
-                setSound(null, null)
-                enableVibration(true)
-            }
         }
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

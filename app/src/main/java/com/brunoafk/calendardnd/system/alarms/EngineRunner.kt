@@ -26,6 +26,7 @@ import com.brunoafk.calendardnd.util.EngineConstants.PRE_DND_NOTIFICATION_MIN_DE
 import com.brunoafk.calendardnd.util.PermissionUtils
 import com.brunoafk.calendardnd.util.PerformanceTrace
 import com.brunoafk.calendardnd.util.PerformanceTracer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 
 /**
@@ -91,7 +92,9 @@ object EngineRunner {
                 manualEventStartMs = runtimeSnapshot.manualEventStartMs,
                 manualEventEndMs = runtimeSnapshot.manualEventEndMs,
                 lastKnownDndFilter = runtimeSnapshot.lastKnownDndFilter,
+                skippedEventId = runtimeSnapshot.skippedEventId,
                 skippedEventBeginMs = runtimeSnapshot.skippedEventBeginMs,
+                skippedEventEndMs = runtimeSnapshot.skippedEventEndMs,
                 notifiedNewEventBeforeSkip = runtimeSnapshot.notifiedNewEventBeforeSkip,
                 hasCalendarPermission = hasCalendarPermission(context),
                 hasPolicyAccess = dndController.hasPolicyAccess(),
@@ -150,6 +153,18 @@ object EngineRunner {
 
             // DND changes
             if (decision.shouldEnableDnd) {
+                // Cancel any pending restore-ringer alarm and restore ringer immediately
+                alarmScheduler.cancelRestoreRingerAlarm()
+                val savedMode = runtimeStateStore.getSnapshot().savedRingerMode
+                if (savedMode >= 0) {
+                    dndController.restoreRingerMode(savedMode)
+                    runtimeStateStore.clearSavedRingerMode()
+                    debugLogStore.appendLog(
+                        DebugLogLevel.INFO,
+                        "Vibration cool-down interrupted: restored ringer mode $savedMode before enabling DND"
+                    )
+                }
+
                 val dndTrace = startDndTraceIfEnabled(perfEnabled, "dnd_enable", input)
                 val beforeFilter = dndController.getCurrentFilterName()
                 val success = dndController.enableDnd(input.dndMode)
@@ -174,6 +189,40 @@ object EngineRunner {
                 )
                 if (success) {
                     runtimeStateStore.setLastKnownDndFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+
+                    // Vibration cool-down: set vibrate mode and schedule restore
+                    if (settingsSnapshot.vibrationCooldownEnabled && input.dndSetByApp) {
+                        val currentRinger = dndController.getCurrentRingerMode()
+                        if (currentRinger >= 0) {
+                            runtimeStateStore.setSavedRingerMode(currentRinger)
+                            val vibrateSuccess = dndController.setRingerModeVibrate()
+                            if (vibrateSuccess) {
+                                // 0 = "until notification" with 1-min safety net; 1-30 = fixed minutes
+                                val cooldownMs = if (settingsSnapshot.vibrationCooldownMinutes == 0) {
+                                    60 * 1000L
+                                } else {
+                                    settingsSnapshot.vibrationCooldownMinutes.toLong() * 60 * 1000L
+                                }
+                                val restoreAtMs = System.currentTimeMillis() + cooldownMs
+                                alarmScheduler.scheduleRestoreRingerAlarm(restoreAtMs)
+                                val label = if (settingsSnapshot.vibrationCooldownMinutes == 0) {
+                                    "until notification (1m safety net)"
+                                } else {
+                                    "${settingsSnapshot.vibrationCooldownMinutes}m"
+                                }
+                                debugLogStore.appendLog(
+                                    DebugLogLevel.INFO,
+                                    "Vibration cool-down started: $label, saved ringer=$currentRinger"
+                                )
+                            } else {
+                                runtimeStateStore.clearSavedRingerMode()
+                                debugLogStore.appendLog(
+                                    DebugLogLevel.ERROR,
+                                    "Vibration cool-down: failed to set vibrate mode"
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -192,10 +241,21 @@ object EngineRunner {
             // Check for meeting overrun notification
             if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.MEETING_OVERRUN) {
                 if (PermissionUtils.hasNotificationPermission(context)) {
-                    MeetingOverrunNotificationHelper.showOverrunNotification(
-                        context,
-                        silent = settingsSnapshot.postMeetingNotificationSilent
-                    )
+                    MeetingOverrunNotificationHelper.showOverrunNotification(context)
+                }
+                // "Until notification" mode: restore ringer shortly after the notification fired
+                if (settingsSnapshot.vibrationCooldownEnabled && settingsSnapshot.vibrationCooldownMinutes == 0) {
+                    val savedMode = runtimeStateStore.getSnapshot().savedRingerMode
+                    if (savedMode >= 0) {
+                        delay(5_000L)
+                        alarmScheduler.cancelRestoreRingerAlarm()
+                        dndController.restoreRingerMode(savedMode)
+                        runtimeStateStore.clearSavedRingerMode()
+                        debugLogStore.appendLog(
+                            DebugLogLevel.INFO,
+                            "Vibration cool-down ended: restored ringer mode $savedMode (notification fired)"
+                        )
+                    }
                 }
             }
 
@@ -217,7 +277,9 @@ object EngineRunner {
             decision.setManualDndUntilMs?.let { runtimeStateStore.setManualDndUntilMs(it) }
             decision.setManualEventStartMs?.let { runtimeStateStore.setManualEventStartMs(it) }
             decision.setManualEventEndMs?.let { runtimeStateStore.setManualEventEndMs(it) }
+            decision.setSkippedEventId?.let { runtimeStateStore.setSkippedEventId(it) }
             decision.setSkippedEventBeginMs?.let { runtimeStateStore.setSkippedEventBeginMs(it) }
+            decision.setSkippedEventEndMs?.let { runtimeStateStore.setSkippedEventEndMs(it) }
             decision.setNotifiedNewEventBeforeSkip?.let { runtimeStateStore.setNotifiedNewEventBeforeSkip(it) }
 
             // Update last run time

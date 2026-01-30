@@ -3,6 +3,7 @@ package com.brunoafk.calendardnd.data.dnd
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.provider.Settings
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.util.ExceptionHandler
@@ -11,6 +12,10 @@ class DndController(private val context: Context) {
 
     private val notificationManager: NotificationManager by lazy {
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+
+    private val audioManager: AudioManager by lazy {
+        context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
     /**
@@ -151,6 +156,45 @@ class DndController(private val context: Context) {
             NotificationManager.INTERRUPTION_FILTER_NONE -> "Total Silence"
             NotificationManager.INTERRUPTION_FILTER_ALARMS -> "Alarms Only"
             else -> "Unknown"
+        }
+    }
+
+    /**
+     * Get current ringer mode (NORMAL, VIBRATE, or SILENT).
+     * Returns -1 on failure.
+     */
+    fun getCurrentRingerMode(): Int {
+        return try {
+            audioManager.ringerMode
+        } catch (e: Exception) {
+            ExceptionHandler.handleDndException(e, "getCurrentRingerMode")
+            -1
+        }
+    }
+
+    /**
+     * Set ringer mode to vibrate only.
+     */
+    fun setRingerModeVibrate(): Boolean {
+        return try {
+            audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+            true
+        } catch (e: Exception) {
+            ExceptionHandler.handleDndException(e, "setRingerModeVibrate")
+            false
+        }
+    }
+
+    /**
+     * Restore a previously saved ringer mode.
+     */
+    fun restoreRingerMode(mode: Int): Boolean {
+        return try {
+            audioManager.ringerMode = mode
+            true
+        } catch (e: Exception) {
+            ExceptionHandler.handleDndException(e, "restoreRingerMode")
+            false
         }
     }
 }

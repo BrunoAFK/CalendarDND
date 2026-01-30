@@ -41,6 +41,9 @@
     <string name="complete_setup">Completa configurazione</string>
     <string name="current_meeting">Riunione attuale</string>
     <string name="next_meeting">Prossima riunione</string>
+    <string name="active_meeting_overlap_chip">%1$d eventi</string>
+    <string name="active_meetings_title">Eventi attivi</string>
+    <string name="upcoming_meetings_title">Eventi imminenti</string>
     <string name="next_event_enable_dnd">Attiva DND per questo evento</string>
     <string name="next_event_skip_dnd">Salta DND per questo evento</string>
     <string name="next_event_enable_confirm_title">Attivare DND per il prossimo evento?</string>
@@ -620,8 +623,12 @@
     <string name="debug_tools_reviews_force_title">Forza recensione</string>
     <string name="debug_tools_reviews_force_subtitle">Mostra ora il dialogo di recensione in-app.</string>
     <string name="debug_tools_reviews_no_activity">Impossibile avviare il dialogo di recensione.</string>
+    <string name="debug_tools_reviews_state_title">Stato richiesta recensione</string>
+    <string name="debug_tools_reviews_state_subtitle">Mostrato: %1$s • Aperture: %2$d • Prima apertura: %3$s • Idoneo: %4$s</string>
     <string name="debug_tools_nav_overlay_subtitle">Mostra il percorso corrente e la registrazione dei tocchi</string>
     <string name="debug_tools_nav_overlay_title">Mostra overlay debug navigazione</string>
+    <string name="debug_tools_status_debug_panel_title">Pannello debug schermata stato</string>
+    <string name="debug_tools_status_debug_panel_subtitle">Tocca il nome dell\'app nella schermata principale per mostrare un pannello debug con stato aggiornamento, stato DND e finestre eventi</string>
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
     <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
@@ -697,8 +704,13 @@
     <string name="post_meeting_notification_timing_before">%d minuti prima della fine</string>
     <string name="post_meeting_notification_timing_after">%d minuti dopo la fine</string>
     <string name="post_meeting_notification_timing_help">Regola quando appare il prompt per estendere DND intorno alla fine della riunione.</string>
-    <string name="post_meeting_notification_silent_title">Notifica post-riunione silenziosa</string>
-    <string name="post_meeting_notification_silent_subtitle">Canale a bassa importanza (senza suono). La vibrazione dipende dalle impostazioni di sistema.</string>
+    <string name="vibration_cooldown_section_title">Raffreddamento vibrazione</string>
+    <string name="vibration_cooldown_toggle_title">Abilita raffreddamento vibrazione</string>
+    <string name="vibration_cooldown_toggle_subtitle">Imposta il telefono su vibrazione dopo DND, poi ripristina la suoneria precedente.</string>
+    <string name="vibration_cooldown_duration_title">Durata raffreddamento</string>
+    <string name="vibration_cooldown_duration_value">%d minuti</string>
+    <string name="vibration_cooldown_duration_until_notification">Fino alla notifica</string>
+    <string name="vibration_cooldown_help">Dopo la disattivazione di DND, il telefono resta in vibrazione. \"Fino alla notifica\" ripristina la suoneria quando appare la notifica post-riunione (max 1 min). Valori più alti mantengono la vibrazione per la durata indicata.</string>
     <string name="notifications_permission_banner_title">Notifiche disattivate</string>
     <string name="notifications_permission_banner_message">Abilita l\'autorizzazione alle notifiche per modificare queste impostazioni.</string>
     <string name="notifications_permission_banner_action">Abilita notifiche</string>
@@ -708,7 +720,6 @@
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
-    <string name="meeting_overrun_channel_name_silent">Riunione in ritardo (silenzioso)</string>
     <string name="debug_tools_gradient_debug_title">Debug gradiente</string>
     <string name="debug_tools_gradient_debug_subtitle">Mostra i colori del gradiente calcolati</string>
     <string name="debug_tools_themes_list_title">Elenco temi</string>

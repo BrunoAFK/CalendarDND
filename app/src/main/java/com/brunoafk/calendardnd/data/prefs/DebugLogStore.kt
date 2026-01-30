@@ -121,7 +121,7 @@ class DebugLogStore(private val context: Context) {
             appendLine("Pre-DND timing: ${settingsSnapshot.preDndNotificationLeadMinutes}m")
             appendLine("Post-meeting notification: ${settingsSnapshot.postMeetingNotificationEnabled}")
             appendLine("Post-meeting timing: ${settingsSnapshot.postMeetingNotificationOffsetMinutes}m")
-            appendLine("Post-meeting silent: ${settingsSnapshot.postMeetingNotificationSilent}")
+            appendLine("Vibration cool-down: ${settingsSnapshot.vibrationCooldownEnabled} (${settingsSnapshot.vibrationCooldownMinutes}m)")
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")
@@ -177,7 +177,7 @@ class DebugLogStore(private val context: Context) {
             appendLine("Pre-DND timing: ${settingsSnapshot.preDndNotificationLeadMinutes}m")
             appendLine("Post-meeting notification: ${settingsSnapshot.postMeetingNotificationEnabled}")
             appendLine("Post-meeting timing: ${settingsSnapshot.postMeetingNotificationOffsetMinutes}m")
-            appendLine("Post-meeting silent: ${settingsSnapshot.postMeetingNotificationSilent}")
+            appendLine("Vibration cool-down: ${settingsSnapshot.vibrationCooldownEnabled} (${settingsSnapshot.vibrationCooldownMinutes}m)")
             appendLine("Title filter: ${settingsSnapshot.requireTitleKeyword}")
             if (settingsSnapshot.requireTitleKeyword) {
                 appendLine("Title filter mode: ${settingsSnapshot.titleKeywordMatchMode.name}")

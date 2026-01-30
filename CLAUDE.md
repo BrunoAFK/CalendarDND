@@ -15,9 +15,10 @@ Calendar DND is an Android app that automatically manages Do Not Disturb mode ba
 ./gradlew assembleManualRelease  # Manual distribution
 ./gradlew installDebug           # Install on device
 ./gradlew test                   # Unit tests
-./gradlew test --tests "ClassName"  # Single test class
+./gradlew :app:testPlayDebugUnitTest --tests "ClassName"  # Single test class
 ./gradlew connectedAndroidTest   # Instrumented tests
 ./gradlew lint                   # Code quality
+./gradlew compilePlayDebugKotlin # Quick compile check
 ```
 
 ## Architecture
@@ -49,6 +50,8 @@ All background triggers → `EngineRunner.runEngine()` → `AutomationEngine.run
 | `data/prefs/SettingsStore.kt` | Persistent user preferences |
 | `data/prefs/RuntimeStateStore.kt` | Transient automation state |
 | `data/dnd/DndController.kt` | Android DND system interface |
+| `domain/util/SkipUtils.kt` | Per-event skip logic utilities |
+| `domain/model/OneTimeAction.kt` | Skip/Enable action models |
 
 ### Background Scheduling (3 tiers)
 
@@ -59,6 +62,10 @@ All background triggers → `EngineRunner.runEngine()` → `AutomationEngine.run
 ### User Override Detection
 
 App tracks `dndSetByApp` in RuntimeStateStore. If user manually disables DND during a meeting, the app sets `userSuppressedUntilMs` and stops interfering until meeting ends.
+
+### Per-Event Skip/Enable
+
+Users can skip or enable DND for individual events. Tracked via `skippedEventId`, `skippedEventBeginMs`, `skippedEventEndMs` in RuntimeStateStore. Use `SkipUtils` for skip logic and `RuntimeStateStore.setSkippedEvent()`/`clearSkippedEvent()` for atomic updates.
 
 ## Product Flavors
 
@@ -81,7 +88,10 @@ Flavor-specific code in `src/play/`, `src/fdroid/`, `src/manual/`.
 
 Domain layer is pure Kotlin and easily unit tested. Run `./gradlew test` before marking tasks complete.
 
-Key test: `AutomationEngineTest.kt` covers the decision logic.
+Key tests:
+- `AutomationEngineTest.kt` - Decision logic including skip behavior
+- `MeetingWindowResolverTest.kt` - Meeting merging logic
+- `SkipUtilsTest.kt` - Per-event skip utilities
 
 ## SDK Requirements
 

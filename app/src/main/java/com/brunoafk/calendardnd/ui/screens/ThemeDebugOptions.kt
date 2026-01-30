@@ -37,5 +37,10 @@ fun themeDebugItems(): List<ThemeDebugItem> = listOf(
         title = stringResource(R.string.debug_tools_main_view_v5_title),
         subtitle = stringResource(R.string.debug_tools_main_view_v5_subtitle),
         route = AppRoutes.STATUS_V5
+    ),
+    ThemeDebugItem(
+        title = stringResource(R.string.debug_tools_main_view_v10_title),
+        subtitle = stringResource(R.string.debug_tools_main_view_v10_subtitle),
+        route = AppRoutes.STATUS_V10
     )
 )

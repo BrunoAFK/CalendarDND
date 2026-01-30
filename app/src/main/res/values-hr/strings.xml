@@ -41,6 +41,9 @@
     <string name="complete_setup">Završi postavljanje</string>
     <string name="current_meeting">Trenutačni sastanak</string>
     <string name="next_meeting">Sljedeći sastanak</string>
+    <string name="active_meeting_overlap_chip">%1$d događaja</string>
+    <string name="active_meetings_title">Aktivni događaji</string>
+    <string name="upcoming_meetings_title">Nadolazeći događaji</string>
     <string name="next_event_enable_dnd">Uključi DND za ovaj događaj</string>
     <string name="next_event_skip_dnd">Preskoči DND za ovaj događaj</string>
     <string name="next_event_enable_confirm_title">Uključiti DND za sljedeći događaj?</string>
@@ -620,8 +623,12 @@
     <string name="debug_tools_reviews_force_title">Prisili recenziju</string>
     <string name="debug_tools_reviews_force_subtitle">Prikazi in-app dijalog za recenziju sada.</string>
     <string name="debug_tools_reviews_no_activity">Nije moguće pokrenuti dijalog za recenziju.</string>
+    <string name="debug_tools_reviews_state_title">Stanje upita za recenziju</string>
+    <string name="debug_tools_reviews_state_subtitle">Prikazano: %1$s • Otvaranja: %2$d • Prvo pokretanje: %3$s • Ispunjava uvjete: %4$s</string>
     <string name="debug_tools_nav_overlay_subtitle">Prikazuje trenutnu rutu i bilježenje dodira</string>
     <string name="debug_tools_nav_overlay_title">Prikaži navigacijski debug overlay</string>
+    <string name="debug_tools_status_debug_panel_title">Debug panel statusnog zaslona</string>
+    <string name="debug_tools_status_debug_panel_subtitle">Dodirnite naziv aplikacije na glavnom zaslonu za prikaz debug panela s informacijama o osvježavanju, DND statusu i prozorima događaja</string>
     <string name="debug_tools_nav_title">Navigacija</string>
     <string name="dnd_mode_description">Upravljajte ponašanjem Ne ometaj tijekom sastanaka.</string>
     <string name="dnd_mode_summary">Odaberite Samo prioritet ili Potpuna tišina.</string>
@@ -697,8 +704,13 @@
     <string name="post_meeting_notification_timing_before">%d min prije kraja</string>
     <string name="post_meeting_notification_timing_after">%d min nakon kraja</string>
     <string name="post_meeting_notification_timing_help">Podesite kada se prikazuje upit za produljenje DND-a oko završetka sastanka.</string>
-    <string name="post_meeting_notification_silent_title">Tiha obavijest nakon sastanka</string>
-    <string name="post_meeting_notification_silent_subtitle">Niska važnost (bez zvuka). Vibracija ovisi o postavkama sustava.</string>
+    <string name="vibration_cooldown_section_title">Vibracijsko hlađenje</string>
+    <string name="vibration_cooldown_toggle_title">Omogući vibracijsko hlađenje</string>
+    <string name="vibration_cooldown_toggle_subtitle">Postavi telefon na vibraciju nakon DND-a, zatim vrati prethodni način zvona.</string>
+    <string name="vibration_cooldown_duration_title">Trajanje hlađenja</string>
+    <string name="vibration_cooldown_duration_value">%d minuta</string>
+    <string name="vibration_cooldown_duration_until_notification">Do obavijesti</string>
+    <string name="vibration_cooldown_help">Nakon što se DND isključi, telefon ostaje na vibraciji. „Do obavijesti" vraća zvono kad se pojavi obavijest nakon sastanka (maks. 1 min). Veće vrijednosti zadržavaju vibraciju odabrano vrijeme.</string>
     <string name="notifications_permission_banner_title">Obavijesti su isključene</string>
     <string name="notifications_permission_banner_message">Omogući dozvolu za obavijesti da promijeniš ove postavke.</string>
     <string name="notifications_permission_banner_action">Omogući obavijesti</string>
@@ -708,7 +720,6 @@
     <string name="external_link_prompt_message">Poveznica će se otvoriti u pregledniku.</string>
     <string name="external_link_open">Otvori</string>
     <string name="external_link_cancel">Odustani</string>
-    <string name="meeting_overrun_channel_name_silent">Sastanak se odužio (tiho)</string>
     <string name="debug_tools_gradient_debug_title">Debug gradijenta</string>
     <string name="debug_tools_gradient_debug_subtitle">Prikaži izračunate boje gradijenta</string>
     <string name="debug_tools_themes_list_title">Popis tema</string>

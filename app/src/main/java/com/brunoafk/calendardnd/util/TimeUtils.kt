@@ -26,7 +26,7 @@ object TimeUtils {
     }
 
     fun formatDuration(durationMs: Long): String {
-        val minutes = durationMs / 60_000L
+        val minutes = (durationMs + 59_999L) / 60_000L
         val hours = minutes / 60
         val days = hours / 24
         val hoursRemainder = hours % 24

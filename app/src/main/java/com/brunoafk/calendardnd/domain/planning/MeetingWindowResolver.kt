@@ -52,7 +52,7 @@ object MeetingWindowResolver {
         return MeetingWindow(
             begin = mergedBegin,
             end = mergedEnd,
-            events = windowInstances
+            events = windowInstances.sortedByDescending { it.end - it.begin }
         )
     }
 

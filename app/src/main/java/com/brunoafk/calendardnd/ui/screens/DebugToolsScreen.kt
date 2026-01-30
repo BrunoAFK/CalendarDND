@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -78,11 +79,17 @@ fun DebugToolsScreen(
     val debugOverlayEnabled by settingsStore.debugOverlayEnabled.collectAsState(
         initial = false
     )
+    val statusDebugPanelEnabled by settingsStore.statusDebugPanelEnabled.collectAsState(
+        initial = false
+    )
     val telemetryEnabled by settingsStore.telemetryEnabled.collectAsState(
         initial = com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultEnabled
     )
     val telemetryLevel by settingsStore.telemetryLevel.collectAsState(
         initial = com.brunoafk.calendardnd.util.AppConfig.telemetryDefaultLevel
+    )
+    val oneTimeActionConfirmation by settingsStore.oneTimeActionConfirmation.collectAsState(
+        initial = true
     )
     val totalSilenceDialogEnabled by settingsStore.totalSilenceDialogEnabled.collectAsState(
         initial = true
@@ -117,6 +124,32 @@ fun DebugToolsScreen(
         "ko" to stringResource(R.string.language_korean).ifBlank { "한국어" }
     )
     val listState = rememberLazyListState()
+    val reviewPromptState by produceState<SettingsStore.ReviewPromptState?>(initialValue = null, settingsStore) {
+        value = withContext(Dispatchers.IO) {
+            settingsStore.getReviewPromptState()
+        }
+    }
+    val reviewStateSubtitle = reviewPromptState?.let { state ->
+        val dayMs = 24L * 60 * 60 * 1000
+        val daysSinceFirstOpen = if (state.firstOpenMs > 0L) {
+            ((System.currentTimeMillis() - state.firstOpenMs) / dayMs).coerceAtLeast(0)
+        } else {
+            -1
+        }
+        val daysLabel = if (daysSinceFirstOpen >= 0) "${daysSinceFirstOpen}d" else "—"
+        val eligible = !BuildConfig.DEBUG &&
+            BuildConfig.FLAVOR == "play" &&
+            !state.promptShown &&
+            state.appOpenCount >= 5 &&
+            daysSinceFirstOpen >= 3
+        stringResource(
+            R.string.debug_tools_reviews_state_subtitle,
+            if (state.promptShown) stringResource(R.string.yes) else stringResource(R.string.no),
+            state.appOpenCount,
+            daysLabel,
+            if (eligible) stringResource(R.string.yes) else stringResource(R.string.no)
+        )
+    } ?: "—"
 
     fun previewDnd(mode: DndMode) {
         scope.launch {
@@ -301,6 +334,11 @@ fun DebugToolsScreen(
                                 }
                             }
                         )
+                        SettingsDivider()
+                        SettingsInfoRow(
+                            title = stringResource(R.string.debug_tools_reviews_state_title),
+                            subtitle = reviewStateSubtitle
+                        )
                     }
                 }
             }
@@ -461,6 +499,17 @@ fun DebugToolsScreen(
                 SettingsSection(title = stringResource(R.string.debug_tools_app_control_title)) {
                     Column {
                         SettingsSwitchRow(
+                            title = stringResource(R.string.one_time_action_confirmation_title),
+                            subtitle = stringResource(R.string.one_time_action_confirmation_subtitle),
+                            checked = oneTimeActionConfirmation,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setOneTimeActionConfirmation(enabled)
+                                }
+                            }
+                        )
+                        SettingsDivider()
+                        SettingsSwitchRow(
                             title = stringResource(R.string.debug_tools_total_silence_dialog_title),
                             subtitle = stringResource(R.string.debug_tools_total_silence_dialog_subtitle),
                             checked = totalSilenceDialogEnabled,
@@ -478,6 +527,17 @@ fun DebugToolsScreen(
                             onCheckedChange = { enabled ->
                                 scope.launch {
                                     settingsStore.setDebugOverlayEnabled(enabled)
+                                }
+                            }
+                        )
+                        SettingsDivider()
+                        SettingsSwitchRow(
+                            title = stringResource(R.string.debug_tools_status_debug_panel_title),
+                            subtitle = stringResource(R.string.debug_tools_status_debug_panel_subtitle),
+                            checked = statusDebugPanelEnabled,
+                            onCheckedChange = { enabled ->
+                                scope.launch {
+                                    settingsStore.setStatusDebugPanelEnabled(enabled)
                                 }
                             }
                         )

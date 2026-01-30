@@ -44,6 +44,9 @@
     <string name="complete_setup">Complete Setup</string>
     <string name="current_meeting">Current Meeting</string>
     <string name="next_meeting">Next Meeting</string>
+    <string name="active_meeting_overlap_chip">%1$d events</string>
+    <string name="active_meetings_title">Active events</string>
+    <string name="upcoming_meetings_title">Upcoming events</string>
     <string name="next_event_enable_dnd">Enable DND for this event</string>
     <string name="next_event_skip_dnd">Skip DND for this event</string>
     <string name="next_event_enable_confirm_title">Enable DND for next event?</string>
@@ -504,6 +507,8 @@
     <string name="debug_tools_reviews_force_title">Force review prompt</string>
     <string name="debug_tools_reviews_force_subtitle">Show the in-app review dialog now.</string>
     <string name="debug_tools_reviews_no_activity">Unable to launch review dialog.</string>
+    <string name="debug_tools_reviews_state_title">Review prompt state</string>
+    <string name="debug_tools_reviews_state_subtitle">Shown: %1$s • Opens: %2$d • First open: %3$s • Eligible: %4$s</string>
     <string name="debug_tools_updates_title">Updates</string>
     <string name="debug_tools_force_update_title">Force update</string>
     <string name="debug_tools_force_update_subtitle">Download and launch the installer for the latest release</string>
@@ -520,6 +525,8 @@
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="debug_tools_nav_overlay_title">Show nav debug overlay</string>
     <string name="debug_tools_nav_overlay_subtitle">Displays current route and tap logging</string>
+    <string name="debug_tools_status_debug_panel_title">Status screen debug panel</string>
+    <string name="debug_tools_status_debug_panel_subtitle">Tap the app name on the main screen to show a live debug panel with refresh state, DND status, and event windows</string>
     <string name="debug_tools_restore_dnd_banner_title">Restore DND mode banner</string>
     <string name="debug_tools_restore_dnd_banner_subtitle">Show the DND mode prompt on the home screen again</string>
     <string name="debug_tools_restore_banners_title">Restore all banners</string>
@@ -615,8 +622,13 @@
     <string name="post_meeting_notification_timing_before">%d minutes before end</string>
     <string name="post_meeting_notification_timing_after">%d minutes after end</string>
     <string name="post_meeting_notification_timing_help">Adjusts when the extend DND prompt appears around the meeting end.</string>
-    <string name="post_meeting_notification_silent_title">Silent post-meeting notification</string>
-    <string name="post_meeting_notification_silent_subtitle">Low-importance channel (no sound). Vibration depends on system settings.</string>
+    <string name="vibration_cooldown_section_title">Vibration Cool-Down</string>
+    <string name="vibration_cooldown_toggle_title">Enable vibration cool-down</string>
+    <string name="vibration_cooldown_toggle_subtitle">Set phone to vibrate-only after DND ends, then restore normal ringer.</string>
+    <string name="vibration_cooldown_duration_title">Cool-down duration</string>
+    <string name="vibration_cooldown_duration_value">%d minutes</string>
+    <string name="vibration_cooldown_duration_until_notification">Until notification</string>
+    <string name="vibration_cooldown_help">After DND turns off, the phone stays on vibrate. \"Until notification\" restores your ringer when the post-meeting notification fires (max 1 min wait). Higher values keep vibrate for that many minutes.</string>
     <string name="notifications_permission_banner_title">Notifications are disabled</string>
     <string name="notifications_permission_banner_message">Enable notification permission to adjust these settings.</string>
     <string name="notifications_permission_banner_action">Enable notifications</string>
@@ -653,7 +665,6 @@
     <string name="meeting_overrun_message">Extend DND to stay focused</string>
     <string name="meeting_overrun_extend_format">+%1$dm</string>
     <string name="meeting_overrun_channel_name">Meeting Overrun</string>
-    <string name="meeting_overrun_channel_name_silent">Meeting Overrun (Silent)</string>
     <string name="meeting_overrun_channel_description">Notifications when meetings run over time</string>
     <string name="meeting_overrun_restore">Restore</string>
 

@@ -28,7 +28,9 @@ data class Decision(
     val setManualDndUntilMs: Long?, // new manual override end, null = no change
     val setManualEventStartMs: Long?, // new manual event start, null = no change
     val setManualEventEndMs: Long?, // new manual event end, null = no change
+    val setSkippedEventId: Long?, // new skipped event id, null = no change
     val setSkippedEventBeginMs: Long?, // new skipped event begin, null = no change
+    val setSkippedEventEndMs: Long?, // new skipped event end, null = no change
     val setNotifiedNewEventBeforeSkip: Boolean?, // set notification flag, null = no change
     val notificationNeeded: NotificationNeeded
 )

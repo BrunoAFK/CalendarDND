@@ -166,7 +166,6 @@ fun SettingsScreen(
     val analyticsOptIn by settingsStore.analyticsOptIn.collectAsState(initial = false)
     val crashlyticsOptIn by settingsStore.crashlyticsOptIn.collectAsState(initial = true)
     val automationEnabled by settingsStore.automationEnabled.collectAsState(initial = false)
-    val oneTimeActionConfirmation by settingsStore.oneTimeActionConfirmation.collectAsState(initial = true)
     val debugToolsUnlocked by settingsStore.debugToolsUnlocked.collectAsState(initial = false)
     var hasCalendarPermission by remember {
         mutableStateOf(PermissionUtils.hasCalendarPermission(context))
@@ -757,22 +756,6 @@ fun SettingsScreen(
                         title = stringResource(com.brunoafk.calendardnd.R.string.notifications_advanced_title),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.notifications_advanced_subtitle),
                         onClick = onNavigateToNotificationAdvanced
-                    )
-                    SettingsDivider()
-                    SettingsSwitchRow(
-                        title = stringResource(com.brunoafk.calendardnd.R.string.one_time_action_confirmation_title),
-                        subtitle = stringResource(com.brunoafk.calendardnd.R.string.one_time_action_confirmation_subtitle),
-                        checked = oneTimeActionConfirmation,
-                        onCheckedChange = { enabled ->
-                            scope.launch {
-                                settingsStore.setOneTimeActionConfirmation(enabled)
-                                AnalyticsTracker.logSettingsChanged(
-                                    context,
-                                    "one_time_action_confirmation",
-                                    enabled.toString()
-                                )
-                            }
-                        }
                     )
                 }
             }

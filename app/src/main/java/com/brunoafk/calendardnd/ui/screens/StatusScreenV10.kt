@@ -1,5 +1,6 @@
 package com.brunoafk.calendardnd.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -100,6 +101,10 @@ import com.brunoafk.calendardnd.domain.model.EventHighlightPreset
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
 import com.brunoafk.calendardnd.domain.model.Trigger
+import com.brunoafk.calendardnd.domain.model.OneTimeAction
+import com.brunoafk.calendardnd.domain.model.OneTimeActionType
+import com.brunoafk.calendardnd.domain.model.SkippedEventState
+import com.brunoafk.calendardnd.domain.util.SkipUtils
 import com.brunoafk.calendardnd.domain.model.ThemeDebugMode
 import com.brunoafk.calendardnd.domain.planning.MeetingWindowResolver
 import com.brunoafk.calendardnd.system.alarms.AlarmScheduler
@@ -150,7 +155,9 @@ fun StatusScreenV10(
 
     var automationEnabled by remember { mutableStateOf(false) }
     var activeWindow by remember { mutableStateOf<MeetingWindow?>(null) }
+    var activeWindowRaw by remember { mutableStateOf<MeetingWindow?>(null) }
     var nextInstance by remember { mutableStateOf<EventInstance?>(null) }
+    var nextOverlappingEvents by remember { mutableStateOf<List<EventInstance>>(emptyList()) }
     var hasCalendarPermission by remember {
         mutableStateOf(PermissionUtils.hasCalendarPermission(context))
     }
@@ -183,8 +190,22 @@ fun StatusScreenV10(
     var userSuppressedFromMs by remember { mutableLongStateOf(0L) }
     var manualEventStartMs by remember { mutableLongStateOf(0L) }
     var manualEventEndMs by remember { mutableLongStateOf(0L) }
+    var skippedEventId by remember { mutableLongStateOf(0L) }
+    var skippedEventBeginMs by remember { mutableLongStateOf(0L) }
+    var skippedEventEndMs by remember { mutableLongStateOf(0L) }
     var oneTimeActionConfirmation by remember { mutableStateOf(true) }
     var pendingOneTimeDialog by remember { mutableStateOf<OneTimeDialog?>(null) }
+    var showActiveEventsDialog by remember { mutableStateOf(false) }
+    var showNextEventsDialog by remember { mutableStateOf(false) }
+
+    // --- Debug tracking ---
+    var statusDebugPanelEnabled by remember { mutableStateOf(false) }
+    var debugRefreshCount by remember { mutableStateOf(0) }
+    var debugLastRefreshMs by remember { mutableLongStateOf(0L) }
+    var debugLastRefreshSource by remember { mutableStateOf("none") }
+    var debugSmartTimerDelayMs by remember { mutableLongStateOf(0L) }
+    var debugSmartTimerTarget by remember { mutableLongStateOf(0L) }
+    var debugShowPanel by remember { mutableStateOf(false) }
     val isDarkThemeForHighlight = LocalIsDarkTheme.current
     val highlightPalette = eventHighlightColors(eventHighlightPreset)
     val eventHighlightColor = if (isDarkThemeForHighlight) highlightPalette.dark else highlightPalette.light
@@ -196,16 +217,17 @@ fun StatusScreenV10(
         return start to instance.end
     }
 
+    fun isSkippedEvent(event: EventInstance?): Boolean {
+        return SkipUtils.isSkippedEvent(event, skippedEventId, skippedEventBeginMs, skippedEventEndMs)
+    }
+
     fun determineActiveAction(event: EventInstance?): OneTimeActionType? {
         if (event == null) return null
         val now = System.currentTimeMillis()
 
         // Check if skip is active for this event (suppression covers the event time)
-        if (userSuppressedUntilMs > 0 && now < userSuppressedUntilMs) {
-            val (startMs, endMs) = buildManualWindow(event)
-            if (userSuppressedFromMs <= startMs && userSuppressedUntilMs >= endMs) {
-                return OneTimeActionType.SKIP
-            }
+        if (isSkippedEvent(event)) {
+            return OneTimeActionType.SKIP
         }
 
         // Check if enable is active for this event (manual event covers the event time)
@@ -219,15 +241,37 @@ fun StatusScreenV10(
         return null
     }
 
-    fun refresh() {
+    fun refresh(source: String = "unknown") {
         scope.launch {
+            Log.d("StatusV10", "=== refresh() STARTED === source=$source")
+            debugRefreshCount++
+            debugLastRefreshMs = System.currentTimeMillis()
+            debugLastRefreshSource = source
             hasCalendarPermission = PermissionUtils.hasCalendarPermission(context)
             hasPolicyAccess = dndController.hasPolicyAccess()
             canScheduleExactAlarms = alarmScheduler.canScheduleExactAlarms()
 
+            // Read fresh runtime state to ensure UI is synchronized after engine runs.
+            // This fixes the race condition where DataStore flows haven't emitted yet.
+            val runtimeSnapshot = withContext(Dispatchers.IO) {
+                runtimeStateStore.getSnapshot()
+            }
+            dndSetByApp = runtimeSnapshot.dndSetByApp
+            userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs
+            userSuppressedFromMs = runtimeSnapshot.userSuppressedFromMs
+            manualEventStartMs = runtimeSnapshot.manualEventStartMs
+            manualEventEndMs = runtimeSnapshot.manualEventEndMs
+            skippedEventId = runtimeSnapshot.skippedEventId
+            skippedEventBeginMs = runtimeSnapshot.skippedEventBeginMs
+            skippedEventEndMs = runtimeSnapshot.skippedEventEndMs
+
+            Log.d("StatusV10", "refresh() state: dndSetByApp=$dndSetByApp, skipId=$skippedEventId, skipBegin=$skippedEventBeginMs, skipEnd=$skippedEventEndMs")
+
             if (!hasCalendarPermission) {
                 activeWindow = null
+                activeWindowRaw = null
                 nextInstance = null
+                Log.d("StatusV10", "refresh() ABORTED - no calendar permission")
                 return@launch
             }
 
@@ -250,7 +294,21 @@ fun StatusScreenV10(
                     titleKeywordMatchAll = titleKeywordMatchAll,
                     titleKeywordExclude = titleKeywordExclude
                 )
-                val window = MeetingWindowResolver.findActiveWindow(activeInstances, now)
+                Log.d("StatusV10", "refresh() activeInstances=${activeInstances.size}: ${activeInstances.map { "${it.title}(id=${it.eventId},${it.begin}-${it.end})" }}")
+
+                val windowRaw = MeetingWindowResolver.findActiveWindow(activeInstances, now)
+                Log.d("StatusV10", "refresh() windowRaw: events=${windowRaw?.events?.size}, begin=${windowRaw?.begin}, end=${windowRaw?.end}")
+
+                val filteredInstances = activeInstances.filterNot { inst ->
+                    val skipped = isSkippedEvent(inst)
+                    if (skipped) Log.d("StatusV10", "refresh() FILTERING OUT: ${inst.title}(id=${inst.eventId})")
+                    skipped
+                }
+                Log.d("StatusV10", "refresh() filteredInstances=${filteredInstances.size}: ${filteredInstances.map { it.title }}")
+
+                val window = MeetingWindowResolver.findActiveWindow(filteredInstances, now)
+                Log.d("StatusV10", "refresh() activeWindow: events=${window?.events?.size}, begin=${window?.begin}, end=${window?.end}")
+
                 val next = calendarRepository.getNextInstance(
                     now = now,
                     selectedCalendarIds = selectedCalendarIds,
@@ -268,56 +326,136 @@ fun StatusScreenV10(
                     titleKeywordMatchAll = titleKeywordMatchAll,
                     titleKeywordExclude = titleKeywordExclude
                 )
-                window to next
+                Log.d("StatusV10", "refresh() nextInstance: ${next?.title}(begin=${next?.begin})")
+
+                val nextOverlap = if (next != null) {
+                    calendarRepository.getInstancesInRange(
+                        beginMs = next.begin,
+                        endMs = next.end,
+                        selectedCalendarIds = selectedCalendarIds,
+                        busyOnly = busyOnly,
+                        ignoreAllDay = ignoreAllDay,
+                        skipRecurring = skipRecurring,
+                        selectedDaysEnabled = selectedDaysEnabled,
+                        selectedDaysMask = selectedDaysMask,
+                        minEventMinutes = minEventMinutes,
+                        requireLocation = requireLocation,
+                        requireTitleKeyword = requireTitleKeyword,
+                        titleKeyword = titleKeyword,
+                        titleKeywordMatchMode = titleKeywordMatchMode,
+                        titleKeywordCaseSensitive = titleKeywordCaseSensitive,
+                        titleKeywordMatchAll = titleKeywordMatchAll,
+                        titleKeywordExclude = titleKeywordExclude
+                    )
+                } else {
+                    emptyList()
+                }
+
+                data class RefreshResult(
+                    val window: MeetingWindow?,
+                    val windowRaw: MeetingWindow?,
+                    val next: EventInstance?,
+                    val nextOverlap: List<EventInstance>
+                )
+                RefreshResult(window, windowRaw, next, nextOverlap)
             }
-            activeWindow = snapshot.first
-            nextInstance = snapshot.second
+            activeWindow = snapshot.window
+            activeWindowRaw = snapshot.windowRaw
+            nextInstance = snapshot.next
+            nextOverlappingEvents = snapshot.nextOverlap
+            Log.d("StatusV10", "=== refresh() DONE === activeWindow=${activeWindow != null}, activeWindowRaw=${activeWindowRaw != null}, nextInstance=${nextInstance != null}")
         }
     }
 
     fun applyOneTimeAction(action: OneTimeAction) {
         scope.launch {
+            Log.d("StatusV10", ">>> applyOneTimeAction: $action")
             when (action) {
                 is OneTimeAction.EnableForEvent -> {
-                    runtimeStateStore.setManualEventStartMs(action.startMs)
-                    runtimeStateStore.setManualEventEndMs(action.endMs)
-                    runtimeStateStore.setUserSuppressedFromMs(0L)
-                    runtimeStateStore.setUserSuppressedUntilMs(0L)
+                    runtimeStateStore.setManualEvent(action.startMs, action.endMs)
+                    runtimeStateStore.clearUserSuppression()
+                    runtimeStateStore.clearSkippedEvent()
                 }
                 is OneTimeAction.SkipEvent -> {
-                    runtimeStateStore.setUserSuppressedFromMs(action.startMs)
-                    runtimeStateStore.setUserSuppressedUntilMs(action.endMs)
-                    runtimeStateStore.setSkippedEventBeginMs(action.event.begin)
-                    runtimeStateStore.setNotifiedNewEventBeforeSkip(false)
+                    Log.d("StatusV10", ">>> SKIP: eventId=${action.event.eventId}, begin=${action.event.begin}, end=${action.event.end}")
+                    runtimeStateStore.clearUserSuppression()
+                    runtimeStateStore.setSkippedEvent(
+                        action.event.eventId,
+                        action.event.begin,
+                        action.event.end
+                    )
                 }
             }
+            Log.d("StatusV10", ">>> Running engine...")
             withContext(Dispatchers.IO) {
                 EngineRunner.runEngine(context, Trigger.MANUAL)
             }
+            Log.d("StatusV10", ">>> Engine done, calling refresh()...")
+            refresh("applyOneTimeAction")
         }
     }
 
     fun clearOneTimeAction() {
         scope.launch {
-            runtimeStateStore.setManualEventStartMs(0L)
-            runtimeStateStore.setManualEventEndMs(0L)
-            runtimeStateStore.setUserSuppressedFromMs(0L)
-            runtimeStateStore.setUserSuppressedUntilMs(0L)
-            runtimeStateStore.setSkippedEventBeginMs(0L)
-            runtimeStateStore.setNotifiedNewEventBeforeSkip(false)
+            runtimeStateStore.clearAllOneTimeActions()
             withContext(Dispatchers.IO) {
                 EngineRunner.runEngine(context, Trigger.MANUAL)
             }
+            refresh("clearOneTimeAction")
         }
     }
+
+    // Track if app is in foreground
+    var isResumed by remember { mutableStateOf(false) }
 
     // Lifecycle & data collection effects
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) { refresh() }
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    isResumed = true
+                    refresh("ON_RESUME")
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    isResumed = false
+                }
+                else -> {}
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // Smart auto-refresh: continuously recalculates when next state change is expected
+    // Uses a while loop so it keeps firing even when keys don't change
+    LaunchedEffect(isResumed) {
+        while (isResumed) {
+            val now = System.currentTimeMillis()
+            val offsetMs = dndStartOffsetMinutes * 60_000L
+
+            Log.d("StatusV10", "[SmartRefresh] calculating: activeWindow.end=${activeWindow?.end}, nextInstance.begin=${nextInstance?.begin}, offset=${offsetMs}")
+
+            // Calculate next relevant timestamp
+            val nextBoundary = listOfNotNull(
+                activeWindow?.end,
+                nextInstance?.let { (it.begin + offsetMs).coerceAtLeast(it.begin) }
+            )
+                .filter { it > now }
+                .minOrNull()
+
+            val delayMs = if (nextBoundary != null && nextBoundary - now <= 60_000L) {
+                (nextBoundary - now + 1_000L).coerceAtLeast(1_000L)
+            } else {
+                30_000L
+            }
+
+            debugSmartTimerDelayMs = delayMs
+            debugSmartTimerTarget = System.currentTimeMillis() + delayMs
+            Log.d("StatusV10", "[SmartRefresh] nextBoundary=$nextBoundary, delayMs=$delayMs (${delayMs/1000}s)")
+            delay(delayMs)
+            Log.d("StatusV10", "[SmartRefresh] FIRING refresh() now")
+            if (isResumed) refresh("SmartTimer")
+        }
     }
 
     DisposableEffect(Unit) {
@@ -361,6 +499,11 @@ fun StatusScreenV10(
     }
 
     DisposableEffect(Unit) {
+        val job = scope.launch { settingsStore.statusDebugPanelEnabled.collectLatest { statusDebugPanelEnabled = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
         val job = scope.launch { runtimeStateStore.dndSetByApp.collectLatest { dndSetByApp = it } }
         onDispose { job.cancel() }
     }
@@ -382,6 +525,21 @@ fun StatusScreenV10(
 
     DisposableEffect(Unit) {
         val job = scope.launch { runtimeStateStore.manualEventEndMs.collectLatest { manualEventEndMs = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch { runtimeStateStore.skippedEventId.collectLatest { skippedEventId = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch { runtimeStateStore.skippedEventBeginMs.collectLatest { skippedEventBeginMs = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch { runtimeStateStore.skippedEventEndMs.collectLatest { skippedEventEndMs = it } }
         onDispose { job.cancel() }
     }
 
@@ -464,6 +622,28 @@ fun StatusScreenV10(
 
     val missingPermissions = !hasCalendarPermission || !hasPolicyAccess
     val isDndActive = dndSetByApp && activeWindow != null
+    val rawActiveEvents = activeWindowRaw?.events.orEmpty()
+    val specialRuleEvent = rawActiveEvents.firstOrNull { determineActiveAction(it) != null }
+    val hasSpecialRuleActiveEvent = specialRuleEvent != null
+    val activePrimaryEvent = if (isDndActive) {
+        activeWindow?.events?.firstOrNull()
+    } else {
+        specialRuleEvent
+    }
+    val activeOverlapCount = if (isDndActive) {
+        activeWindow?.events?.size ?: 0
+    } else {
+        rawActiveEvents.size
+    }
+    val activeActionType = determineActiveAction(activePrimaryEvent)
+    val activeActionData = activePrimaryEvent?.let { instance ->
+        val (startMs, endMs) = buildManualWindow(instance)
+        if (automationEnabled) {
+            OneTimeAction.SkipEvent(instance, startMs, endMs)
+        } else {
+            OneTimeAction.EnableForEvent(instance, startMs, endMs)
+        }
+    }
     val nextActionData = nextInstance?.let { instance ->
         val (startMs, endMs) = buildManualWindow(instance)
         if (automationEnabled) {
@@ -498,7 +678,7 @@ fun StatusScreenV10(
                 withContext(Dispatchers.IO) {
                     EngineRunner.runEngine(context, Trigger.MANUAL)
                 }
-                refresh()
+                refresh("PullToRefresh")
                 delay(300L)
                 isRefreshing = false
             }
@@ -583,6 +763,150 @@ fun StatusScreenV10(
         )
     }
 
+    if (showActiveEventsDialog && activeWindowRaw?.events?.isNotEmpty() == true) {
+        AlertDialog(
+            onDismissRequest = { showActiveEventsDialog = false },
+            title = { Text(stringResource(R.string.active_meetings_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    activeWindowRaw!!.events.forEach { event ->
+                        val title = event.title.takeIf { it.isNotBlank() }
+                            ?: stringResource(R.string.untitled_meeting)
+                        val timeLabel = "${TimeUtils.formatTime(context, event.begin)} – ${TimeUtils.formatTime(context, event.end)}"
+                        val eventActionType = determineActiveAction(event)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showActiveEventsDialog = false
+                                    StatusScreenIntents.openCalendarEvent(context, event.eventId, event.begin)
+                                }
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = timeLabel,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val actionLabel = when {
+                                    eventActionType == OneTimeActionType.SKIP -> stringResource(R.string.next_event_clear_skip_action)
+                                    eventActionType == OneTimeActionType.ENABLE -> stringResource(R.string.next_event_clear_enable_action)
+                                    automationEnabled -> stringResource(R.string.next_event_skip_dnd)
+                                    else -> stringResource(R.string.next_event_enable_dnd)
+                                }
+                                TextButton(onClick = {
+                                    showActiveEventsDialog = false
+                                    if (eventActionType != null) {
+                                        clearOneTimeAction()
+                                    } else {
+                                        val (startMs, endMs) = buildManualWindow(event)
+                                        val action = if (automationEnabled) {
+                                            OneTimeAction.SkipEvent(event, startMs, endMs)
+                                        } else {
+                                            OneTimeAction.EnableForEvent(event, startMs, endMs)
+                                        }
+                                        if (oneTimeActionConfirmation) {
+                                            pendingOneTimeDialog = OneTimeDialog.Set(action)
+                                        } else {
+                                            applyOneTimeAction(action)
+                                        }
+                                    }
+                                }) {
+                                    Text(actionLabel)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showActiveEventsDialog = false }) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
+
+    if (showNextEventsDialog && nextOverlappingEvents.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = { showNextEventsDialog = false },
+            title = { Text(stringResource(R.string.upcoming_meetings_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    nextOverlappingEvents.forEach { event ->
+                        val title = event.title.takeIf { it.isNotBlank() }
+                            ?: stringResource(R.string.untitled_meeting)
+                        val timeLabel = "${TimeUtils.formatTime(context, event.begin)} – ${TimeUtils.formatTime(context, event.end)}"
+                        val eventActionType = determineActiveAction(event)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showNextEventsDialog = false
+                                    StatusScreenIntents.openCalendarEvent(context, event.eventId, event.begin)
+                                }
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = timeLabel,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val actionLabel = when {
+                                    eventActionType == OneTimeActionType.SKIP -> stringResource(R.string.next_event_clear_skip_action)
+                                    eventActionType == OneTimeActionType.ENABLE -> stringResource(R.string.next_event_clear_enable_action)
+                                    automationEnabled -> stringResource(R.string.next_event_skip_dnd)
+                                    else -> stringResource(R.string.next_event_enable_dnd)
+                                }
+                                TextButton(onClick = {
+                                    showNextEventsDialog = false
+                                    if (eventActionType != null) {
+                                        clearOneTimeAction()
+                                    } else {
+                                        val (startMs, endMs) = buildManualWindow(event)
+                                        val action = if (automationEnabled) {
+                                            OneTimeAction.SkipEvent(event, startMs, endMs)
+                                        } else {
+                                            OneTimeAction.EnableForEvent(event, startMs, endMs)
+                                        }
+                                        if (oneTimeActionConfirmation) {
+                                            pendingOneTimeDialog = OneTimeDialog.Set(action)
+                                        } else {
+                                            applyOneTimeAction(action)
+                                        }
+                                    }
+                                }) {
+                                    Text(actionLabel)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showNextEventsDialog = false }) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -610,8 +934,54 @@ fun StatusScreenV10(
                 text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = if (statusDebugPanelEnabled) Modifier.clickable { debugShowPanel = !debugShowPanel } else Modifier
             )
+
+            // --- DEBUG PANEL (tap app name to toggle) ---
+            if (statusDebugPanelEnabled && debugShowPanel) {
+                val debugNow = nowMs
+                val debugTimerIn = if (debugSmartTimerTarget > debugNow) {
+                    "${(debugSmartTimerTarget - debugNow) / 1000}s"
+                } else "fired"
+                val debugLastAgo = if (debugLastRefreshMs > 0) {
+                    "${(debugNow - debugLastRefreshMs) / 1000}s ago"
+                } else "never"
+                val debugWindowInfo = activeWindow?.let {
+                    "events=${it.events.size}, ${it.events.map { e -> e.title }}"
+                } ?: "null"
+                val debugRawInfo = activeWindowRaw?.let {
+                    "events=${it.events.size}, ${it.events.map { e -> e.title }}"
+                } ?: "null"
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    color = Color(0xCC000000),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text("DEBUG REFRESH PANEL", color = Color.Yellow, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        Text("refreshCount: $debugRefreshCount", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Text("lastRefresh: $debugLastAgo ($debugLastRefreshSource)", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Text("smartTimer: $debugTimerIn (delay=${debugSmartTimerDelayMs/1000}s)", color = Color.Cyan, style = MaterialTheme.typography.bodySmall)
+                        Text("isResumed: $isResumed", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("STATE:", color = Color.Yellow, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        Text("dndSetByApp: $dndSetByApp", color = if (dndSetByApp) Color.Green else Color.Red, style = MaterialTheme.typography.bodySmall)
+                        Text("isDndActive: $isDndActive", color = if (isDndActive) Color.Green else Color.Red, style = MaterialTheme.typography.bodySmall)
+                        Text("automationEnabled: $automationEnabled", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("WINDOWS:", color = Color.Yellow, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        Text("activeWindow: $debugWindowInfo", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Text("activeWindowRaw: $debugRawInfo", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Text("nextInstance: ${nextInstance?.title ?: "null"}", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("SKIP:", color = Color.Yellow, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        Text("skipId=$skippedEventId, begin=$skippedEventBeginMs, end=$skippedEventEndMs", color = if (skippedEventId > 0) Color.Magenta else Color.Gray, style = MaterialTheme.typography.bodySmall)
+                        Text("activePrimaryEvent: ${activePrimaryEvent?.title ?: "null"}", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        Text("activeActionType: $activeActionType", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -686,10 +1056,15 @@ fun StatusScreenV10(
                         missingPermissions -> stringResource(R.string.status_missing_permissions_summary)
                         isDndActive -> {
                             val meetingTitle = activeWindow?.events?.firstOrNull()?.title?.takeIf { it.isNotBlank() }
-                            if (meetingTitle != null) {
-                                stringResource(R.string.status_in_meeting, meetingTitle)
-                            } else {
-                                stringResource(R.string.status_dnd_active_summary, TimeUtils.formatDuration(remainingMs))
+                            val overlapCount = activeOverlapCount
+                            when {
+                                meetingTitle != null && overlapCount > 1 ->
+                                    stringResource(R.string.status_in_meeting, meetingTitle) +
+                                        " " + stringResource(R.string.active_meeting_overlap_chip, overlapCount)
+                                meetingTitle != null ->
+                                    stringResource(R.string.status_in_meeting, meetingTitle)
+                                else ->
+                                    stringResource(R.string.status_dnd_active_summary, TimeUtils.formatDuration(remainingMs))
                             }
                         }
                         !automationEnabled -> stringResource(R.string.status_automation_paused_summary)
@@ -704,7 +1079,12 @@ fun StatusScreenV10(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = if (isDndActive && activeOverlapCount > 1) {
+                            Modifier.clickable { showActiveEventsDialog = true }
+                        } else {
+                            Modifier
+                        }
                     )
                 }
 
@@ -832,24 +1212,82 @@ fun StatusScreenV10(
                 }
             }
 
+            // Active meeting card when DND is not active (skipped or paused)
+            AnimatedVisibility(
+                visible = !isDndActive && activePrimaryEvent != null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                val activeEvent = activePrimaryEvent ?: return@AnimatedVisibility
+                val overlapCount = activeOverlapCount.coerceAtLeast(1)
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    ActiveMeetingCardV10(
+                        title = activeEvent.title.takeIf { it.isNotBlank() } ?: stringResource(R.string.untitled_meeting),
+                        startTime = TimeUtils.formatTime(context, activeEvent.begin),
+                        endTime = TimeUtils.formatTime(context, activeEvent.end),
+                        overlapCount = overlapCount,
+                        highlightCard = activeActionType != null,
+                        highlightColor = eventHighlightColor,
+                        onClick = {
+                            if (overlapCount > 1) {
+                                showActiveEventsDialog = true
+                            } else {
+                                StatusScreenIntents.openCalendarEvent(context, activeEvent.eventId, activeEvent.begin)
+                            }
+                        }
+                    )
+                    ActionStrip(
+                        activeActionType = activeActionType,
+                        automationEnabled = automationEnabled,
+                        enabled = nextActionEnabled,
+                        activeHighlightColor = eventHighlightColor,
+                        onSetAction = {
+                            val action = activeActionData ?: return@ActionStrip
+                            if (oneTimeActionConfirmation) {
+                                pendingOneTimeDialog = OneTimeDialog.Set(action)
+                            } else {
+                                applyOneTimeAction(action)
+                            }
+                        },
+                        onClearAction = {
+                            activeActionType?.let { type ->
+                                if (oneTimeActionConfirmation) {
+                                    pendingOneTimeDialog = OneTimeDialog.Clear(type)
+                                } else {
+                                    clearOneTimeAction()
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
             // Next meeting card (when not in DND)
             AnimatedVisibility(
-                visible = !isDndActive && nextInstance != null,
+                visible = !isDndActive && nextInstance != null && !hasSpecialRuleActiveEvent,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
                     nextInstance?.let { next ->
                         val activeActionType = determineActiveAction(next)
+                        val nextOverlapCount = nextOverlappingEvents.size.coerceAtLeast(1)
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         NextMeetingCardV10(
                             title = next.title.takeIf { it.isNotBlank() } ?: stringResource(R.string.untitled_meeting),
                             startTime = TimeUtils.formatTime(context, next.begin),
                             endTime = TimeUtils.formatTime(context, next.end),
                             startsIn = TimeUtils.formatDuration((next.begin - nowMs).coerceAtLeast(0L)),
+                            overlapCount = nextOverlapCount,
                             highlightCard = activeActionType != null,
                             highlightColor = eventHighlightColor,
                             hasActionStrip = true,
-                            onClick = { StatusScreenIntents.openCalendarEvent(context, next.eventId, next.begin) }
+                            onClick = {
+                                if (nextOverlapCount > 1) {
+                                    showNextEventsDialog = true
+                                } else {
+                                    StatusScreenIntents.openCalendarEvent(context, next.eventId, next.begin)
+                                }
+                            }
                         )
                         ActionStrip(
                             activeActionType = activeActionType,
@@ -1361,6 +1799,7 @@ private fun NextMeetingCardV10(
     startTime: String,
     endTime: String,
     startsIn: String,
+    overlapCount: Int = 1,
     highlightCard: Boolean,
     highlightColor: Color,
     hasActionStrip: Boolean = true,
@@ -1409,17 +1848,133 @@ private fun NextMeetingCardV10(
                     )
                 }
 
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = chipBackground
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = chipBackground
+                    ) {
+                        Text(
+                            text = stringResource(R.string.time_until_format, startsIn),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = chipText
+                        )
+                    }
+                    if (overlapCount > 1) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = chipBackground
+                        ) {
+                            Text(
+                                text = stringResource(R.string.active_meeting_overlap_chip, overlapCount),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = chipText
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "$startTime – $endTime",
+                style = MaterialTheme.typography.bodyMedium,
+                color = secondaryText
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActiveMeetingCardV10(
+    title: String,
+    startTime: String,
+    endTime: String,
+    overlapCount: Int,
+    highlightCard: Boolean,
+    highlightColor: Color,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
+    val primaryText = if (highlightCard) Color.Black else MaterialTheme.colorScheme.onSurface
+    val secondaryText = if (highlightCard) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
+    val chipBackground = if (highlightCard) Color.Black.copy(alpha = 0.08f) else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+    val chipText = if (highlightCard) Color.Black else MaterialTheme.colorScheme.primary
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
+        color = if (highlightCard) highlightColor else surfaceColorAtElevation(1.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = stringResource(R.string.time_until_format, startsIn),
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = chipText
+                        text = stringResource(R.string.current_meeting).uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (highlightCard) Color.Black else MaterialTheme.colorScheme.primary,
+                        letterSpacing = 1.sp
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = primaryText,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = chipBackground
+                    ) {
+                        Text(
+                            text = stringResource(R.string.time_until_now),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = chipText
+                        )
+                    }
+                    if (overlapCount > 1) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = chipBackground
+                        ) {
+                            Text(
+                                text = stringResource(R.string.active_meeting_overlap_chip, overlapCount),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = chipText
+                            )
+                        }
+                    }
                 }
             }
 
@@ -1442,11 +1997,6 @@ private fun Color.toHexString(): String {
         (argb shr 8) and 0xFF,
         argb and 0xFF
     )
-}
-
-enum class OneTimeActionType {
-    SKIP,
-    ENABLE
 }
 
 /**

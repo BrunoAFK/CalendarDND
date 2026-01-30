@@ -43,7 +43,9 @@ data class EngineInput(
     val manualEventStartMs: Long,
     val manualEventEndMs: Long,
     val lastKnownDndFilter: Int,
+    val skippedEventId: Long,
     val skippedEventBeginMs: Long,
+    val skippedEventEndMs: Long,
     val notifiedNewEventBeforeSkip: Boolean,
 
     // System state

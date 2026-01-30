@@ -111,7 +111,7 @@ fun DayFilterScreen(
                         text = stringResource(R.string.day_filter_days_description),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp)
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)
                     )
                     dayLabels.forEachIndexed { index, (day, label) ->
                         val mask = WeekdayMask.dayToMask(day)

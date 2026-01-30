@@ -73,7 +73,8 @@ class SettingsStore(private val context: Context) {
         private val POST_MEETING_NOTIFICATION_ENABLED = booleanPreferencesKey("post_meeting_notification_enabled")
         private val POST_MEETING_NOTIFICATION_OFFSET_MINUTES =
             intPreferencesKey("post_meeting_notification_offset_minutes")
-        private val POST_MEETING_NOTIFICATION_SILENT = booleanPreferencesKey("post_meeting_notification_silent")
+        private val VIBRATION_COOLDOWN_ENABLED = booleanPreferencesKey("vibration_cooldown_enabled")
+        private val VIBRATION_COOLDOWN_MINUTES = intPreferencesKey("vibration_cooldown_minutes")
         private val TELEMETRY_ENABLED = booleanPreferencesKey("telemetry_enabled")
         private val TELEMETRY_LEVEL = stringPreferencesKey("telemetry_level")
         private val TESTER_TELEMETRY_ENABLED = booleanPreferencesKey("tester_telemetry_enabled")
@@ -85,6 +86,7 @@ class SettingsStore(private val context: Context) {
         private val REVIEW_PROMPT_SHOWN = booleanPreferencesKey("review_prompt_shown")
         private val MODERN_BANNER_DESIGN = booleanPreferencesKey("modern_banner_design")
         private val ONE_TIME_ACTION_CONFIRMATION = booleanPreferencesKey("one_time_action_confirmation")
+        private val STATUS_DEBUG_PANEL_ENABLED = booleanPreferencesKey("status_debug_panel_enabled")
     }
 
     data class SettingsSnapshot(
@@ -110,7 +112,8 @@ class SettingsStore(private val context: Context) {
         val crashlyticsOptIn: Boolean,
         val postMeetingNotificationEnabled: Boolean,
         val postMeetingNotificationOffsetMinutes: Int,
-        val postMeetingNotificationSilent: Boolean
+        val vibrationCooldownEnabled: Boolean,
+        val vibrationCooldownMinutes: Int
     )
 
     data class ReviewPromptState(
@@ -232,6 +235,10 @@ class SettingsStore(private val context: Context) {
         prefs[DEBUG_OVERLAY_ENABLED] ?: false
     }
 
+    val statusDebugPanelEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[STATUS_DEBUG_PANEL_ENABLED] ?: false
+    }
+
     val totalSilenceConfirmed: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[TOTAL_SILENCE_CONFIRMED] ?: false
     }
@@ -304,8 +311,12 @@ class SettingsStore(private val context: Context) {
         prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] ?: 0
     }
 
-    val postMeetingNotificationSilent: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
+    val vibrationCooldownEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[VIBRATION_COOLDOWN_ENABLED] ?: false
+    }
+
+    val vibrationCooldownMinutes: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[VIBRATION_COOLDOWN_MINUTES] ?: 0
     }
 
     val telemetryEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -356,7 +367,8 @@ class SettingsStore(private val context: Context) {
             crashlyticsOptIn = prefs[CRASHLYTICS_OPT_IN] ?: true,
             postMeetingNotificationEnabled = prefs[POST_MEETING_NOTIFICATION_ENABLED] ?: false,
             postMeetingNotificationOffsetMinutes = prefs[POST_MEETING_NOTIFICATION_OFFSET_MINUTES] ?: 0,
-            postMeetingNotificationSilent = prefs[POST_MEETING_NOTIFICATION_SILENT] ?: true
+            vibrationCooldownEnabled = prefs[VIBRATION_COOLDOWN_ENABLED] ?: false,
+            vibrationCooldownMinutes = prefs[VIBRATION_COOLDOWN_MINUTES] ?: 0
         )
     }
 
@@ -529,11 +541,18 @@ class SettingsStore(private val context: Context) {
         logSettingChange("Post-meeting notification timing", "${minutes}m")
     }
 
-    suspend fun setPostMeetingNotificationSilent(silent: Boolean) {
+    suspend fun setVibrationCooldownEnabled(enabled: Boolean) {
         dataStore.edit { prefs ->
-            prefs[POST_MEETING_NOTIFICATION_SILENT] = silent
+            prefs[VIBRATION_COOLDOWN_ENABLED] = enabled
         }
-        logSettingChange("Post-meeting notification silent", silent.toString())
+        logSettingChange("Vibration cool-down", if (enabled) "enabled" else "disabled")
+    }
+
+    suspend fun setVibrationCooldownMinutes(minutes: Int) {
+        dataStore.edit { prefs ->
+            prefs[VIBRATION_COOLDOWN_MINUTES] = minutes
+        }
+        logSettingChange("Vibration cool-down duration", "${minutes}m")
     }
 
     suspend fun setTelemetryEnabled(enabled: Boolean) {
@@ -595,6 +614,15 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setReviewPromptShown(shown: Boolean) {
         dataStore.edit { it[REVIEW_PROMPT_SHOWN] = shown }
+    }
+
+    suspend fun getReviewPromptState(): ReviewPromptState {
+        val prefs = dataStore.data.first()
+        return ReviewPromptState(
+            firstOpenMs = prefs[FIRST_OPEN_MS] ?: 0L,
+            appOpenCount = prefs[APP_OPEN_COUNT] ?: 0,
+            promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false
+        )
     }
 
     val modernBannerDesign: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -678,6 +706,13 @@ class SettingsStore(private val context: Context) {
             prefs[DEBUG_OVERLAY_ENABLED] = enabled
         }
         logSettingChange("Debug overlay", if (enabled) "enabled" else "disabled")
+    }
+
+    suspend fun setStatusDebugPanelEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[STATUS_DEBUG_PANEL_ENABLED] = enabled
+        }
+        logSettingChange("Status debug panel", if (enabled) "enabled" else "disabled")
     }
 
     suspend fun setTotalSilenceConfirmed(confirmed: Boolean) {

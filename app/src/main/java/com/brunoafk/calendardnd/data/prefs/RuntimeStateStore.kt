@@ -26,8 +26,11 @@ class RuntimeStateStore(private val context: Context) {
         private val LAST_PLANNED_BOUNDARY_MS = longPreferencesKey("last_planned_boundary_ms")
         private val LAST_ENGINE_RUN_MS = longPreferencesKey("last_engine_run_ms")
         private val LAST_KNOWN_DND_FILTER = intPreferencesKey("last_known_dnd_filter")
+        private val SKIPPED_EVENT_ID = longPreferencesKey("skipped_event_id")
         private val SKIPPED_EVENT_BEGIN_MS = longPreferencesKey("skipped_event_begin_ms")
+        private val SKIPPED_EVENT_END_MS = longPreferencesKey("skipped_event_end_ms")
         private val NOTIFIED_NEW_EVENT_BEFORE_SKIP = booleanPreferencesKey("notified_new_event_before_skip")
+        private val SAVED_RINGER_MODE = intPreferencesKey("saved_ringer_mode")
     }
 
     data class RuntimeStateSnapshot(
@@ -39,8 +42,11 @@ class RuntimeStateStore(private val context: Context) {
         val manualEventStartMs: Long,
         val manualEventEndMs: Long,
         val lastKnownDndFilter: Int,
+        val skippedEventId: Long,
         val skippedEventBeginMs: Long,
-        val notifiedNewEventBeforeSkip: Boolean
+        val skippedEventEndMs: Long,
+        val notifiedNewEventBeforeSkip: Boolean,
+        val savedRingerMode: Int
     )
 
     val dndSetByApp: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -87,8 +93,20 @@ class RuntimeStateStore(private val context: Context) {
         prefs[SKIPPED_EVENT_BEGIN_MS] ?: 0L
     }
 
+    val skippedEventId: Flow<Long> = dataStore.data.map { prefs ->
+        prefs[SKIPPED_EVENT_ID] ?: 0L
+    }
+
+    val skippedEventEndMs: Flow<Long> = dataStore.data.map { prefs ->
+        prefs[SKIPPED_EVENT_END_MS] ?: 0L
+    }
+
     val notifiedNewEventBeforeSkip: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] ?: false
+    }
+
+    val savedRingerMode: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[SAVED_RINGER_MODE] ?: -1
     }
 
     suspend fun getSnapshot(): RuntimeStateSnapshot {
@@ -102,8 +120,11 @@ class RuntimeStateStore(private val context: Context) {
             manualEventStartMs = prefs[MANUAL_EVENT_START_MS] ?: 0L,
             manualEventEndMs = prefs[MANUAL_EVENT_END_MS] ?: 0L,
             lastKnownDndFilter = prefs[LAST_KNOWN_DND_FILTER] ?: -1,
+            skippedEventId = prefs[SKIPPED_EVENT_ID] ?: 0L,
             skippedEventBeginMs = prefs[SKIPPED_EVENT_BEGIN_MS] ?: 0L,
-            notifiedNewEventBeforeSkip = prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] ?: false
+            skippedEventEndMs = prefs[SKIPPED_EVENT_END_MS] ?: 0L,
+            notifiedNewEventBeforeSkip = prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] ?: false,
+            savedRingerMode = prefs[SAVED_RINGER_MODE] ?: -1
         )
     }
 
@@ -173,9 +194,104 @@ class RuntimeStateStore(private val context: Context) {
         }
     }
 
+    suspend fun setSkippedEventId(value: Long) {
+        dataStore.edit { prefs ->
+            prefs[SKIPPED_EVENT_ID] = value
+        }
+    }
+
+    suspend fun setSkippedEventEndMs(value: Long) {
+        dataStore.edit { prefs ->
+            prefs[SKIPPED_EVENT_END_MS] = value
+        }
+    }
+
     suspend fun setNotifiedNewEventBeforeSkip(value: Boolean) {
         dataStore.edit { prefs ->
             prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = value
+        }
+    }
+
+    suspend fun setSavedRingerMode(value: Int) {
+        dataStore.edit { prefs ->
+            prefs[SAVED_RINGER_MODE] = value
+        }
+    }
+
+    suspend fun clearSavedRingerMode() {
+        dataStore.edit { prefs ->
+            prefs[SAVED_RINGER_MODE] = -1
+        }
+    }
+
+    /**
+     * Atomically sets all skipped event fields in a single transaction.
+     * This prevents intermediate states where some fields are set but others aren't.
+     */
+    suspend fun setSkippedEvent(eventId: Long, beginMs: Long, endMs: Long) {
+        dataStore.edit { prefs ->
+            prefs[SKIPPED_EVENT_ID] = eventId
+            prefs[SKIPPED_EVENT_BEGIN_MS] = beginMs
+            prefs[SKIPPED_EVENT_END_MS] = endMs
+            prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = false
+        }
+    }
+
+    /**
+     * Atomically clears all skipped event fields in a single transaction.
+     */
+    suspend fun clearSkippedEvent() {
+        dataStore.edit { prefs ->
+            prefs[SKIPPED_EVENT_ID] = 0L
+            prefs[SKIPPED_EVENT_BEGIN_MS] = 0L
+            prefs[SKIPPED_EVENT_END_MS] = 0L
+            prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = false
+        }
+    }
+
+    /**
+     * Atomically sets manual event window in a single transaction.
+     */
+    suspend fun setManualEvent(startMs: Long, endMs: Long) {
+        dataStore.edit { prefs ->
+            prefs[MANUAL_EVENT_START_MS] = startMs
+            prefs[MANUAL_EVENT_END_MS] = endMs
+        }
+    }
+
+    /**
+     * Atomically clears manual event window in a single transaction.
+     */
+    suspend fun clearManualEvent() {
+        dataStore.edit { prefs ->
+            prefs[MANUAL_EVENT_START_MS] = 0L
+            prefs[MANUAL_EVENT_END_MS] = 0L
+        }
+    }
+
+    /**
+     * Atomically clears user suppression in a single transaction.
+     */
+    suspend fun clearUserSuppression() {
+        dataStore.edit { prefs ->
+            prefs[USER_SUPPRESSED_FROM_MS] = 0L
+            prefs[USER_SUPPRESSED_UNTIL_MS] = 0L
+        }
+    }
+
+    /**
+     * Atomically clears all one-time action state (skip, manual event, suppression).
+     */
+    suspend fun clearAllOneTimeActions() {
+        dataStore.edit { prefs ->
+            prefs[SKIPPED_EVENT_ID] = 0L
+            prefs[SKIPPED_EVENT_BEGIN_MS] = 0L
+            prefs[SKIPPED_EVENT_END_MS] = 0L
+            prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = false
+            prefs[MANUAL_EVENT_START_MS] = 0L
+            prefs[MANUAL_EVENT_END_MS] = 0L
+            prefs[USER_SUPPRESSED_FROM_MS] = 0L
+            prefs[USER_SUPPRESSED_UNTIL_MS] = 0L
         }
     }
 
@@ -210,8 +326,11 @@ class RuntimeStateStore(private val context: Context) {
             prefs[MANUAL_EVENT_END_MS] = 0L
             prefs[LAST_PLANNED_BOUNDARY_MS] = 0L
             prefs[LAST_KNOWN_DND_FILTER] = -1
+            prefs[SKIPPED_EVENT_ID] = 0L
             prefs[SKIPPED_EVENT_BEGIN_MS] = 0L
+            prefs[SKIPPED_EVENT_END_MS] = 0L
             prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = false
+            prefs[SAVED_RINGER_MODE] = -1
         }
     }
 }

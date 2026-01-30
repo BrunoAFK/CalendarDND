@@ -44,6 +44,9 @@
     <string name="complete_setup">Kurulumu tamamla</string>
     <string name="current_meeting">Mevcut toplantı</string>
     <string name="next_meeting">Sıradaki toplantı</string>
+    <string name="active_meeting_overlap_chip">%1$d etkinlik</string>
+    <string name="active_meetings_title">Aktif etkinlikler</string>
+    <string name="upcoming_meetings_title">Yaklaşan etkinlikler</string>
     <string name="next_event_enable_dnd">Bu etkinlik için DND’yi etkinleştir</string>
     <string name="next_event_skip_dnd">Bu etkinlikte DND’yi atla</string>
     <string name="next_event_enable_confirm_title">Sonraki etkinlik için DND etkinleştirilsin mi?</string>
@@ -516,6 +519,8 @@
     <string name="debug_tools_reviews_force_title">Yorumu zorla goster</string>
     <string name="debug_tools_reviews_force_subtitle">Uygulama ici yorum dialogunu simdi goster.</string>
     <string name="debug_tools_reviews_no_activity">Yorum dialogu baslatilamadi.</string>
+    <string name="debug_tools_reviews_state_title">Yorum istemi durumu</string>
+    <string name="debug_tools_reviews_state_subtitle">Gösterildi: %1$s • Açılış: %2$d • İlk açılış: %3$s • Uygun: %4$s</string>
     <string name="debug_tools_dry_run_title">Kuru çalışma</string>
     <string name="debug_tools_dry_run_subtitle">DND veya zamanlamaları değiştirmeden bir sonraki kararı simüle et</string>
     <string name="debug_tools_dry_run_toast">Kuru çalışma tamamlandı</string>
@@ -535,10 +540,12 @@
     <string name="debug_tools_nav_title">Gezinme</string>
     <string name="debug_tools_nav_overlay_title">Gezinme hata ayıklama kaplamasını göster</string>
     <string name="debug_tools_nav_overlay_subtitle">Mevcut rotayı ve dokunma günlüğünü gösterir</string>
-    <string name="debug_tools_restore_dnd_banner_title">DND modu banner’ını geri getir</string>
+    <string name="debug_tools_status_debug_panel_title">Durum ekranı hata ayıklama paneli</string>
+    <string name="debug_tools_status_debug_panel_subtitle">Yenileme durumu, DND durumu ve etkinlik pencereleri içeren canlı bir hata ayıklama paneli göstermek için ana ekrandaki uygulama adına dokunun</string>
+    <string name="debug_tools_restore_dnd_banner_title">DND modu banner\u2019ını geri getir</string>
     <string name="debug_tools_restore_dnd_banner_subtitle">Ana ekranda DND modu istemini tekrar göster</string>
-    <string name="debug_tools_restore_banners_title">Tüm banner’ları geri getir</string>
-    <string name="debug_tools_restore_banners_subtitle">Ana ekranda DND modu ve yenileme banner’larını tekrar göster</string>
+    <string name="debug_tools_restore_banners_title">Tüm banner\u2019ları geri getir</string>
+    <string name="debug_tools_restore_banners_subtitle">Ana ekranda DND modu ve yenileme banner\u2019larını tekrar göster</string>
     <string name="debug_tools_reset_total_silence_title">Tam Sessizlik onayını sıfırla</string>
     <string name="debug_tools_reset_total_silence_subtitle">Tam Sessizlik seçildiğinde uyarı diyalogunu yeniden göster</string>
     <string name="dnd_priority_summary_title">Öncelikli kesintiler</string>
@@ -585,8 +592,13 @@
     <string name="post_meeting_notification_timing_before">Bitimden %d dakika önce</string>
     <string name="post_meeting_notification_timing_after">Bitimden %d dakika sonra</string>
     <string name="post_meeting_notification_timing_help">DND’yi uzatma isteminin toplantı bitimi etrafında ne zaman görüneceğini ayarlar.</string>
-    <string name="post_meeting_notification_silent_title">Sessiz toplantı sonrası bildirimi</string>
-    <string name="post_meeting_notification_silent_subtitle">Düşük önem kanalı (ses yok). Titreşim sistem ayarlarına bağlıdır.</string>
+    <string name="vibration_cooldown_section_title">Titreşim Bekleme</string>
+    <string name="vibration_cooldown_toggle_title">Titreşim beklemeyi etkinleştir</string>
+    <string name="vibration_cooldown_toggle_subtitle">DND kapandıktan sonra titreşim moduna geç, ardından önceki zil modunu geri yükle.</string>
+    <string name="vibration_cooldown_duration_title">Bekleme süresi</string>
+    <string name="vibration_cooldown_duration_value">%d dakika</string>
+    <string name="vibration_cooldown_duration_until_notification">Bildirime kadar</string>
+    <string name="vibration_cooldown_help">DND kapandıktan sonra telefon titreşimde kalır. \"Bildirime kadar\" toplantı sonrası bildirimi göründüğünde zil modunu geri yükler (maks. 1 dk). Daha yüksek değerler titreşimi belirtilen süre boyunca tutar.</string>
     <string name="notifications_permission_banner_title">Bildirimler kapali</string>
     <string name="notifications_permission_banner_message">Bu ayarlari degistirmek icin bildirim izni verin.</string>
     <string name="notifications_permission_banner_action">Bildirimleri etkinlestir</string>
@@ -623,7 +635,6 @@
     <string name="meeting_overrun_message">Odaklanmak için DND’yi uzat</string>
     <string name="meeting_overrun_extend_format">+%1$ddk</string>
     <string name="meeting_overrun_channel_name">Toplantı uzaması</string>
-    <string name="meeting_overrun_channel_name_silent">Toplantı uzaması (sessiz)</string>
     <string name="meeting_overrun_channel_description">Toplantılar uzadığında bildirimler</string>
     <string name="meeting_overrun_restore">Geri getir</string>
 

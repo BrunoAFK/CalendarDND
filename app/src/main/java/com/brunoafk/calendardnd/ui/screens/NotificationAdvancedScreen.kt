@@ -58,7 +58,8 @@ fun NotificationAdvancedScreen(
     val postMeetingNotificationOffsetMinutes by settingsStore.postMeetingNotificationOffsetMinutes.collectAsState(
         initial = 0
     )
-    val postMeetingNotificationSilent by settingsStore.postMeetingNotificationSilent.collectAsState(initial = true)
+    val vibrationCooldownEnabled by settingsStore.vibrationCooldownEnabled.collectAsState(initial = false)
+    val vibrationCooldownMinutes by settingsStore.vibrationCooldownMinutes.collectAsState(initial = 0)
     val listState = rememberLazyListState()
     var hasNotifications by remember {
         mutableStateOf(PermissionUtils.hasNotificationPermission(context))
@@ -206,22 +207,70 @@ fun NotificationAdvancedScreen(
                         )
                     }
 
+                }
+            }
+            item {
+                SettingsSection(title = stringResource(R.string.vibration_cooldown_section_title)) {
                     SettingsSwitchRow(
-                        title = stringResource(R.string.post_meeting_notification_silent_title),
-                        subtitle = stringResource(R.string.post_meeting_notification_silent_subtitle),
-                        checked = postMeetingNotificationSilent,
-                        enabled = hasNotifications && postMeetingNotificationEnabled,
-                        onCheckedChange = { silent ->
+                        title = stringResource(R.string.vibration_cooldown_toggle_title),
+                        subtitle = stringResource(R.string.vibration_cooldown_toggle_subtitle),
+                        checked = vibrationCooldownEnabled,
+                        enabled = hasNotifications,
+                        onCheckedChange = { enabled ->
                             scope.launch {
-                                settingsStore.setPostMeetingNotificationSilent(silent)
+                                settingsStore.setVibrationCooldownEnabled(enabled)
                                 AnalyticsTracker.logSettingsChanged(
                                     context,
-                                    "post_meeting_notification_silent",
-                                    silent.toString()
+                                    "vibration_cooldown_enabled",
+                                    enabled.toString()
                                 )
                             }
                         }
                     )
+
+                    Column(modifier = Modifier.padding(16.dp).padding(bottom = 8.dp)) {
+                        val labelColor = if (vibrationCooldownEnabled) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        }
+                        Text(
+                            stringResource(R.string.vibration_cooldown_duration_title),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        val durationLabel = if (vibrationCooldownMinutes == 0) {
+                            stringResource(R.string.vibration_cooldown_duration_until_notification)
+                        } else {
+                            stringResource(R.string.vibration_cooldown_duration_value, vibrationCooldownMinutes)
+                        }
+                        Text(
+                            durationLabel,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = labelColor
+                        )
+                        Slider(
+                            value = vibrationCooldownMinutes.toFloat(),
+                            onValueChange = { value ->
+                                scope.launch {
+                                    settingsStore.setVibrationCooldownMinutes(value.toInt())
+                                }
+                            },
+                            onValueChangeFinished = {
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "vibration_cooldown_minutes",
+                                    vibrationCooldownMinutes.toString()
+                                )
+                            },
+                            valueRange = 0f..30f,
+                            steps = 29,
+                            enabled = vibrationCooldownEnabled
+                        )
+                        SettingsHelpText(
+                            text = stringResource(R.string.vibration_cooldown_help),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                        )
+                    }
                 }
             }
         }

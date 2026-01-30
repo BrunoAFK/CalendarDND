@@ -118,7 +118,8 @@ class CalendarRepository(private val context: Context) : ICalendarRepository {
                             titleKeywordExclude
                         )
             }
-            .minByOrNull { it.begin }
+            .sortedWith(compareBy<EventInstance> { it.begin }.thenByDescending { it.end - it.begin })
+            .firstOrNull()
     }
 
     /**

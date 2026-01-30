@@ -41,6 +41,9 @@
     <string name="complete_setup">Einrichtung abschließen</string>
     <string name="current_meeting">Aktuelles Meeting</string>
     <string name="next_meeting">Nächstes Meeting</string>
+    <string name="active_meeting_overlap_chip">%1$d Ereignisse</string>
+    <string name="active_meetings_title">Aktive Ereignisse</string>
+    <string name="upcoming_meetings_title">Bevorstehende Ereignisse</string>
     <string name="next_event_enable_dnd">DND für dieses Ereignis aktivieren</string>
     <string name="next_event_skip_dnd">DND für dieses Ereignis überspringen</string>
     <string name="next_event_enable_confirm_title">DND für nächstes Ereignis aktivieren?</string>
@@ -620,8 +623,12 @@
     <string name="debug_tools_reviews_force_title">Bewertung erzwingen</string>
     <string name="debug_tools_reviews_force_subtitle">In-App-Bewertungsdialog jetzt anzeigen.</string>
     <string name="debug_tools_reviews_no_activity">Bewertungsdialog kann nicht gestartet werden.</string>
+    <string name="debug_tools_reviews_state_title">Status der Bewertungsaufforderung</string>
+    <string name="debug_tools_reviews_state_subtitle">Angezeigt: %1$s • Öffnungen: %2$d • Erster Start: %3$s • Berechtigt: %4$s</string>
     <string name="debug_tools_nav_overlay_subtitle">Zeigt aktuelle Route und Tipp-Protokollierung</string>
     <string name="debug_tools_nav_overlay_title">Navigations-Debug-Overlay anzeigen</string>
+    <string name="debug_tools_status_debug_panel_title">Debug-Panel der Statusanzeige</string>
+    <string name="debug_tools_status_debug_panel_subtitle">Tippe auf den App-Namen auf dem Hauptbildschirm, um ein Live-Debug-Panel mit Aktualisierungsstatus, DND-Status und Ereignisfenstern anzuzeigen</string>
     <string name="debug_tools_nav_title">Navigation</string>
     <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
     <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
@@ -697,8 +704,13 @@
     <string name="post_meeting_notification_timing_before">%d Minuten vor Ende</string>
     <string name="post_meeting_notification_timing_after">%d Minuten nach Ende</string>
     <string name="post_meeting_notification_timing_help">Legt fest, wann der Hinweis zum Verlängern von DND rund um das Meeting-Ende erscheint.</string>
-    <string name="post_meeting_notification_silent_title">Stille Nach-Meeting-Benachrichtigung</string>
-    <string name="post_meeting_notification_silent_subtitle">Niedrige Priorität (kein Ton). Vibration abhängig von Systemeinstellungen.</string>
+    <string name="vibration_cooldown_section_title">Vibrations-Abklingzeit</string>
+    <string name="vibration_cooldown_toggle_title">Vibrations-Abklingzeit aktivieren</string>
+    <string name="vibration_cooldown_toggle_subtitle">Nach DND auf Vibration umschalten, dann vorherigen Klingelton wiederherstellen.</string>
+    <string name="vibration_cooldown_duration_title">Abklingdauer</string>
+    <string name="vibration_cooldown_duration_value">%d Minuten</string>
+    <string name="vibration_cooldown_duration_until_notification">Bis zur Benachrichtigung</string>
+    <string name="vibration_cooldown_help">Nach dem Ende von DND bleibt das Telefon auf Vibration. „Bis zur Benachrichtigung" stellt den Klingelton wieder her, sobald die Nach-Meeting-Benachrichtigung erscheint (max. 1 Min.). Höhere Werte halten die Vibration für die angegebene Zeit.</string>
     <string name="notifications_permission_banner_title">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_permission_banner_message">Aktiviere die Benachrichtigungsberechtigung, um diese Einstellungen zu ändern.</string>
     <string name="notifications_permission_banner_action">Benachrichtigungen aktivieren</string>
@@ -708,7 +720,6 @@
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
-    <string name="meeting_overrun_channel_name_silent">Meeting verlängern (still)</string>
     <string name="debug_tools_gradient_debug_title">Gradient-Debug</string>
     <string name="debug_tools_gradient_debug_subtitle">Aufgelöste Verlaufsfarben anzeigen</string>
     <string name="debug_tools_themes_list_title">Themenliste</string>

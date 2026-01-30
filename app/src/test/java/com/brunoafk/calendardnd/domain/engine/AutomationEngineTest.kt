@@ -14,6 +14,9 @@ import org.junit.Test
 
 class AutomationEngineTest {
 
+    /** Must match the 1-minute end buffer in AutomationEngine.resolveDndWindow */
+    private val DND_END_BUFFER_MS = 60_000L
+
     private lateinit var engine: AutomationEngine
     private lateinit var mockCalendarRepository: MockCalendarRepository
     private lateinit var mockTimeFormatter: MockTimeFormatter
@@ -135,7 +138,7 @@ class AutomationEngineTest {
         assertTrue("Should enable DND", output.decision.shouldEnableDnd)
         assertFalse("Should not disable DND", output.decision.shouldDisableDnd)
         assertEquals("Should set ownership", true, output.decision.setDndSetByApp)
-        assertEquals("Should set active window end", meetingEnd, output.decision.setActiveWindowEnd)
+        assertEquals("Should set active window end", meetingEnd + DND_END_BUFFER_MS, output.decision.setActiveWindowEnd)
     }
 
     @Test
@@ -230,7 +233,7 @@ class AutomationEngineTest {
         val output = engine.run(input)
 
         assertTrue("Should enable DND", output.decision.shouldEnableDnd)
-        assertEquals("Should extend active window to merged end", nextEnd, output.decision.setActiveWindowEnd)
+        assertEquals("Should extend active window to merged end", nextEnd + DND_END_BUFFER_MS, output.decision.setActiveWindowEnd)
     }
 
     @Test
@@ -342,7 +345,7 @@ class AutomationEngineTest {
         val output = engine.run(input)
 
         assertFalse("Should not re-enable DND", output.decision.shouldEnableDnd)
-        assertEquals("Should set suppression", meetingEnd, output.decision.setUserSuppressedUntil)
+        assertEquals("Should set suppression", meetingEnd + DND_END_BUFFER_MS, output.decision.setUserSuppressedUntil)
         assertEquals("Should clear ownership", false, output.decision.setDndSetByApp)
     }
 
@@ -381,7 +384,7 @@ class AutomationEngineTest {
         val output = engine.run(input)
 
         assertFalse("Should not re-enable DND", output.decision.shouldEnableDnd)
-        assertEquals("Should set suppression", meetingEnd, output.decision.setUserSuppressedUntil)
+        assertEquals("Should set suppression", meetingEnd + DND_END_BUFFER_MS, output.decision.setUserSuppressedUntil)
         assertEquals("Should clear ownership", false, output.decision.setDndSetByApp)
     }
 
@@ -606,6 +609,170 @@ class AutomationEngineTest {
     }
 
     // ============================================
+    // Skip Event Tests
+    // ============================================
+
+    @Test
+    fun `skipped event should not trigger DND`() = runBlocking {
+        val now = 1000L
+        val eventStart = 500L
+        val eventEnd = 2000L
+        val eventId = 123L
+
+        val event = EventInstance(
+            id = 1L,
+            eventId = eventId,
+            calendarId = 1L,
+            title = "Skipped Meeting",
+            location = "",
+            begin = eventStart,
+            end = eventEnd,
+            allDay = false,
+            availability = 0,
+            isRecurring = false
+        )
+
+        mockCalendarRepository.instancesInRange = listOf(event)
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            skippedEventId = eventId,
+            skippedEventBeginMs = eventStart,
+            skippedEventEndMs = eventEnd
+        )
+
+        val output = engine.run(input)
+
+        assertFalse("Should NOT enable DND for skipped event", output.decision.shouldEnableDnd)
+        assertNull("Active window should be null", output.activeWindow)
+    }
+
+    @Test
+    fun `skipped event with overlapping event should still trigger DND for other event`() = runBlocking {
+        val now = 1000L
+        val eventAId = 123L
+        val eventAStart = 500L
+        val eventAEnd = 2000L
+
+        val eventBId = 456L
+        val eventBStart = 800L
+        val eventBEnd = 3000L
+
+        val eventA = EventInstance(
+            id = 1L,
+            eventId = eventAId,
+            calendarId = 1L,
+            title = "Skipped Meeting",
+            location = "",
+            begin = eventAStart,
+            end = eventAEnd,
+            allDay = false,
+            availability = 0,
+            isRecurring = false
+        )
+
+        val eventB = EventInstance(
+            id = 2L,
+            eventId = eventBId,
+            calendarId = 1L,
+            title = "Active Meeting",
+            location = "",
+            begin = eventBStart,
+            end = eventBEnd,
+            allDay = false,
+            availability = 0,
+            isRecurring = false
+        )
+
+        mockCalendarRepository.instancesInRange = listOf(eventA, eventB)
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            skippedEventId = eventAId,
+            skippedEventBeginMs = eventAStart,
+            skippedEventEndMs = eventAEnd
+        )
+
+        val output = engine.run(input)
+
+        assertTrue("Should enable DND for non-skipped overlapping event", output.decision.shouldEnableDnd)
+        assertNotNull("Active window should exist", output.activeWindow)
+        assertEquals("Active window should contain only event B", 1, output.activeWindow?.events?.size)
+        assertEquals("Active event should be event B", eventBId, output.activeWindow?.events?.firstOrNull()?.eventId)
+    }
+
+    @Test
+    fun `skip should auto-clear when event ends`() = runBlocking {
+        val eventEnd = 1000L
+        val now = 1500L // After event ended
+        val eventId = 123L
+        val eventStart = 500L
+
+        mockCalendarRepository.instancesInRange = emptyList()
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            skippedEventId = eventId,
+            skippedEventBeginMs = eventStart,
+            skippedEventEndMs = eventEnd
+        )
+
+        val output = engine.run(input)
+
+        assertEquals("Should clear skipped event ID", 0L, output.decision.setSkippedEventId)
+        assertEquals("Should clear skipped event begin", 0L, output.decision.setSkippedEventBeginMs)
+        assertEquals("Should clear skipped event end", 0L, output.decision.setSkippedEventEndMs)
+    }
+
+    @Test
+    fun `skip should not match event with different begin time`() = runBlocking {
+        val now = 1000L
+        val eventId = 123L
+        val originalEventStart = 500L
+        val modifiedEventStart = 600L // Calendar event was modified
+        val eventEnd = 2000L
+
+        val modifiedEvent = EventInstance(
+            id = 1L,
+            eventId = eventId,
+            calendarId = 1L,
+            title = "Modified Meeting",
+            location = "",
+            begin = modifiedEventStart,
+            end = eventEnd,
+            allDay = false,
+            availability = 0,
+            isRecurring = false
+        )
+
+        mockCalendarRepository.instancesInRange = listOf(modifiedEvent)
+
+        val input = createEngineInput(
+            now = now,
+            automationEnabled = true,
+            hasCalendarPermission = true,
+            hasPolicyAccess = true,
+            skippedEventId = eventId,
+            skippedEventBeginMs = originalEventStart, // Original start time
+            skippedEventEndMs = eventEnd
+        )
+
+        val output = engine.run(input)
+
+        assertTrue("Should enable DND since event begin time changed", output.decision.shouldEnableDnd)
+        assertNotNull("Active window should exist for modified event", output.activeWindow)
+    }
+
+    // ============================================
     // Helper Methods
     // ============================================
 
@@ -645,7 +812,9 @@ class AutomationEngineTest {
         preDndNotificationLeadMinutes: Int = 5,
         postMeetingNotificationEnabled: Boolean = true,
         postMeetingNotificationOffsetMinutes: Int = 0,
+        skippedEventId: Long = 0,
         skippedEventBeginMs: Long = 0,
+        skippedEventEndMs: Long = 0,
         notifiedNewEventBeforeSkip: Boolean = false
     ): EngineInput {
         return EngineInput(
@@ -680,12 +849,14 @@ class AutomationEngineTest {
             manualEventStartMs = manualEventStartMs,
             manualEventEndMs = manualEventEndMs,
             lastKnownDndFilter = lastKnownDndFilter,
+            skippedEventId = skippedEventId,
             hasCalendarPermission = hasCalendarPermission,
             hasPolicyAccess = hasPolicyAccess,
             hasExactAlarms = hasExactAlarms,
             systemDndIsOn = systemDndIsOn,
             currentSystemFilter = currentSystemFilter,
             skippedEventBeginMs = skippedEventBeginMs,
+            skippedEventEndMs = skippedEventEndMs,
             notifiedNewEventBeforeSkip = notifiedNewEventBeforeSkip
         )
     }
@@ -757,7 +928,16 @@ class AutomationEngineTest {
             titleKeywordMatchAll: Boolean,
             titleKeywordExclude: Boolean
         ): List<EventInstance> {
-            return if (instancesInRange.isNotEmpty()) instancesInRange else activeInstances
+            if (instancesInRange.isNotEmpty()) {
+                return instancesInRange
+            }
+            val result = activeInstances.toMutableList()
+            nextInstance?.let { instance ->
+                if (instance.begin in beginMs..endMs && result.none { it.id == instance.id }) {
+                    result.add(instance)
+                }
+            }
+            return result
         }
 
         override suspend fun getCalendars(): List<CalendarInfo> {

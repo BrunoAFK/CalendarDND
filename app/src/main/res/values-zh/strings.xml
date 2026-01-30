@@ -44,6 +44,9 @@
     <string name="complete_setup">完成设置</string>
     <string name="current_meeting">当前会议</string>
     <string name="next_meeting">下一个会议</string>
+    <string name="active_meeting_overlap_chip">%1$d 个日程</string>
+    <string name="active_meetings_title">进行中的日程</string>
+    <string name="upcoming_meetings_title">即将开始的日程</string>
     <string name="next_event_enable_dnd">仅为此事件开启免打扰</string>
     <string name="next_event_skip_dnd">此事件不启用免打扰</string>
     <string name="next_event_enable_confirm_title">为下一个事件开启免打扰？</string>
@@ -542,6 +545,8 @@
     <string name="debug_tools_nav_title">导航</string>
     <string name="debug_tools_nav_overlay_title">显示导航调试悬浮窗</string>
     <string name="debug_tools_nav_overlay_subtitle">显示当前路由和点击日志</string>
+    <string name="debug_tools_status_debug_panel_title">状态页面调试面板</string>
+    <string name="debug_tools_status_debug_panel_subtitle">在主界面点击应用名称，可显示包含刷新状态、免打扰状态和事件窗口的实时调试面板</string>
     <string name="debug_tools_restore_dnd_banner_title">恢复免打扰模式横幅</string>
     <string name="debug_tools_restore_dnd_banner_subtitle">在主屏幕再次显示免打扰模式提示</string>
     <string name="debug_tools_restore_banners_title">恢复所有横幅</string>
@@ -692,6 +697,8 @@
     <string name="debug_tools_reviews_force_title">强制显示评价</string>
     <string name="debug_tools_reviews_force_subtitle">立即显示应用内评价对话框。</string>
     <string name="debug_tools_reviews_no_activity">无法打开评价对话框。</string>
+    <string name="debug_tools_reviews_state_title">评价提示状态</string>
+    <string name="debug_tools_reviews_state_subtitle">已显示：%1$s • 启动次数：%2$d • 首次打开：%3$s • 符合条件：%4$s</string>
     <string name="tile_hint_disabled_message">Automation is OFF. Turn it on below to enable DND during meetings.</string>
     <string name="tile_hint_enabled_message">Automation is ON. Use the toggle below to change it anytime.</string>
     <string name="tile_hint_title">Quick Settings tile</string>
@@ -720,8 +727,13 @@
     <string name="post_meeting_notification_timing_before">结束前 %d 分钟</string>
     <string name="post_meeting_notification_timing_after">结束后 %d 分钟</string>
     <string name="post_meeting_notification_timing_help">调整在会议结束前后显示延长 DND 提示的时间。</string>
-    <string name="post_meeting_notification_silent_title">结束提醒静音</string>
-    <string name="post_meeting_notification_silent_subtitle">低重要性（无声音）。是否振动取决于系统设置。</string>
+    <string name="vibration_cooldown_section_title">振动冷却</string>
+    <string name="vibration_cooldown_toggle_title">启用振动冷却</string>
+    <string name="vibration_cooldown_toggle_subtitle">免打扰结束后切换到振动模式，然后恢复之前的铃声模式。</string>
+    <string name="vibration_cooldown_duration_title">冷却时间</string>
+    <string name="vibration_cooldown_duration_value">%d 分钟</string>
+    <string name="vibration_cooldown_duration_until_notification">直到通知</string>
+    <string name="vibration_cooldown_help">免打扰关闭后，手机保持振动模式。"直到通知"会在会议结束通知出现时恢复铃声（最多等待1分钟）。更高的值将保持振动指定的时间。</string>
     <string name="notifications_permission_banner_title">通知已关闭</string>
     <string name="notifications_permission_banner_message">启用通知权限以调整这些设置。</string>
     <string name="notifications_permission_banner_action">启用通知</string>
@@ -731,7 +743,6 @@
     <string name="external_link_prompt_message">This link will open in your browser.</string>
     <string name="external_link_open">Open</string>
     <string name="external_link_cancel">Cancel</string>
-    <string name="meeting_overrun_channel_name_silent">会议延长（静音）</string>
     <string name="debug_tools_gradient_debug_title">渐变调试</string>
     <string name="debug_tools_gradient_debug_subtitle">显示解析后的渐变颜色</string>
     <string name="debug_tools_themes_list_title">主题列表</string>

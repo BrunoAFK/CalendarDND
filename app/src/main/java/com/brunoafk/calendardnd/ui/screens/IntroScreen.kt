@@ -127,9 +127,14 @@ fun IntroScreen(
                                 MaterialTheme.colorScheme.primary
                             ),
                             Triple(
-                                "🧪",
-                                stringResource(R.string.intro_feature_keywords),
+                                "🧩",
+                                stringResource(R.string.intro_feature_filters),
                                 MaterialTheme.colorScheme.secondary
+                            ),
+                            Triple(
+                                "🔕",
+                                stringResource(R.string.intro_feature_silent_mode),
+                                MaterialTheme.colorScheme.tertiary
                             )
                         )
 
@@ -147,11 +152,6 @@ fun IntroScreen(
                     }
                     Text(
                         text = stringResource(R.string.intro_notice),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(R.string.intro_vibe_coded),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

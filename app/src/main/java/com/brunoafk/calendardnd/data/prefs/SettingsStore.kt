@@ -84,6 +84,9 @@ class SettingsStore(private val context: Context) {
         private val FIRST_OPEN_MS = longPreferencesKey("first_open_ms")
         private val APP_OPEN_COUNT = intPreferencesKey("app_open_count")
         private val REVIEW_PROMPT_SHOWN = booleanPreferencesKey("review_prompt_shown")
+        private val REVIEW_PROMPT_LAST_LAUNCH_MS = longPreferencesKey("review_prompt_last_launch_ms")
+        private val REVIEW_PROMPT_LAST_MAJOR_VERSION = intPreferencesKey("review_prompt_last_major_version")
+        private val REVIEW_PROMPT_MIGRATED = booleanPreferencesKey("review_prompt_migrated")
         private val MODERN_BANNER_DESIGN = booleanPreferencesKey("modern_banner_design")
         private val ONE_TIME_ACTION_CONFIRMATION = booleanPreferencesKey("one_time_action_confirmation")
         private val STATUS_DEBUG_PANEL_ENABLED = booleanPreferencesKey("status_debug_panel_enabled")
@@ -119,7 +122,9 @@ class SettingsStore(private val context: Context) {
     data class ReviewPromptState(
         val firstOpenMs: Long,
         val appOpenCount: Int,
-        val promptShown: Boolean
+        val promptShown: Boolean,
+        val lastPromptMs: Long,
+        val lastPromptMajorVersion: Int
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -199,7 +204,7 @@ class SettingsStore(private val context: Context) {
     }
 
     val analyticsOptIn: Flow<Boolean> = dataStore.data.map { prefs ->
-        val defaultEnabled = BuildConfig.FLAVOR == "play"
+        val defaultEnabled = false
         prefs[ANALYTICS_OPT_IN] ?: defaultEnabled
     }
 
@@ -601,6 +606,8 @@ class SettingsStore(private val context: Context) {
         val firstOpenMs = prefs[FIRST_OPEN_MS] ?: nowMs
         val appOpenCount = (prefs[APP_OPEN_COUNT] ?: 0) + 1
         val promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false
+        val lastPromptMs = prefs[REVIEW_PROMPT_LAST_LAUNCH_MS] ?: 0L
+        val lastPromptMajorVersion = prefs[REVIEW_PROMPT_LAST_MAJOR_VERSION] ?: 0
         dataStore.edit {
             it[FIRST_OPEN_MS] = firstOpenMs
             it[APP_OPEN_COUNT] = appOpenCount
@@ -608,7 +615,9 @@ class SettingsStore(private val context: Context) {
         return ReviewPromptState(
             firstOpenMs = firstOpenMs,
             appOpenCount = appOpenCount,
-            promptShown = promptShown
+            promptShown = promptShown,
+            lastPromptMs = lastPromptMs,
+            lastPromptMajorVersion = lastPromptMajorVersion
         )
     }
 
@@ -621,8 +630,43 @@ class SettingsStore(private val context: Context) {
         return ReviewPromptState(
             firstOpenMs = prefs[FIRST_OPEN_MS] ?: 0L,
             appOpenCount = prefs[APP_OPEN_COUNT] ?: 0,
-            promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false
+            promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false,
+            lastPromptMs = prefs[REVIEW_PROMPT_LAST_LAUNCH_MS] ?: 0L,
+            lastPromptMajorVersion = prefs[REVIEW_PROMPT_LAST_MAJOR_VERSION] ?: 0
         )
+    }
+
+    suspend fun markReviewPromptLaunched(nowMs: Long, majorVersion: Int) {
+        dataStore.edit {
+            it[REVIEW_PROMPT_LAST_LAUNCH_MS] = nowMs
+            it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = majorVersion
+            it[REVIEW_PROMPT_SHOWN] = true
+        }
+    }
+
+    suspend fun resetReviewPromptEligibility(nowMs: Long) {
+        dataStore.edit {
+            it[FIRST_OPEN_MS] = nowMs
+            it[APP_OPEN_COUNT] = 0
+            it[REVIEW_PROMPT_SHOWN] = false
+            it[REVIEW_PROMPT_LAST_LAUNCH_MS] = 0L
+            it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = 0
+        }
+    }
+
+    suspend fun migrateReviewPromptIfNeeded(nowMs: Long) {
+        val prefs = dataStore.data.first()
+        if (prefs[REVIEW_PROMPT_MIGRATED] == true) {
+            return
+        }
+        dataStore.edit {
+            it[REVIEW_PROMPT_MIGRATED] = true
+            it[FIRST_OPEN_MS] = nowMs
+            it[APP_OPEN_COUNT] = 0
+            it[REVIEW_PROMPT_SHOWN] = false
+            it[REVIEW_PROMPT_LAST_LAUNCH_MS] = 0L
+            it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = 0
+        }
     }
 
     val modernBannerDesign: Flow<Boolean> = dataStore.data.map { prefs ->

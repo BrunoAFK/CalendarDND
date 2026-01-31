@@ -354,9 +354,9 @@
     <string name="intro_feature_merge">Arka arkaya toplantıları akıllıca birleştirir</string>
     <string name="intro_feature_override">Manuel DND değişikliklerine saygı duyar</string>
     <string name="intro_feature_privacy">Gizlilik odaklı, cihazda kalır</string>
-    <string name="intro_feature_keywords">İsteğe bağlı anahtar kelime filtresi (deneysel)</string>
+    <string name="intro_feature_filters">İhtiyacınıza göre kişiselleştirilmiş filtreler: takvimler, yalnızca meşgul, tüm günleri yok say, minimum süre, yinelenenleri atla, haftanın günleri, konum gerekli, başlık anahtar kelimeleri.</string>
+    <string name="intro_feature_silent_mode">Özel sessiz mod: DND bittikten sonra yalnızca titreşim</string>
     <string name="intro_notice">Gizlilik öncelikli: takvim verileri cihazda kalır. İsteğe bağlı Firebase analizleri ve çökme raporları her zaman kapatılabilir.</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Başlayın</string>
     <string name="step_indicator">Adım %1$d / %2$d</string>
 

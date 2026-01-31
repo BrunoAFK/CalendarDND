@@ -243,30 +243,52 @@ class MainActivity : AppCompatActivity() {
         val settingsStore = SettingsStore(this)
         lifecycleScope.launch {
             val nowMs = System.currentTimeMillis()
+            val currentMajorVersion = parseMajorVersion(BuildConfig.VERSION_NAME)
+            withContext(Dispatchers.IO) {
+                settingsStore.migrateReviewPromptIfNeeded(nowMs)
+            }
             val state = withContext(Dispatchers.IO) {
                 settingsStore.recordAppOpen(nowMs)
-            }
-            if (state.promptShown) {
-                return@launch
             }
             val daysSinceFirstOpen = nowMs - state.firstOpenMs
             val threeDaysMs = 3L * 24 * 60 * 60 * 1000
             if (state.appOpenCount < 5 || daysSinceFirstOpen < threeDaysMs) {
                 return@launch
             }
-            withContext(Dispatchers.IO) {
-                settingsStore.setReviewPromptShown(true)
+            val cooldownMs = 60L * 24 * 60 * 60 * 1000
+            if (state.lastPromptMs > 0L &&
+                state.lastPromptMajorVersion == currentMajorVersion &&
+                nowMs - state.lastPromptMs < cooldownMs
+            ) {
+                return@launch
             }
             val manager = ReviewManagerFactory.create(this@MainActivity)
             manager.requestReviewFlow().addOnCompleteListener { requestTask ->
                 if (!requestTask.isSuccessful) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        settingsStore.resetReviewPromptEligibility(nowMs)
+                    }
                     return@addOnCompleteListener
                 }
                 val reviewInfo = requestTask.result
                 manager.launchReviewFlow(this@MainActivity, reviewInfo)
-                    .addOnCompleteListener { }
+                    .addOnCompleteListener { launchTask ->
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            if (launchTask.isSuccessful) {
+                                settingsStore.markReviewPromptLaunched(nowMs, currentMajorVersion)
+                            } else {
+                                settingsStore.resetReviewPromptEligibility(nowMs)
+                            }
+                        }
+                    }
             }
         }
+    }
+
+    private fun parseMajorVersion(versionName: String): Int {
+        val trimmed = versionName.trim()
+        val primary = trimmed.substringBefore(".")
+        return primary.toIntOrNull() ?: trimmed.toIntOrNull() ?: 0
     }
 
     override fun onNewIntent(intent: Intent) {

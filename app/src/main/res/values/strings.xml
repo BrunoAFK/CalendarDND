@@ -354,9 +354,9 @@
     <string name="intro_feature_merge">Smart merging for back-to-back meetings</string>
     <string name="intro_feature_override">Respects manual DND changes</string>
     <string name="intro_feature_privacy">Private by design, stays on-device</string>
-    <string name="intro_feature_keywords">Optional keyword filter (experimental)</string>
+    <string name="intro_feature_filters">Personalized filters to fit your needs: calendars, busy-only, ignore all-day, minimum duration, skip recurring, days of week, location required, title keywords.</string>
+    <string name="intro_feature_silent_mode">Special silent mode: vibrate-only after DND ends</string>
     <string name="intro_notice">Privacy-first: calendar data stays on-device. Optional Firebase analytics and crash reports can be turned off anytime.</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Get Started</string>
     <string name="step_indicator">Step %1$d of %2$d</string>
 
@@ -508,7 +508,7 @@
     <string name="debug_tools_reviews_force_subtitle">Show the in-app review dialog now.</string>
     <string name="debug_tools_reviews_no_activity">Unable to launch review dialog.</string>
     <string name="debug_tools_reviews_state_title">Review prompt state</string>
-    <string name="debug_tools_reviews_state_subtitle">Shown: %1$s • Opens: %2$d • First open: %3$s • Eligible: %4$s</string>
+    <string name="debug_tools_reviews_state_subtitle">Last prompt: %1$s • Opens: %2$d • First open: %3$s • Eligible: %4$s</string>
     <string name="debug_tools_updates_title">Updates</string>
     <string name="debug_tools_force_update_title">Force update</string>
     <string name="debug_tools_force_update_subtitle">Download and launch the installer for the latest release</string>

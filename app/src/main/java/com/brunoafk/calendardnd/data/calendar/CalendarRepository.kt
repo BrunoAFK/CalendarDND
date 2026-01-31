@@ -367,7 +367,8 @@ internal fun matchesTitleKeyword(
             }
         }
         KeywordMatchMode.REGEX -> {
-            val regex = runCatching { Regex(pattern) }.getOrNull() ?: return false
+            val options = if (caseSensitive) emptySet() else setOf(RegexOption.IGNORE_CASE)
+            val regex = runCatching { Regex(pattern, options) }.getOrNull() ?: return false
             regex.containsMatchIn(title)
         }
     }

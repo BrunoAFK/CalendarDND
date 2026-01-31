@@ -379,8 +379,8 @@ fun `merges touching events`() {
 ### Version Info
 
 ```kotlin
-versionCode = 10700
-versionName = "1.7"
+versionCode = 11900
+versionName = "1.19"
 minSdk = 26
 targetSdk = 36
 ```

@@ -184,8 +184,8 @@ Helper scripts in `scripts/`:
 Version defined in `app/build.gradle.kts`:
 
 ```kotlin
-versionCode = 10700    // Increment for each release
-versionName = "1.7"    // Semantic version
+versionCode = 11900    // Increment for each release
+versionName = "1.19"   // Semantic version
 ```
 
 Version code format: `MAJOR * 10000 + MINOR * 100 + PATCH`
@@ -202,8 +202,8 @@ For `manual` flavor, updates are checked via:
 `update.json` format:
 ```json
 {
-  "versionCode": 10700,
-  "versionName": "1.7",
+  "versionCode": 11900,
+  "versionName": "1.19",
   "downloadUrl": "https://github.com/.../app-manual-release.apk",
   "releaseNotes": "Bug fixes and improvements"
 }

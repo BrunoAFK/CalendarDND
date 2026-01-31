@@ -37,7 +37,7 @@ android {
         buildConfigField("boolean", "TELEMETRY_DEFAULT_ENABLED", telemetryDefaultEnabled.toString())
 
         val debugToolsEnabled = (project.findProperty("debugToolsEnabled") as String?)
-            ?.toBooleanStrictOrNull() ?: true
+            ?.toBooleanStrictOrNull() ?: false
         buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", debugToolsEnabled.toString())
 
         val telemetryDefaultLevel = (project.findProperty("telemetryDefaultLevel") as String?)
@@ -144,7 +144,6 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
-            buildConfigField("boolean", "DEBUG_TOOLS_ENABLED", "true")
             signingConfigs.findByName("release")?.let { signingConfig = it }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

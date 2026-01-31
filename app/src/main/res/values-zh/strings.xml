@@ -459,9 +459,9 @@
     <string name="intro_feature_merge">智能合并连续会议</string>
     <string name="intro_feature_override">尊重手动更改勿扰状态</string>
     <string name="intro_feature_privacy">隐私优先，数据留在本机</string>
-    <string name="intro_feature_keywords">可选关键词过滤（实验性）</string>
+    <string name="intro_feature_filters">个性化过滤满足你的需求：日历、仅忙碌、忽略全天、最小时长、跳过重复、星期几、需要地点、标题关键词。</string>
+    <string name="intro_feature_silent_mode">特殊静音模式：DND 结束后仅振动</string>
     <string name="intro_notice">隐私优先：日历数据仅保存在设备上。可选的 Firebase 分析与崩溃报告可随时关闭。</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">开始使用</string>
     <string name="step_indicator">第 %1$d 步，共 %2$d 步</string>
 

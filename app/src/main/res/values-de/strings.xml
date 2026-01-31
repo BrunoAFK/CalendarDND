@@ -347,9 +347,9 @@
     <string name="intro_feature_merge">Intelligentes Zusammenführen bei direkt aufeinanderfolgenden Meetings</string>
     <string name="intro_feature_override">Respektiert manuelle DND-Änderungen</string>
     <string name="intro_feature_privacy">Datenschutzfreundlich: bleibt auf dem Gerät</string>
-    <string name="intro_feature_keywords">Optionaler Stichwortfilter (experimentell)</string>
+    <string name="intro_feature_filters">Personalisierte Filter nach deinen Bedürfnissen: Kalender, nur-beschäftigt, ganztägige ignorieren, Mindestdauer, wiederkehrende überspringen, Wochentage, Ort erforderlich, Titel-Schlüsselwörter.</string>
+    <string name="intro_feature_silent_mode">Spezieller Silent-Modus: Nur-Vibration nach dem DND-Ende</string>
     <string name="intro_notice">Datenschutz zuerst: Kalenderdaten bleiben auf dem Gerät. Optionale Firebase-Analysen und Crash-Berichte lassen sich jederzeit deaktivieren.</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Los geht\'s</string>
 
     <string name="language_title">Sprache auswählen</string>

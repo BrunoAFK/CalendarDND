@@ -347,9 +347,9 @@
     <string name="intro_feature_merge">연속 회의 자동 병합</string>
     <string name="intro_feature_override">수동 DND 변경을 존중</string>
     <string name="intro_feature_privacy">개인정보 우선, 기기 내에만 저장</string>
-    <string name="intro_feature_keywords">선택적 키워드 필터(실험적)</string>
+    <string name="intro_feature_filters">맞춤형 필터로 원하는 방식대로 설정: 캘린더, 바쁨만, 종일 일정 제외, 최소 길이, 반복 일정 건너뛰기, 요일, 위치 필요, 제목 키워드.</string>
+    <string name="intro_feature_silent_mode">특별 무음 모드: DND 종료 후 진동만</string>
     <string name="intro_notice">개인정보 우선: 캘린더 데이터는 기기에만 저장됩니다. 선택적 Firebase 분석 및 크래시 보고는 언제든 끌 수 있습니다.</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">시작하기</string>
 
     <string name="language_title">언어 선택</string>

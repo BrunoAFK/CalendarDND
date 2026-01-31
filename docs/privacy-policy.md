@@ -1,6 +1,6 @@
 # Privacy Policy for Calendar DND
 
-Last updated: 2025-01-17
+Last updated: 2026-01-31
 
 ## Summary
 

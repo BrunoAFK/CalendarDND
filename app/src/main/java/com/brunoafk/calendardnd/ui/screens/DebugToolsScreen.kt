@@ -137,14 +137,23 @@ fun DebugToolsScreen(
             -1
         }
         val daysLabel = if (daysSinceFirstOpen >= 0) "${daysSinceFirstOpen}d" else "—"
+        val lastPromptLabel = if (state.lastPromptMs > 0L) {
+            TimeUtils.formatDateTime(context, state.lastPromptMs)
+        } else {
+            "—"
+        }
+        val currentMajorVersion = parseMajorVersion(BuildConfig.VERSION_NAME)
+        val cooldownMs = 60L * 24 * 60 * 60 * 1000
+        val cooldownElapsed = state.lastPromptMs <= 0L ||
+            System.currentTimeMillis() - state.lastPromptMs >= cooldownMs
         val eligible = !BuildConfig.DEBUG &&
             BuildConfig.FLAVOR == "play" &&
-            !state.promptShown &&
             state.appOpenCount >= 5 &&
-            daysSinceFirstOpen >= 3
+            daysSinceFirstOpen >= 3 &&
+            (cooldownElapsed || state.lastPromptMajorVersion != currentMajorVersion)
         stringResource(
             R.string.debug_tools_reviews_state_subtitle,
-            if (state.promptShown) stringResource(R.string.yes) else stringResource(R.string.no),
+            lastPromptLabel,
             state.appOpenCount,
             daysLabel,
             if (eligible) stringResource(R.string.yes) else stringResource(R.string.no)
@@ -316,7 +325,7 @@ fun DebugToolsScreen(
                                     }
                                     val settingsStore = SettingsStore(context)
                                     withContext(Dispatchers.IO) {
-                                        settingsStore.setReviewPromptShown(false)
+                                        settingsStore.resetReviewPromptEligibility(System.currentTimeMillis())
                                     }
                                     val manager = ReviewManagerFactory.create(activity)
                                     manager.requestReviewFlow().addOnCompleteListener { requestTask ->
@@ -327,7 +336,12 @@ fun DebugToolsScreen(
                                         manager.launchReviewFlow(activity, reviewInfo)
                                             .addOnCompleteListener {
                                                 scope.launch(Dispatchers.IO) {
-                                                    settingsStore.setReviewPromptShown(true)
+                                                    if (it.isSuccessful) {
+                                                        settingsStore.markReviewPromptLaunched(
+                                                            System.currentTimeMillis(),
+                                                            parseMajorVersion(BuildConfig.VERSION_NAME)
+                                                        )
+                                                    }
                                                 }
                                             }
                                     }
@@ -581,6 +595,12 @@ fun DebugToolsScreen(
             }
         }
     }
+}
+
+private fun parseMajorVersion(versionName: String): Int {
+    val trimmed = versionName.trim()
+    val primary = trimmed.substringBefore(".")
+    return primary.toIntOrNull() ?: trimmed.toIntOrNull() ?: 0
 }
 
 private const val DND_PREVIEW_SECONDS = 10

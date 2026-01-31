@@ -347,9 +347,9 @@
     <string name="intro_feature_merge">Pametno spajanje uzastopnih sastanaka</string>
     <string name="intro_feature_override">Poštuje ručne promjene DND-a</string>
     <string name="intro_feature_privacy">Privatnost na prvom mjestu, ostaje na uređaju</string>
-    <string name="intro_feature_keywords">Opcionalni filtar ključnih riječi (eksperimentalno)</string>
+    <string name="intro_feature_filters">Personalizirani filtri prema vašim potrebama: kalendari, samo zauzeto, zanemari cjelodnevne, minimalno trajanje, preskoči ponavljajuće, dani u tjednu, potrebna lokacija, ključne riječi naslova.</string>
+    <string name="intro_feature_silent_mode">Poseban tihi način: samo vibracija nakon završetka DND-a</string>
     <string name="intro_notice">Privatnost prije svega: podaci iz kalendara ostaju na uređaju. Opcionalne Firebase analitike i izvješća o rušenjima mogu se isključiti u bilo kojem trenutku.</string>
-    <string name="intro_vibe_coded">Vibe-coded.</string>
     <string name="get_started">Započni</string>
 
     <string name="language_title">Odaberi jezik</string>

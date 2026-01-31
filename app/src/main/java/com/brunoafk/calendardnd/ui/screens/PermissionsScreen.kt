@@ -57,12 +57,16 @@ fun PermissionsScreen(
     var hasNotificationPermission by remember {
         mutableStateOf(PermissionUtils.hasNotificationPermission(context))
     }
+    var batteryOptimized by remember {
+        mutableStateOf(isBatteryOptimized(context))
+    }
 
     fun refreshPermissions() {
         hasCalendarPermission = PermissionUtils.hasCalendarPermission(context)
         hasPolicyAccess = dndController.hasPolicyAccess()
         hasExactAlarms = alarmScheduler.canScheduleExactAlarms()
         hasNotificationPermission = PermissionUtils.hasNotificationPermission(context)
+        batteryOptimized = isBatteryOptimized(context)
     }
 
     LaunchedEffect(Unit) {
@@ -78,8 +82,6 @@ fun PermissionsScreen(
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-
-    val batteryOptimized = isBatteryOptimized(context)
 
     Scaffold(
         topBar = {

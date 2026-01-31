@@ -56,6 +56,36 @@ class CalendarRepositoryTest {
     }
 
     @Test
+    fun `regex honors case-insensitive matching`() {
+        val matches = matchesTitleKeyword(
+            title = "Project KICKOFF 2025",
+            requireTitleKeyword = true,
+            titleKeyword = "kickoff\\s\\d{4}",
+            matchMode = KeywordMatchMode.REGEX,
+            caseSensitive = false,
+            matchAll = false,
+            excludeMatches = false
+        )
+
+        assertTrue(matches)
+    }
+
+    @Test
+    fun `regex honors case-sensitive matching`() {
+        val matches = matchesTitleKeyword(
+            title = "Project KICKOFF 2025",
+            requireTitleKeyword = true,
+            titleKeyword = "kickoff\\s\\d{4}",
+            matchMode = KeywordMatchMode.REGEX,
+            caseSensitive = true,
+            matchAll = false,
+            excludeMatches = false
+        )
+
+        assertFalse(matches)
+    }
+
+    @Test
     fun `regex fails when pattern is invalid`() {
         val matches = matchesTitleKeyword(
             title = "Project Kickoff",

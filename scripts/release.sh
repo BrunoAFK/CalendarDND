@@ -16,6 +16,7 @@ This script:
 - Generates update.json (for manual flavor only)
 - Pushes commits + tags
 - Creates a GitHub release and uploads APKs + update.json
+
 EOF
 }
 

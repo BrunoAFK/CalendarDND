@@ -123,50 +123,50 @@
                         <div class="phone-frame">
                             <div class="phone-notch"></div>
                             <div class="phone-screen">
-                                <img src="assets/1.jpg" alt="Calendar DND main status screen" loading="lazy">
+                                <img src="assets/screens/light/homepage.jpg" data-light="assets/screens/light/homepage.jpg" data-dark="assets/screens/dark/home.jpg" alt="Calendar DND home screen" loading="lazy">
                             </div>
                         </div>
-                        <p class="phone-caption">At-a-glance status</p>
+                        <p class="phone-caption">Homepage: core automation at a glance</p>
                     </div>
 
                     <div class="phone-container">
                         <div class="phone-frame">
                             <div class="phone-notch"></div>
                             <div class="phone-screen">
-                                <img src="assets/2.jpg" alt="Calendar DND settings" loading="lazy">
+                                <img src="assets/screens/light/dnd%20activated.jpg" data-light="assets/screens/light/dnd%20activated.jpg" data-dark="assets/screens/dark/dnd.jpg" alt="DND activated status and notification preview" loading="lazy">
                             </div>
                         </div>
-                        <p class="phone-caption">Flexible settings</p>
+                        <p class="phone-caption">DND activated: automation + status checks</p>
                     </div>
 
                     <div class="phone-container">
                         <div class="phone-frame">
                             <div class="phone-notch"></div>
                             <div class="phone-screen">
-                                <img src="assets/3.jpg" alt="Calendar selection" loading="lazy">
+                                <img src="assets/screens/light/fliters.jpg" data-light="assets/screens/light/fliters.jpg" data-dark="assets/screens/dark/filters.jpg" alt="Personalized event filters" loading="lazy">
                             </div>
                         </div>
-                        <p class="phone-caption">Pick your calendars</p>
+                        <p class="phone-caption">Filters: tailor activation to your needs</p>
                     </div>
 
                     <div class="phone-container">
                         <div class="phone-frame">
                             <div class="phone-notch"></div>
                             <div class="phone-screen">
-                                <img src="assets/4.jpg" alt="Event filters" loading="lazy">
+                                <img src="assets/screens/themes.jpg" alt="Theme selection" loading="lazy">
                             </div>
                         </div>
-                        <p class="phone-caption">Smart event filters</p>
+                        <p class="phone-caption">Themes: light/dark + hidden options</p>
                     </div>
 
                     <div class="phone-container">
                         <div class="phone-frame">
                             <div class="phone-notch"></div>
                             <div class="phone-screen">
-                                <img src="assets/5.jpg" alt="DND mode selection" loading="lazy">
+                                <img src="assets/screens/light/individual.jpg" data-light="assets/screens/light/individual.jpg" data-dark="assets/screens/dark/individual.jpg" alt="Individual event actions" loading="lazy">
                             </div>
                         </div>
-                        <p class="phone-caption">Choose DND mode</p>
+                        <p class="phone-caption">Individual events: custom actions per meeting</p>
                     </div>
                 </div>
 
@@ -334,6 +334,13 @@
         function setTheme(isDark) {
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            applyThemeImages(isDark);
+        }
+
+        function applyThemeImages(isDark) {
+            document.querySelectorAll('img[data-light][data-dark]').forEach((img) => {
+                img.src = isDark ? img.dataset.dark : img.dataset.light;
+            });
         }
 
         // Initialize theme

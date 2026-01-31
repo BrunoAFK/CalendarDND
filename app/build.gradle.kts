@@ -19,8 +19,8 @@ android {
         applicationId = "com.brunoafk.calendardnd"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11900
-        versionName = "1.19"
+        versionCode = 12000
+        versionName = "1.20"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

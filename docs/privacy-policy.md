@@ -46,10 +46,6 @@ Some builds send anonymous usage pings to understand usage and decide what to im
 
 Opt out: open About and enable Debug Tools, then go to Settings > Debug Tools and disable Telemetry.
 
-### F-Droid Distribution
-
-The F-Droid build does not include Firebase. Analytics, crash reporting, and push notifications are completely absent.
-
 ## Update Checks (GitHub Distribution)
 
 The GitHub (manual) distribution can check for updates by downloading a small JSON file from GitHub. If an update is available, the app downloads the APK and verifies its cryptographic signature and SHA-256 checksum before prompting for installation.

@@ -41,10 +41,9 @@ This is an Android application that automatically manages "Do Not Disturb" (DND)
 
 ### Product Flavors
 
-The app has three product flavors:
+The app has two product flavors:
 
 -   `play`: For the Google Play Store, includes Firebase services.
--   `fdroid`: For F-Droid, with Firebase services removed.
 -   `manual`: For manual distribution, includes Firebase and a manual update check.
 
 ## Development Conventions

@@ -11,7 +11,6 @@ Calendar DND is an Android app that automatically manages Do Not Disturb mode ba
 ```bash
 ./gradlew assembleDebug          # Debug APK
 ./gradlew assemblePlayRelease    # Play Store release
-./gradlew assembleFdroidRelease  # F-Droid release (no Firebase)
 ./gradlew assembleManualRelease  # Manual distribution
 ./gradlew installDebug           # Install on device
 ./gradlew test                   # Unit tests
@@ -72,10 +71,9 @@ Users can skip or enable DND for individual events. Tracked via `skippedEventId`
 | Flavor | Firebase | Updates | Notes |
 |--------|----------|---------|-------|
 | `play` | Full | Play Store | Google Play distribution |
-| `fdroid` | Disabled | None | F-Droid distribution |
 | `manual` | Full | In-app/GitHub | Direct APK |
 
-Flavor-specific code in `src/play/`, `src/fdroid/`, `src/manual/`.
+Flavor-specific code in `src/play/`, `src/manual/`.
 
 ## Code Style
 

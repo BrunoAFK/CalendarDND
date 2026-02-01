@@ -387,12 +387,11 @@ targetSdk = 36
 
 ### Build Flavors
 
-Three distribution variants:
+Two distribution variants:
 
 | Flavor | Description |
 |--------|-------------|
 | `play` | Google Play Store (Firebase enabled) |
-| `fdroid` | F-Droid (no Firebase/FCM, no analytics UI) |
 | `manual` | Direct download + built-in updater (Firebase enabled) |
 
 Tip: For local Android Studio runs, use `playDebug` to keep Firebase enabled.
@@ -403,7 +402,6 @@ Helper scripts to build release APKs:
 
 ```bash
 ./scripts/build-play.sh
-./scripts/build-fdroid.sh
 ./scripts/build-manual.sh
 ```
 

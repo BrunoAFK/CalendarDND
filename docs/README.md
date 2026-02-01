@@ -37,7 +37,6 @@ Calendar DND is an Android app that automatically controls Do Not Disturb mode b
 
 # Release builds
 ./gradlew assemblePlayRelease      # Play Store
-./gradlew assembleFdroidRelease    # F-Droid
 ./gradlew assembleManualRelease    # Manual distribution
 ```
 

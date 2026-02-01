@@ -250,7 +250,7 @@ body {
 }
 
 .store-badge img {
-    height: 80px; /* Google Play & F-Droid badges have built-in padding */
+    height: 80px; /* Store badges have built-in padding */
     width: auto;
     display: block;
 }

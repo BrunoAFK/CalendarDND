@@ -66,13 +66,6 @@ android {
             buildConfigField("String", "TELEMETRY_DEFAULT_LEVEL", "\"DETAILED\"")
             buildConfigField("String", "PLAY_STORE_UPDATE_MANAGER_CLASS", "\"com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerImpl\"")
         }
-        create("fdroid") {
-            dimension = "distribution"
-            buildConfigField("boolean", "FIREBASE_ENABLED", "false")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
-            buildConfigField("String", "PLAY_STORE_UPDATE_MANAGER_CLASS", "\"com.brunoafk.calendardnd.system.update.PlayStoreUpdateManagerNoOp\"")
-        }
         create("manual") {
             dimension = "distribution"
             buildConfigField("boolean", "MANUAL_UPDATE_ENABLED", "true")
@@ -175,16 +168,13 @@ android {
         getByName("play") {
             java.srcDirs("src/play/java")
         }
-        getByName("fdroid") {
-            java.srcDirs("src/fdroid/java")
-        }
         getByName("manual") {
             java.srcDirs("src/manual/java")
         }
     }
 
     applicationVariants.all {
-        if (flavorName == "fdroid" || buildType.name == "debugNoTools") {
+        if (buildType.name == "debugNoTools") {
             val variantName = name.replaceFirstChar { it.uppercaseChar() }
             tasks.matching { it.name == "process${variantName}GoogleServices" }
                 .configureEach { enabled = false }

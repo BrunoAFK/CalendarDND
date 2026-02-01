@@ -30,7 +30,6 @@ CalendarDND/
 │   ├── src/
 │   │   ├── main/           # Shared code
 │   │   ├── play/           # Play Store flavor
-│   │   ├── fdroid/         # F-Droid flavor
 │   │   └── manual/         # Manual distribution flavor
 │   └── build.gradle.kts
 ├── docs/                   # Documentation (you are here)

@@ -10,12 +10,12 @@ Usage: scripts/release.sh
 
 This script:
 - Bumps versionName/versionCode
-- Runs ./gradlew assembleDebug, test, lint, assembleManualRelease, assembleFdroidRelease
+- Runs ./gradlew assembleDebug, test, lint, assembleManualRelease
 - Ensures release-notes/<version>.md exists (must be ready)
 - Creates a git tag v<version>
 - Generates update.json (for manual flavor only)
 - Pushes commits + tags
-- Creates a GitHub release and uploads APKs + update.json
+- Creates a GitHub release and uploads APK + update.json
 
 EOF
 }
@@ -331,11 +331,10 @@ fi
 
 # Build names
 manual_apk_name="CalendarDND-${version}-manual.apk"
-fdroid_apk_name="CalendarDND-${version}-fdroid.apk"
 play_aab_name="CalendarDND-${version}-play.aab"
 
 # Build all flavors + Play Store AAB
-./gradlew assembleDebug test lint assembleManualRelease assembleFdroidRelease bundlePlayRelease
+./gradlew assembleDebug test lint assembleManualRelease bundlePlayRelease
 
 # Handle Manual APK
 manual_apk_src="$(ls "${repo_root}"/app/build/outputs/apk/manual/release/app-manual-release*.apk 2>/dev/null | head -n 1 || true)"
@@ -346,15 +345,6 @@ fi
 final_manual_apk_path="${generated_dir}/${manual_apk_name}"
 cp "${manual_apk_src}" "${final_manual_apk_path}"
 manual_sha="$(compute_sha256 "${final_manual_apk_path}")"
-
-# Handle F-Droid APK
-fdroid_apk_src="$(ls "${repo_root}"/app/build/outputs/apk/fdroid/release/app-fdroid-release*.apk 2>/dev/null | head -n 1 || true)"
-if [[ ! -f "${fdroid_apk_src}" ]]; then
-  echo "F-Droid APK not found after build."
-  exit 1
-fi
-final_fdroid_apk_path="${generated_dir}/${fdroid_apk_name}"
-cp "${fdroid_apk_src}" "${final_fdroid_apk_path}"
 
 # Handle Play Store AAB (not uploaded)
 play_aab_src="$(ls "${repo_root}"/app/build/outputs/bundle/playRelease/app-play-release*.aab 2>/dev/null | head -n 1 || true)"
@@ -408,7 +398,6 @@ gh release create "${tag}" \
   --title "${tag}" \
   --notes-file "${notes_file}" \
   "${final_manual_apk_path}#${manual_apk_name}" \
-  "${final_fdroid_apk_path}#${fdroid_apk_name}" \
   "${update_json}#update.json"
 
 echo "Release created: ${tag}"

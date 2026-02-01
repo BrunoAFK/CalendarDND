@@ -36,7 +36,7 @@ Usage:
 Targeting flags (combine as needed):
   --all                       Send to "all" or "updates" topics
   --topic=updates             Send to a specific topic
-  --flavor=play|manual|fdroid  Target build flavor topic
+  --flavor=play|manual         Target build flavor topic
   --language=en|en-US         Target language topic (lang_en, lang_en_us)
   --min-version=11200         Target version and above (v_ge_11200)
   --below-version=11200       Target versions below (NOT v_ge_11200)
@@ -61,7 +61,7 @@ Environment:
 Default topics (subscribed in app):
   all
   updates
-  flavor_play | flavor_manual | flavor_fdroid
+  flavor_play | flavor_manual
   build_debug | build_release
   v_<versionCode>             e.g., v_11600
   v_ge_<versionGate>          e.g., v_ge_11200 (gates configured in app)

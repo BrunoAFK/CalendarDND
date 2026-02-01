@@ -4,7 +4,7 @@ Build flavors, feature toggles, and project settings.
 
 ## Build Flavors
 
-The app has three distribution flavors in the `distribution` dimension:
+The app has two distribution flavors in the `distribution` dimension:
 
 ### Play Store (`play`)
 
@@ -19,21 +19,6 @@ For Google Play distribution.
 - Firebase Crashlytics enabled
 - Firebase Analytics enabled
 - Standard update mechanism (Play Store)
-
-### F-Droid (`fdroid`)
-
-For F-Droid distribution.
-
-```bash
-./gradlew assembleFdroidDebug
-./gradlew assembleFdroidRelease
-```
-
-**Features**:
-- No Firebase dependencies
-- No analytics
-- No proprietary code
-- Complies with F-Droid inclusion policy
 
 ### Manual (`manual`)
 
@@ -171,9 +156,6 @@ Helper scripts in `scripts/`:
 ```bash
 # Build Play Store release
 ./scripts/build-play.sh
-
-# Build F-Droid release
-./scripts/build-fdroid.sh
 
 # Build Manual release
 ./scripts/build-manual.sh

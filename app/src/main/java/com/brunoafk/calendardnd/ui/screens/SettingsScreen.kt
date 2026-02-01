@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -49,10 +51,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.delay
+import java.nio.charset.StandardCharsets
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
 import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.domain.model.KeywordMatchMode
 import com.brunoafk.calendardnd.BuildConfig
+import com.brunoafk.calendardnd.R
 import com.brunoafk.calendardnd.domain.model.ThemeMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -140,6 +144,63 @@ fun SettingsScreen(
                         true.toString()
                     )
                 }
+            }
+        }
+    }
+
+    var pendingImportJson by remember { mutableStateOf<String?>(null) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri == null) {
+            return@rememberLauncherForActivityResult
+        }
+        scope.launch {
+            val payload = withContext(Dispatchers.IO) {
+                settingsStore.exportSettingsJson()
+            }
+            val success = withContext(Dispatchers.IO) {
+                runCatching {
+                    context.contentResolver.openOutputStream(uri)?.use { stream ->
+                        stream.write(payload.toByteArray(StandardCharsets.UTF_8))
+                        stream.flush()
+                    }
+                    true
+                }.getOrDefault(false)
+            }
+            Toast.makeText(
+                context,
+                if (success) {
+                    context.getString(R.string.settings_export_success)
+                } else {
+                    context.getString(R.string.settings_export_failed)
+                },
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) {
+            return@rememberLauncherForActivityResult
+        }
+        scope.launch {
+            val payload = withContext(Dispatchers.IO) {
+                runCatching {
+                    context.contentResolver.openInputStream(uri)?.use { stream ->
+                        stream.readBytes().toString(StandardCharsets.UTF_8)
+                    }
+                }.getOrNull()
+            }
+            if (payload.isNullOrBlank()) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.settings_import_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                pendingImportJson = payload
             }
         }
     }
@@ -812,6 +873,26 @@ fun SettingsScreen(
             }
 
             item {
+                SettingsSection(title = stringResource(R.string.settings_backup_title)) {
+                    SettingsNavigationRow(
+                        title = stringResource(R.string.settings_export_title),
+                        subtitle = stringResource(R.string.settings_export_subtitle),
+                        onClick = {
+                            exportLauncher.launch("calendar-dnd-settings.json")
+                        }
+                    )
+                    SettingsDivider()
+                    SettingsNavigationRow(
+                        title = stringResource(R.string.settings_import_title),
+                        subtitle = stringResource(R.string.settings_import_subtitle),
+                        onClick = {
+                            importLauncher.launch(arrayOf("application/json", "text/*"))
+                        }
+                    )
+                }
+            }
+
+            item {
                 SettingsSection(title = stringResource(com.brunoafk.calendardnd.R.string.help_title)) {
                     if (BuildConfig.MANUAL_UPDATE_ENABLED && showUpdatesMenu) {
                         SettingsNavigationRow(
@@ -844,6 +925,42 @@ fun SettingsScreen(
             }
 
         }
+    }
+
+    pendingImportJson?.let { payload ->
+        AlertDialog(
+            onDismissRequest = { pendingImportJson = null },
+            title = { Text(stringResource(R.string.settings_import_title)) },
+            text = { Text(stringResource(R.string.settings_import_confirm_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            val result = withContext(Dispatchers.IO) {
+                                settingsStore.importSettingsJson(payload)
+                            }
+                            Toast.makeText(
+                                context,
+                                context.getString(
+                                    R.string.settings_import_success,
+                                    result.importedCount,
+                                    result.skippedCount
+                                ),
+                                Toast.LENGTH_LONG
+                            ).show()
+                            pendingImportJson = null
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.settings_import_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingImportJson = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 }

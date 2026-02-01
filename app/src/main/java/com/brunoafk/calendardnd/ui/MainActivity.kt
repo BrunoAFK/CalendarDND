@@ -271,6 +271,9 @@ class MainActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
                 val reviewInfo = requestTask.result
+                lifecycleScope.launch(Dispatchers.IO) {
+                    settingsStore.incrementReviewPromptLaunchAttempts()
+                }
                 manager.launchReviewFlow(this@MainActivity, reviewInfo)
                     .addOnCompleteListener { launchTask ->
                         lifecycleScope.launch(Dispatchers.IO) {

@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -64,6 +67,7 @@ fun DebugToolsScreen(
     onOpenTelemetryLevel: () -> Unit = {},
     onOpenThemeList: () -> Unit = {},
     onOpenThemeDebugging: () -> Unit = {},
+    onOpenReviewTools: () -> Unit = {},
     signatureStatus: ManualUpdateManager.SignatureStatus = ManualUpdateManager.SignatureStatus(
         isAllowed = true,
         isPinned = true
@@ -124,12 +128,19 @@ fun DebugToolsScreen(
         "ko" to stringResource(R.string.language_korean).ifBlank { "한국어" }
     )
     val listState = rememberLazyListState()
-    val reviewPromptState by produceState<SettingsStore.ReviewPromptState?>(initialValue = null, settingsStore) {
-        value = withContext(Dispatchers.IO) {
-            settingsStore.getReviewPromptState()
-        }
-    }
-    val reviewStateSubtitle = reviewPromptState?.let { state ->
+    val reviewPromptState by settingsStore.reviewPromptState.collectAsState(
+        initial = SettingsStore.ReviewPromptState(
+            firstOpenMs = 0L,
+            appOpenCount = 0,
+            promptShown = false,
+            lastPromptMs = 0L,
+            lastPromptMajorVersion = 0,
+            launchAttempts = 0
+        )
+    )
+    var reviewConfirmation by remember { mutableStateOf<ReviewConfirmation?>(null) }
+    val reviewStateSubtitle = run {
+        val state = reviewPromptState
         val dayMs = 24L * 60 * 60 * 1000
         val daysSinceFirstOpen = if (state.firstOpenMs > 0L) {
             ((System.currentTimeMillis() - state.firstOpenMs) / dayMs).coerceAtLeast(0)
@@ -156,9 +167,10 @@ fun DebugToolsScreen(
             lastPromptLabel,
             state.appOpenCount,
             daysLabel,
-            if (eligible) stringResource(R.string.yes) else stringResource(R.string.no)
+            if (eligible) stringResource(R.string.yes) else stringResource(R.string.no),
+            state.launchAttempts
         )
-    } ?: "—"
+    }
 
     fun previewDnd(mode: DndMode) {
         scope.launch {
@@ -333,15 +345,16 @@ fun DebugToolsScreen(
                                             return@addOnCompleteListener
                                         }
                                         val reviewInfo = requestTask.result
+                                        scope.launch(Dispatchers.IO) {
+                                            settingsStore.incrementReviewPromptLaunchAttempts()
+                                        }
                                         manager.launchReviewFlow(activity, reviewInfo)
                                             .addOnCompleteListener {
-                                                scope.launch(Dispatchers.IO) {
-                                                    if (it.isSuccessful) {
-                                                        settingsStore.markReviewPromptLaunched(
-                                                            System.currentTimeMillis(),
-                                                            parseMajorVersion(BuildConfig.VERSION_NAME)
-                                                        )
-                                                    }
+                                                if (it.isSuccessful) {
+                                                    reviewConfirmation = ReviewConfirmation(
+                                                        System.currentTimeMillis(),
+                                                        parseMajorVersion(BuildConfig.VERSION_NAME)
+                                                    )
                                                 }
                                             }
                                     }
@@ -349,9 +362,20 @@ fun DebugToolsScreen(
                             }
                         )
                         SettingsDivider()
+                        SettingsNavigationRow(
+                            title = stringResource(R.string.debug_tools_reviews_manage_title),
+                            subtitle = stringResource(R.string.debug_tools_reviews_manage_subtitle),
+                            onClick = onOpenReviewTools
+                        )
+                        SettingsDivider()
                         SettingsInfoRow(
                             title = stringResource(R.string.debug_tools_reviews_state_title),
                             subtitle = reviewStateSubtitle
+                        )
+                        SettingsDivider()
+                        SettingsInfoRow(
+                            title = stringResource(R.string.debug_tools_reviews_attempts_title),
+                            subtitle = reviewPromptState.launchAttempts.toString()
                         )
                     }
                 }
@@ -595,6 +619,34 @@ fun DebugToolsScreen(
             }
         }
     }
+
+    reviewConfirmation?.let { confirmation ->
+        AlertDialog(
+            onDismissRequest = { reviewConfirmation = null },
+            title = { Text(stringResource(R.string.debug_tools_reviews_confirm_title)) },
+            text = { Text(stringResource(R.string.debug_tools_reviews_confirm_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch(Dispatchers.IO) {
+                            settingsStore.markReviewPromptLaunched(
+                                confirmation.nowMs,
+                                confirmation.majorVersion
+                            )
+                        }
+                        reviewConfirmation = null
+                    }
+                ) {
+                    Text(stringResource(R.string.debug_tools_reviews_confirm_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { reviewConfirmation = null }) {
+                    Text(stringResource(R.string.debug_tools_reviews_confirm_no))
+                }
+            }
+        )
+    }
 }
 
 private fun parseMajorVersion(versionName: String): Int {
@@ -605,6 +657,11 @@ private fun parseMajorVersion(versionName: String): Int {
 
 private const val DND_PREVIEW_SECONDS = 10
 private const val DND_PREVIEW_MS = DND_PREVIEW_SECONDS * 1000L
+
+private data class ReviewConfirmation(
+    val nowMs: Long,
+    val majorVersion: Int
+)
 
 private fun Context.findActivity(): Activity? {
     var current = this

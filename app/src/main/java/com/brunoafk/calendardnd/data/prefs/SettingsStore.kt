@@ -17,6 +17,8 @@ import com.brunoafk.calendardnd.domain.model.EventHighlightPreset
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.json.JSONArray
+import org.json.JSONObject
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -86,6 +88,7 @@ class SettingsStore(private val context: Context) {
         private val REVIEW_PROMPT_SHOWN = booleanPreferencesKey("review_prompt_shown")
         private val REVIEW_PROMPT_LAST_LAUNCH_MS = longPreferencesKey("review_prompt_last_launch_ms")
         private val REVIEW_PROMPT_LAST_MAJOR_VERSION = intPreferencesKey("review_prompt_last_major_version")
+        private val REVIEW_PROMPT_LAUNCH_ATTEMPTS = intPreferencesKey("review_prompt_launch_attempts")
         private val REVIEW_PROMPT_MIGRATED = booleanPreferencesKey("review_prompt_migrated")
         private val MODERN_BANNER_DESIGN = booleanPreferencesKey("modern_banner_design")
         private val ONE_TIME_ACTION_CONFIRMATION = booleanPreferencesKey("one_time_action_confirmation")
@@ -124,7 +127,13 @@ class SettingsStore(private val context: Context) {
         val appOpenCount: Int,
         val promptShown: Boolean,
         val lastPromptMs: Long,
-        val lastPromptMajorVersion: Int
+        val lastPromptMajorVersion: Int,
+        val launchAttempts: Int
+    )
+
+    data class SettingsImportResult(
+        val importedCount: Int,
+        val skippedCount: Int
     )
 
     val automationEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -272,6 +281,17 @@ class SettingsStore(private val context: Context) {
         DebugLogLevel.fromString(prefs[LOG_LEVEL_CAPTURE])
     }
 
+    val reviewPromptState: Flow<ReviewPromptState> = dataStore.data.map { prefs ->
+        ReviewPromptState(
+            firstOpenMs = prefs[FIRST_OPEN_MS] ?: 0L,
+            appOpenCount = prefs[APP_OPEN_COUNT] ?: 0,
+            promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false,
+            lastPromptMs = prefs[REVIEW_PROMPT_LAST_LAUNCH_MS] ?: 0L,
+            lastPromptMajorVersion = prefs[REVIEW_PROMPT_LAST_MAJOR_VERSION] ?: 0,
+            launchAttempts = prefs[REVIEW_PROMPT_LAUNCH_ATTEMPTS] ?: 0
+        )
+    }
+
     val debugLogIncludeDetails: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DEBUG_LOG_INCLUDE_DETAILS] ?: false
     }
@@ -375,6 +395,127 @@ class SettingsStore(private val context: Context) {
             vibrationCooldownEnabled = prefs[VIBRATION_COOLDOWN_ENABLED] ?: false,
             vibrationCooldownMinutes = prefs[VIBRATION_COOLDOWN_MINUTES] ?: 0
         )
+    }
+
+    suspend fun exportSettingsJson(): String {
+        val prefs = dataStore.data.first()
+        val prefsJson = JSONObject()
+        prefs.asMap().forEach { (key, value) ->
+            val entry = JSONObject()
+            when (value) {
+                is String -> {
+                    entry.put("type", "string")
+                    entry.put("value", value)
+                }
+                is Int -> {
+                    entry.put("type", "int")
+                    entry.put("value", value)
+                }
+                is Long -> {
+                    entry.put("type", "long")
+                    entry.put("value", value)
+                }
+                is Boolean -> {
+                    entry.put("type", "boolean")
+                    entry.put("value", value)
+                }
+                is Float -> {
+                    entry.put("type", "float")
+                    entry.put("value", value)
+                }
+                is Set<*> -> {
+                    entry.put("type", "string_set")
+                    val array = JSONArray()
+                    value.filterIsInstance<String>().forEach { array.put(it) }
+                    entry.put("value", array)
+                }
+                else -> return@forEach
+            }
+            prefsJson.put(key.name, entry)
+        }
+        val meta = JSONObject()
+            .put("version", 1)
+            .put("appVersion", BuildConfig.VERSION_NAME)
+            .put("exportedAt", System.currentTimeMillis())
+        return JSONObject()
+            .put("meta", meta)
+            .put("prefs", prefsJson)
+            .toString(2)
+    }
+
+    suspend fun importSettingsJson(rawJson: String): SettingsImportResult {
+        val root = JSONObject(rawJson)
+        val prefsJson = root.optJSONObject("prefs") ?: JSONObject()
+        var imported = 0
+        var skipped = 0
+        dataStore.edit { prefs ->
+            val keys = prefsJson.keys()
+            while (keys.hasNext()) {
+                val name = keys.next()
+                val entry = prefsJson.optJSONObject(name)
+                if (entry == null) {
+                    skipped += 1
+                    continue
+                }
+                val type = entry.optString("type")
+                if (!entry.has("value")) {
+                    skipped += 1
+                    continue
+                }
+                when (type) {
+                    "string" -> {
+                        prefs[stringPreferencesKey(name)] = entry.optString("value")
+                        imported += 1
+                    }
+                    "int" -> {
+                        val value = entry.optInt("value", Int.MIN_VALUE)
+                        if (value == Int.MIN_VALUE) {
+                            skipped += 1
+                        } else {
+                            prefs[intPreferencesKey(name)] = value
+                            imported += 1
+                        }
+                    }
+                    "long" -> {
+                        val value = entry.optLong("value", Long.MIN_VALUE)
+                        if (value == Long.MIN_VALUE) {
+                            skipped += 1
+                        } else {
+                            prefs[longPreferencesKey(name)] = value
+                            imported += 1
+                        }
+                    }
+                    "boolean" -> {
+                        prefs[booleanPreferencesKey(name)] = entry.optBoolean("value")
+                        imported += 1
+                    }
+                    "float" -> {
+                        val value = entry.optDouble("value", Double.NaN)
+                        if (value.isNaN()) {
+                            skipped += 1
+                        } else {
+                            prefs[floatPreferencesKey(name)] = value.toFloat()
+                            imported += 1
+                        }
+                    }
+                    "string_set" -> {
+                        val array = entry.optJSONArray("value")
+                        if (array == null) {
+                            skipped += 1
+                        } else {
+                            val set = mutableSetOf<String>()
+                            for (index in 0 until array.length()) {
+                                set.add(array.optString(index))
+                            }
+                            prefs[stringSetPreferencesKey(name)] = set
+                            imported += 1
+                        }
+                    }
+                    else -> skipped += 1
+                }
+            }
+        }
+        return SettingsImportResult(importedCount = imported, skippedCount = skipped)
     }
 
     suspend fun getSigningCertFingerprint(): String? {
@@ -617,12 +758,39 @@ class SettingsStore(private val context: Context) {
             appOpenCount = appOpenCount,
             promptShown = promptShown,
             lastPromptMs = lastPromptMs,
-            lastPromptMajorVersion = lastPromptMajorVersion
+            lastPromptMajorVersion = lastPromptMajorVersion,
+            launchAttempts = prefs[REVIEW_PROMPT_LAUNCH_ATTEMPTS] ?: 0
         )
     }
 
     suspend fun setReviewPromptShown(shown: Boolean) {
         dataStore.edit { it[REVIEW_PROMPT_SHOWN] = shown }
+    }
+
+    suspend fun setReviewPromptFirstOpenMs(value: Long) {
+        dataStore.edit { it[FIRST_OPEN_MS] = value }
+    }
+
+    suspend fun setReviewPromptAppOpenCount(value: Int) {
+        dataStore.edit { it[APP_OPEN_COUNT] = value }
+    }
+
+    suspend fun setReviewPromptLastPromptMs(value: Long) {
+        dataStore.edit { it[REVIEW_PROMPT_LAST_LAUNCH_MS] = value }
+    }
+
+    suspend fun setReviewPromptLastMajorVersion(value: Int) {
+        dataStore.edit { it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = value }
+    }
+
+    suspend fun setReviewPromptLaunchAttempts(value: Int) {
+        dataStore.edit { it[REVIEW_PROMPT_LAUNCH_ATTEMPTS] = value }
+    }
+
+    suspend fun incrementReviewPromptLaunchAttempts() {
+        dataStore.edit { prefs ->
+            prefs[REVIEW_PROMPT_LAUNCH_ATTEMPTS] = (prefs[REVIEW_PROMPT_LAUNCH_ATTEMPTS] ?: 0) + 1
+        }
     }
 
     suspend fun getReviewPromptState(): ReviewPromptState {
@@ -632,7 +800,8 @@ class SettingsStore(private val context: Context) {
             appOpenCount = prefs[APP_OPEN_COUNT] ?: 0,
             promptShown = prefs[REVIEW_PROMPT_SHOWN] ?: false,
             lastPromptMs = prefs[REVIEW_PROMPT_LAST_LAUNCH_MS] ?: 0L,
-            lastPromptMajorVersion = prefs[REVIEW_PROMPT_LAST_MAJOR_VERSION] ?: 0
+            lastPromptMajorVersion = prefs[REVIEW_PROMPT_LAST_MAJOR_VERSION] ?: 0,
+            launchAttempts = prefs[REVIEW_PROMPT_LAUNCH_ATTEMPTS] ?: 0
         )
     }
 
@@ -651,6 +820,7 @@ class SettingsStore(private val context: Context) {
             it[REVIEW_PROMPT_SHOWN] = false
             it[REVIEW_PROMPT_LAST_LAUNCH_MS] = 0L
             it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = 0
+            it[REVIEW_PROMPT_LAUNCH_ATTEMPTS] = 0
         }
     }
 
@@ -666,6 +836,7 @@ class SettingsStore(private val context: Context) {
             it[REVIEW_PROMPT_SHOWN] = false
             it[REVIEW_PROMPT_LAST_LAUNCH_MS] = 0L
             it[REVIEW_PROMPT_LAST_MAJOR_VERSION] = 0
+            it[REVIEW_PROMPT_LAUNCH_ATTEMPTS] = 0
         }
     }
 

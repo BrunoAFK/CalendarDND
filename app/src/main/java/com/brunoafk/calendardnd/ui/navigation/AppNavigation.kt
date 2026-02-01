@@ -42,6 +42,7 @@ import com.brunoafk.calendardnd.ui.screens.DndModeScreen
 import com.brunoafk.calendardnd.ui.screens.DebugToolsScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLanguageScreen
 import com.brunoafk.calendardnd.ui.screens.DebugLogSettingsScreen
+import com.brunoafk.calendardnd.ui.screens.DebugReviewScreen
 import com.brunoafk.calendardnd.ui.screens.DayFilterScreen
 import com.brunoafk.calendardnd.ui.screens.DebugSplashPreviewScreen
 import com.brunoafk.calendardnd.ui.screens.TelemetryLevelScreen
@@ -92,6 +93,7 @@ object AppRoutes {
     const val DEBUG_TELEMETRY_LEVEL = "debug_telemetry_level"
     const val DEBUG_THEME_LIST = "debug_theme_list"
     const val DEBUG_THEME_MODE = "debug_theme_mode"
+    const val DEBUG_REVIEW = "debug_review"
     const val UPDATES = "updates"
     const val UPDATE_HISTORY = "update_history"
     const val EVENT_KEYWORD_FILTER = "event_keyword_filter"
@@ -898,7 +900,34 @@ fun AppNavigation(
                                 lockedRoutes.value = lockedRoutes.value + route
                                 navController.navigate(AppRoutes.DEBUG_THEME_MODE)
                             },
+                            onOpenReviewTools = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.navigate(AppRoutes.DEBUG_REVIEW)
+                            },
                             signatureStatus = signatureStatus
+                        )
+                    }
+                }
+            }
+            if (BuildConfig.DEBUG_TOOLS_ENABLED) {
+                composable(AppRoutes.DEBUG_REVIEW) {
+                    val route = AppRoutes.DEBUG_REVIEW
+                    DestinationWrapper(
+                        route = route,
+                        currentRoute = currentRoute,
+                        debugOverlayEnabled = debugOverlayEnabled,
+                        debugLoggingEnabled = debugToolsUnlocked,
+                        lockedRoutes = lockedRoutes,
+                        onSystemBack = {
+                            lockedRoutes.value = lockedRoutes.value + route
+                            navController.popBackStack()
+                        }
+                    ) {
+                        DebugReviewScreen(
+                            onNavigateBack = {
+                                lockedRoutes.value = lockedRoutes.value + route
+                                navController.popBackStack()
+                            }
                         )
                     }
                 }

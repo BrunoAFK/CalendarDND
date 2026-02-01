@@ -108,7 +108,7 @@
             <p class="section-subtitle">Simple setup. Powerful automation. Zero effort after that.</p>
 
             <div class="carousel-wrapper">
-                <button class="carousel-btn carousel-btn-prev" id="carouselPrev" aria-label="Previous screenshot">
+                <button class="carousel-btn carousel-btn-prev hidden" id="carouselPrev" aria-label="Previous screenshot">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
@@ -362,25 +362,41 @@
 
         // Carousel functionality
         const carousel = document.getElementById('phoneCarousel');
+        const carouselWrapper = document.querySelector('.carousel-wrapper');
         const prevBtn = document.getElementById('carouselPrev');
         const nextBtn = document.getElementById('carouselNext');
 
         function updateCarouselButtons() {
-            const scrollLeft = carousel.scrollLeft;
-            const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-
-            // Hide prev button if at start
-            if (scrollLeft <= 10) {
+            const items = carousel.querySelectorAll('.phone-container');
+            if (!items.length) {
                 prevBtn.classList.add('hidden');
-            } else {
-                prevBtn.classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+                carouselWrapper?.classList.remove('has-prev');
+                carouselWrapper?.classList.remove('has-next');
+                return;
             }
 
-            // Hide next button if at end
-            if (scrollLeft >= maxScroll - 10) {
+            const carouselRect = carousel.getBoundingClientRect();
+            const firstRect = items[0].getBoundingClientRect();
+            const lastRect = items[items.length - 1].getBoundingClientRect();
+
+            const atStart = firstRect.left >= carouselRect.left - 1;
+            const atEnd = lastRect.right <= carouselRect.right + 1;
+
+            if (atStart) {
+                prevBtn.classList.add('hidden');
+                carouselWrapper?.classList.remove('has-prev');
+            } else {
+                prevBtn.classList.remove('hidden');
+                carouselWrapper?.classList.add('has-prev');
+            }
+
+            if (atEnd) {
                 nextBtn.classList.add('hidden');
+                carouselWrapper?.classList.remove('has-next');
             } else {
                 nextBtn.classList.remove('hidden');
+                carouselWrapper?.classList.add('has-next');
             }
         }
 
@@ -394,10 +410,16 @@
 
         prevBtn.addEventListener('click', () => scrollCarousel(-1));
         nextBtn.addEventListener('click', () => scrollCarousel(1));
-        carousel.addEventListener('scroll', updateCarouselButtons);
+        const scheduleUpdate = () => requestAnimationFrame(updateCarouselButtons);
+        carousel.addEventListener('scroll', scheduleUpdate);
+        window.addEventListener('resize', scheduleUpdate);
 
         // Initial button state
         updateCarouselButtons();
+        window.addEventListener('load', () => {
+            updateCarouselButtons();
+            setTimeout(updateCarouselButtons, 300);
+        });
 
         // Fetch GitHub stars
         async function fetchGitHubStars() {

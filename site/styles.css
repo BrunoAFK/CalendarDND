@@ -349,6 +349,7 @@ section h2 {
 }
 
 .carousel-btn.hidden {
+    display: none;
     opacity: 0;
     pointer-events: none;
 }
@@ -590,6 +591,16 @@ section h2 {
 
     .carousel-btn-next {
         right: 0.5rem;
+    }
+
+    .carousel-btn-prev,
+    .carousel-btn-next {
+        display: none;
+    }
+
+    .carousel-wrapper.has-prev .carousel-btn-prev,
+    .carousel-wrapper.has-next .carousel-btn-next {
+        display: flex;
     }
 }
 

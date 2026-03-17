@@ -1,5 +1,6 @@
 package com.brunoafk.calendardnd.domain.engine
 
+import android.media.AudioManager
 import com.brunoafk.calendardnd.data.calendar.ICalendarRepository
 import com.brunoafk.calendardnd.domain.model.MeetingWindow
 import java.security.MessageDigest
@@ -32,7 +33,7 @@ class AutomationEngine(
         }
 
         // RULE 2: If missing required permissions
-        if (!input.hasCalendarPermission || !input.hasPolicyAccess) {
+        if (!input.hasCalendarPermission || (input.dndMode.usesDndFilter && !input.hasPolicyAccess)) {
             return handleMissingPermissions(input)
         }
 
@@ -140,6 +141,7 @@ class AutomationEngine(
         val manualEnd = input.manualEventEndMs
         val hasManualEvent = manualStart > 0L && manualEnd > 0L && manualEnd > now
         val shouldClearManualEvent = manualStart > 0L && manualEnd > 0L && manualEnd <= now
+        val usesVibrateMode = input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE
 
         if (hasManualEvent) {
             val isActive = now in manualStart until manualEnd
@@ -156,15 +158,30 @@ class AutomationEngine(
                 dndWindow.isActive,
                 input.hasExactAlarms
             )
-            val shouldEnable = dndWindow.isActive && !input.systemDndIsOn
-            val shouldDisable = !dndWindow.isActive && input.dndSetByApp
+            val shouldEnableDnd = dndWindow.isActive && input.dndMode.usesDndFilter && !input.systemDndIsOn
+            val shouldDisableDnd = when {
+                !dndWindow.isActive && input.dndSetByApp -> true
+                usesVibrateMode && input.dndSetByApp && input.systemDndIsOn -> true
+                else -> false
+            }
+            val shouldEnableVibrate = dndWindow.isActive &&
+                usesVibrateMode &&
+                input.currentRingerMode != AudioManager.RINGER_MODE_VIBRATE
+            val shouldDisableVibrate = !dndWindow.isActive && usesVibrateMode && input.ringerSetByApp
             val baseDecision = Decision(
-                shouldEnableDnd = shouldEnable,
-                shouldDisableDnd = shouldDisable,
+                shouldEnableDnd = shouldEnableDnd,
+                shouldDisableDnd = shouldDisableDnd,
+                shouldEnableVibrate = shouldEnableVibrate,
+                shouldDisableVibrate = shouldDisableVibrate,
                 setDndSetByApp = when {
-                    shouldEnable -> true
-                    shouldDisable -> false
-                    else -> null
+                    shouldEnableDnd -> true
+                    shouldDisableDnd -> false
+                    else -> if (usesVibrateMode && input.dndSetByApp) false else null
+                },
+                setRingerSetByApp = when {
+                    shouldEnableVibrate -> true
+                    shouldDisableVibrate -> false
+                    else -> if (input.dndMode.usesDndFilter && input.ringerSetByApp) false else null
                 },
                 setUserSuppressedUntil = null,
                 setUserSuppressedFromMs = null,
@@ -172,6 +189,21 @@ class AutomationEngine(
                 setManualDndUntilMs = 0L,
                 setManualEventStartMs = null,
                 setManualEventEndMs = null,
+                setLastKnownDndFilter = when {
+                    shouldEnableDnd -> input.dndMode.filterValue
+                    shouldDisableDnd || usesVibrateMode -> 0
+                    else -> null
+                },
+                setLastKnownRingerMode = when {
+                    shouldEnableVibrate -> AudioManager.RINGER_MODE_VIBRATE
+                    shouldDisableVibrate -> input.savedEventRingerMode
+                    else -> null
+                },
+                setSavedEventRingerMode = when {
+                    shouldEnableVibrate && input.savedEventRingerMode < 0 -> input.currentRingerMode
+                    shouldDisableVibrate -> -1
+                    else -> null
+                },
                 setSkippedEventId = null,
                 setSkippedEventBeginMs = null,
                 setSkippedEventEndMs = null,
@@ -195,13 +227,19 @@ class AutomationEngine(
         val baseDecision = Decision(
             shouldEnableDnd = false,
             shouldDisableDnd = input.dndSetByApp, // Turn off only if we own it
+            shouldEnableVibrate = false,
+            shouldDisableVibrate = input.ringerSetByApp,
             setDndSetByApp = if (input.dndSetByApp) false else null,
+            setRingerSetByApp = if (input.ringerSetByApp) false else null,
             setUserSuppressedUntil = null,
             setUserSuppressedFromMs = null,
             setActiveWindowEnd = 0L,
             setManualDndUntilMs = 0L,
             setManualEventStartMs = if (shouldClearManualEvent) 0L else null,
             setManualEventEndMs = if (shouldClearManualEvent) 0L else null,
+            setLastKnownDndFilter = if (input.dndSetByApp) 0 else null,
+            setLastKnownRingerMode = if (input.ringerSetByApp) input.savedEventRingerMode else null,
+            setSavedEventRingerMode = if (input.ringerSetByApp) -1 else null,
             setSkippedEventId = null,
             setSkippedEventBeginMs = null,
             setSkippedEventEndMs = null,
@@ -226,13 +264,19 @@ class AutomationEngine(
         val baseDecision = Decision(
             shouldEnableDnd = false,
             shouldDisableDnd = false,
+            shouldEnableVibrate = false,
+            shouldDisableVibrate = false,
             setDndSetByApp = null,
+            setRingerSetByApp = null,
             setUserSuppressedUntil = null,
             setUserSuppressedFromMs = null,
             setActiveWindowEnd = null,
             setManualDndUntilMs = 0L,
             setManualEventStartMs = null,
             setManualEventEndMs = null,
+            setLastKnownDndFilter = null,
+            setLastKnownRingerMode = null,
+            setSavedEventRingerMode = null,
             setSkippedEventId = null,
             setSkippedEventBeginMs = null,
             setSkippedEventEndMs = null,
@@ -254,7 +298,15 @@ class AutomationEngine(
     }
 
     private fun detectUserOverride(input: EngineInput, dndWindowActive: Boolean): Boolean {
-        if (!input.dndSetByApp || !dndWindowActive) {
+        if (!dndWindowActive) {
+            return false
+        }
+
+        if (input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE) {
+            return detectRingerOverride(input)
+        }
+
+        if (!input.dndSetByApp) {
             return false
         }
 
@@ -273,6 +325,20 @@ class AutomationEngine(
         }
 
         return false
+    }
+
+    private fun detectRingerOverride(input: EngineInput): Boolean {
+        if (!input.ringerSetByApp) {
+            return false
+        }
+
+        if (input.currentRingerMode != AudioManager.RINGER_MODE_VIBRATE) {
+            return true
+        }
+
+        return input.lastKnownRingerMode >= 0 &&
+            input.lastKnownRingerMode == AudioManager.RINGER_MODE_VIBRATE &&
+            input.currentRingerMode != input.lastKnownRingerMode
     }
 
     private fun detectNewEventBeforeSkipped(
@@ -326,18 +392,52 @@ class AutomationEngine(
         if (dndWindow.isActive && !isSuppressed) {
             val meetingOverrun = input.postMeetingNotificationEnabled &&
                 detectMeetingOverrun(input.now, input.activeWindowEndMs, nextInstance, input.postMeetingNotificationOffsetMinutes)
+            val shouldEnableDnd = input.dndMode.usesDndFilter && !input.systemDndIsOn
+            val shouldDisableDnd = input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE &&
+                input.dndSetByApp &&
+                input.systemDndIsOn
+            val shouldEnableVibrate = input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE &&
+                input.currentRingerMode != AudioManager.RINGER_MODE_VIBRATE
             return applySkipClear(
                 applySuppressionClear(
                 Decision(
-                shouldEnableDnd = !input.systemDndIsOn, // Turn on if not already on
-                shouldDisableDnd = false,
-                setDndSetByApp = if (!input.systemDndIsOn) true else null,
+                shouldEnableDnd = shouldEnableDnd,
+                shouldDisableDnd = shouldDisableDnd,
+                shouldEnableVibrate = shouldEnableVibrate,
+                shouldDisableVibrate = false,
+                setDndSetByApp = when {
+                    shouldEnableDnd -> true
+                    shouldDisableDnd -> false
+                    input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE && input.dndSetByApp -> false
+                    else -> null
+                },
+                setRingerSetByApp = when {
+                    shouldEnableVibrate -> true
+                    input.dndMode.usesDndFilter && input.ringerSetByApp -> false
+                    else -> null
+                },
                 setUserSuppressedUntil = null,
                 setUserSuppressedFromMs = null,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
                 setManualEventStartMs = null,
                 setManualEventEndMs = null,
+                setLastKnownDndFilter = when {
+                    shouldEnableDnd -> input.dndMode.filterValue
+                    shouldDisableDnd -> 0
+                    input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE -> 0
+                    else -> null
+                },
+                setLastKnownRingerMode = when {
+                    shouldEnableVibrate -> AudioManager.RINGER_MODE_VIBRATE
+                    input.dndMode.usesDndFilter && input.ringerSetByApp -> -1
+                    else -> null
+                },
+                setSavedEventRingerMode = when {
+                    shouldEnableVibrate && input.savedEventRingerMode < 0 -> input.currentRingerMode
+                    input.dndMode.usesDndFilter && input.ringerSetByApp -> -1
+                    else -> null
+                },
                 setSkippedEventId = skipClearValue,
                 setSkippedEventBeginMs = null,
                 setSkippedEventEndMs = skipClearValue,
@@ -364,14 +464,38 @@ class AutomationEngine(
                 applySuppressionClear(
                 Decision(
                 shouldEnableDnd = false,
-                shouldDisableDnd = false,
-                setDndSetByApp = if (userOverrideDetected) false else null,
+                shouldDisableDnd = input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE &&
+                    input.dndSetByApp &&
+                    input.systemDndIsOn,
+                shouldEnableVibrate = false,
+                shouldDisableVibrate = false,
+                setDndSetByApp = when {
+                    userOverrideDetected && input.dndMode.usesDndFilter -> false
+                    input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE &&
+                        input.dndSetByApp &&
+                        input.systemDndIsOn -> false
+                    else -> null
+                },
+                setRingerSetByApp = if (userOverrideDetected && input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE) false else null,
                 setUserSuppressedUntil = newSuppressedUntil,
                 setUserSuppressedFromMs = if (userOverrideDetected) input.now else null,
                 setActiveWindowEnd = dndWindow.endMs,
                 setManualDndUntilMs = manualClearValue,
                 setManualEventStartMs = null,
                 setManualEventEndMs = null,
+                setLastKnownDndFilter = when {
+                    userOverrideDetected && input.dndMode.usesDndFilter -> 0
+                    input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE &&
+                        input.dndSetByApp &&
+                        input.systemDndIsOn -> 0
+                    else -> null
+                },
+                setLastKnownRingerMode = if (userOverrideDetected && input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE) {
+                    input.currentRingerMode
+                } else {
+                    null
+                },
+                setSavedEventRingerMode = if (userOverrideDetected && input.dndMode == com.brunoafk.calendardnd.domain.model.DndMode.VIBRATE) -1 else null,
                 setSkippedEventId = skipClearValue,
                 setSkippedEventBeginMs = null,
                 setSkippedEventEndMs = skipClearValue,
@@ -412,13 +536,19 @@ class AutomationEngine(
             Decision(
             shouldEnableDnd = false,
             shouldDisableDnd = input.dndSetByApp, // Turn off only if we own it
+            shouldEnableVibrate = false,
+            shouldDisableVibrate = input.ringerSetByApp,
             setDndSetByApp = if (input.dndSetByApp) false else null,
+            setRingerSetByApp = if (input.ringerSetByApp) false else null,
             setUserSuppressedUntil = suppressionClearValue,
             setUserSuppressedFromMs = suppressionClearValue,
             setActiveWindowEnd = if (keepActiveWindowEnd) input.activeWindowEndMs else 0L,
             setManualDndUntilMs = manualClearValue,
             setManualEventStartMs = null,
             setManualEventEndMs = null,
+            setLastKnownDndFilter = if (input.dndSetByApp) 0 else null,
+            setLastKnownRingerMode = if (input.ringerSetByApp) input.savedEventRingerMode else null,
+            setSavedEventRingerMode = if (input.ringerSetByApp) -1 else null,
             setSkippedEventId = skipClearValue,
             setSkippedEventBeginMs = null,
             setSkippedEventEndMs = skipClearValue,
@@ -505,6 +635,8 @@ class AutomationEngine(
         when {
             decision.shouldEnableDnd -> parts.add("Action: Enable DND (${input.dndMode.name})")
             decision.shouldDisableDnd -> parts.add("Action: Disable DND")
+            decision.shouldEnableVibrate -> parts.add("Action: Enable vibrate")
+            decision.shouldDisableVibrate -> parts.add("Action: Restore ringer")
             else -> parts.add("Action: No change")
         }
 

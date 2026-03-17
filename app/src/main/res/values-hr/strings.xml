@@ -140,6 +140,12 @@
     <string name="min_duration_description">Događaji kraći od %d min se ignoriraju</string>
     <string name="min_duration_value">%d min</string>
     <string name="dnd_mode">DND način</string>
+    <string name="dnd_mode_screen_subtitle">Odaberi što telefon treba raditi tijekom sastanaka.</string>
+    <string name="dnd_mode_summary">Odaberi Vibracija, Samo prioritet ili Potpuna tišina.</string>
+    <string name="dnd_mode_description">Kontroliraj kako se telefon ponaša tijekom sastanaka.</string>
+    <string name="vibrate_mode_title">Vibracija</string>
+    <string name="vibrate_mode_description">Prebaci telefon na vibraciju</string>
+    <string name="vibrate_mode_details">DND ostaje isključen. Pozivi i obavijesti i dalje mogu proći, ali bi telefon trebao vibrirati umjesto zvoniti.</string>
     <string name="priority_mode_title">Samo prioritet</string>
     <string name="priority_mode_description">Dopusti prioritetne obavijesti</string>
     <string name="priority_mode_details">Pozivi od favorita i ponovljenih pozivatelja mogu zazvoniti. Prioritetne obavijesti i dalje mogu upozoriti.</string>
@@ -183,14 +189,14 @@
     <string name="status_missing_permissions_summary">Zavrsi postavljanje kako bi DND radio automatski.</string>
     <string name="status_automation_paused_summary">Automatika je isključena. DND se neće mijenjati automatski.</string>
     <string name="status_dnd_active_summary">DND je aktivan. Zavrsava za %1$s.</string>
-    <string name="status_automation_ready_summary">DND će se automatski uključiti u načinu %1$s.</string>
+    <string name="status_automation_ready_summary">%1$s će se automatski aktivirati tijekom sastanaka.</string>
     <string name="automation_summary_calendars_all">Kalendari: Svi</string>
     <string name="automation_summary_calendars_selected">Kalendari: %d</string>
     <string name="automation_summary_filters_none">Filteri: Nema</string>
     <string name="automation_summary_filters_count">Filteri: %d</string>
     <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
-    <string name="dnd_mode_banner_message">Odabrani DND način: %1$s. Dodirni za promjenu.</string>
+    <string name="dnd_mode_banner_message">Odabrani način za sastanke: %1$s. Dodirni za promjenu.</string>
     <string name="dnd_mode_banner_title">DND način</string>
     <string name="refresh_banner_title">Osvjezi status</string>
     <string name="refresh_banner_message">Povuci dolje za osvjezavanje. Rucna provjera je dostupna i u postavkama.</string>
@@ -281,8 +287,8 @@
     <string name="help_item_title_filters_details">Filtriraj po ključnim riječima, cijelim riječima, počinje/završava s, točnom podudaranju ili regexu. Možeš zahtijevati sve ključne riječi, isključiti podudaranja ili razlikovati velika/mala slova. Primjer: ključne riječi “standup, review”.</string>
 
     <string name="help_item_dnd_mode_title">DND način</string>
-    <string name="help_item_dnd_mode_summary">Odaberite Samo prioritet ili Potpuna tišina.</string>
-    <string name="help_item_dnd_mode_details">Samo prioritet dopušta omiljene kontakte i prioritetne obavijesti. Potpuna tišina blokira sve zvukove, uključujući alarme.</string>
+    <string name="help_item_dnd_mode_summary">Odaberite Vibracija, Samo prioritet ili Potpuna tišina.</string>
+    <string name="help_item_dnd_mode_details">Vibracija prebacuje telefon na vibraciju bez uključivanja DND-a. Samo prioritet dopušta omiljene kontakte i prioritetne obavijesti. Potpuna tišina blokira sve zvukove, uključujući alarme.</string>
 
     <string name="help_item_dnd_timing_title">DND vrijeme</string>
     <string name="help_item_dnd_timing_summary">Pokrenite DND prije ili poslije početka sastanka.</string>
@@ -568,11 +574,11 @@
     <string name="dismiss">Zatvori</string>
 
     <string name="dnd_mode_manage_hint">U sustavnim DND postavkama odaberi tko može proći.</string>
+    <string name="vibrate_mode_manage_hint">Način Vibracija koristi postavku zvona telefona umjesto sustavnih DND pravila.</string>
     <string name="dnd_total_silence_confirm_title">Uključiti potpunu tišinu?</string>
     <string name="dnd_total_silence_confirm_body">Ovo će blokirati sve zvukove, uključujući alarme, do kraja sastanka.</string>
     <string name="dnd_total_silence_confirm_button">Uključi potpunu tišinu</string>
     <string name="dnd_total_silence_cancel_button">Odustani</string>
-    <string name="dnd_mode_screen_subtitle">Odaberi koliko strogi treba biti DND način tijekom sastanaka.</string>
     <string name="check_dnd_complete">DND provjera završena</string>
 
     <string name="warning_degraded_mode">Vrijeme DND-a može biti manje precizno. Dopusti točne alarme za precizno vrijeme.</string>
@@ -630,8 +636,6 @@
     <string name="debug_tools_status_debug_panel_title">Debug panel statusnog zaslona</string>
     <string name="debug_tools_status_debug_panel_subtitle">Dodirnite naziv aplikacije na glavnom zaslonu za prikaz debug panela s informacijama o osvježavanju, DND statusu i prozorima događaja</string>
     <string name="debug_tools_nav_title">Navigacija</string>
-    <string name="dnd_mode_description">Upravljajte ponašanjem Ne ometaj tijekom sastanaka.</string>
-    <string name="dnd_mode_summary">Odaberite Samo prioritet ili Potpuna tišina.</string>
     <string name="dnd_priority_category_alarms">Alarmi</string>
     <string name="dnd_priority_category_calls_with">Pozivi (%1$s)</string>
     <string name="dnd_priority_category_events">Događaji</string>

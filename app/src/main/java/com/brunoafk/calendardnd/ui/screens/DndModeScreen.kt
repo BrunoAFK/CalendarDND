@@ -87,6 +87,23 @@ fun DndModeScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     SegmentedButton(
+                        selected = dndMode == DndMode.VIBRATE,
+                        onClick = {
+                            scope.launch {
+                                settingsStore.setDndMode(DndMode.VIBRATE)
+                                AnalyticsTracker.logSettingsChanged(
+                                    context,
+                                    "dnd_mode",
+                                    DndMode.VIBRATE.name
+                                )
+                            }
+                        },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.vibrate_mode_title))
+                    }
+                    SegmentedButton(
                         selected = dndMode == DndMode.PRIORITY,
                         onClick = {
                             scope.launch {
@@ -98,7 +115,7 @@ fun DndModeScreen(
                                 )
                             }
                         },
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(text = stringResource(R.string.priority_mode_title))
@@ -119,45 +136,40 @@ fun DndModeScreen(
                                 showTotalSilenceDialog = true
                             }
                         },
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(text = stringResource(R.string.total_silence_title))
                     }
                 }
 
-                if (dndMode == DndMode.PRIORITY) {
-                    Text(
-                        text = stringResource(R.string.priority_mode_description),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(R.string.priority_mode_details),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.total_silence_description),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(R.string.total_silence_details),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
                 Text(
-                    text = stringResource(R.string.dnd_mode_manage_hint),
+                    text = stringResource(dndMode.descriptionResId),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = stringResource(dndMode.detailsResId),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Button(onClick = { dndController.openZenModeSettings() }) {
-                    Text(stringResource(R.string.dnd_total_silence_manage_button))
+                Text(
+                    text = stringResource(
+                        if (dndMode.usesDndFilter) {
+                            R.string.dnd_mode_manage_hint
+                        } else {
+                            R.string.vibrate_mode_manage_hint
+                        }
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                if (dndMode.usesDndFilter) {
+                    Button(onClick = { dndController.openZenModeSettings() }) {
+                        Text(stringResource(R.string.dnd_total_silence_manage_button))
+                    }
                 }
             }
         }

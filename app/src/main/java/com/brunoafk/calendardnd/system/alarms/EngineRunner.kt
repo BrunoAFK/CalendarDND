@@ -85,6 +85,7 @@ object EngineRunner {
                 postMeetingNotificationEnabled = settingsSnapshot.postMeetingNotificationEnabled && hasNotifications,
                 postMeetingNotificationOffsetMinutes = settingsSnapshot.postMeetingNotificationOffsetMinutes,
                 dndSetByApp = runtimeSnapshot.dndSetByApp,
+                ringerSetByApp = runtimeSnapshot.ringerSetByApp,
                 activeWindowEndMs = runtimeSnapshot.activeWindowEndMs,
                 userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs,
                 userSuppressedFromMs = runtimeSnapshot.userSuppressedFromMs,
@@ -92,15 +93,18 @@ object EngineRunner {
                 manualEventStartMs = runtimeSnapshot.manualEventStartMs,
                 manualEventEndMs = runtimeSnapshot.manualEventEndMs,
                 lastKnownDndFilter = runtimeSnapshot.lastKnownDndFilter,
+                lastKnownRingerMode = runtimeSnapshot.lastKnownRingerMode,
                 skippedEventId = runtimeSnapshot.skippedEventId,
                 skippedEventBeginMs = runtimeSnapshot.skippedEventBeginMs,
                 skippedEventEndMs = runtimeSnapshot.skippedEventEndMs,
                 notifiedNewEventBeforeSkip = runtimeSnapshot.notifiedNewEventBeforeSkip,
+                savedEventRingerMode = runtimeSnapshot.savedEventRingerMode,
                 hasCalendarPermission = hasCalendarPermission(context),
                 hasPolicyAccess = dndController.hasPolicyAccess(),
                 hasExactAlarms = alarmScheduler.canScheduleExactAlarms(),
                 systemDndIsOn = dndController.isDndOn(),
-                currentSystemFilter = normalizedFilter
+                currentSystemFilter = normalizedFilter,
+                currentRingerMode = dndController.getCurrentRingerMode()
             )
 
             val includeDetailedLogs = settingsStore.debugLogIncludeDetails.first()
@@ -177,7 +181,9 @@ object EngineRunner {
                 if (success) {
                     runtimeStateStore.setLastKnownDndFilter(input.dndMode.filterValue)
                 }
-            } else if (decision.shouldDisableDnd) {
+            }
+
+            if (decision.shouldDisableDnd) {
                 val dndTrace = startDndTraceIfEnabled(perfEnabled, "dnd_disable", input)
                 val beforeFilter = dndController.getCurrentFilterName()
                 val success = dndController.disableDnd()
@@ -191,7 +197,7 @@ object EngineRunner {
                     runtimeStateStore.setLastKnownDndFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
 
                     // Vibration cool-down: set vibrate mode and schedule restore
-                    if (settingsSnapshot.vibrationCooldownEnabled && input.dndSetByApp) {
+                    if (settingsSnapshot.vibrationCooldownEnabled && input.dndSetByApp && input.dndMode.usesDndFilter) {
                         val currentRinger = dndController.getCurrentRingerMode()
                         if (currentRinger >= 0) {
                             runtimeStateStore.setSavedRingerMode(currentRinger)
@@ -226,9 +232,43 @@ object EngineRunner {
                 }
             }
 
+            if (decision.shouldEnableVibrate) {
+                val currentRinger = dndController.getCurrentRingerMode()
+                if (currentRinger >= 0 && !runtimeSnapshot.ringerSetByApp && runtimeSnapshot.savedEventRingerMode < 0) {
+                    runtimeStateStore.setSavedEventRingerMode(currentRinger)
+                }
+                val success = dndController.setRingerModeVibrate()
+                debugLogStore.appendLog(
+                    DebugLogLevel.INFO,
+                    "Event vibrate enable: before=$currentRinger | after=${dndController.getCurrentRingerMode()} | success=$success"
+                )
+                if (success) {
+                    runtimeStateStore.setLastKnownRingerMode(android.media.AudioManager.RINGER_MODE_VIBRATE)
+                }
+            }
+
+            if (decision.shouldDisableVibrate) {
+                val restoreMode = runtimeSnapshot.savedEventRingerMode
+                val success = if (restoreMode >= 0) {
+                    dndController.restoreRingerMode(restoreMode)
+                } else {
+                    false
+                }
+                debugLogStore.appendLog(
+                    DebugLogLevel.INFO,
+                    "Event vibrate disable: restore=$restoreMode | current=${dndController.getCurrentRingerMode()} | success=$success"
+                )
+                if (success) {
+                    runtimeStateStore.setLastKnownRingerMode(restoreMode)
+                }
+            }
+
             val action = when {
+                decision.shouldDisableDnd && decision.shouldEnableVibrate -> "disable_dnd_enable_vibrate"
                 decision.shouldEnableDnd -> "enable_dnd"
                 decision.shouldDisableDnd -> "disable_dnd"
+                decision.shouldEnableVibrate -> "enable_vibrate"
+                decision.shouldDisableVibrate -> "disable_vibrate"
                 else -> "no_change"
             }
             AnalyticsTracker.logEngineRun(
@@ -271,12 +311,16 @@ object EngineRunner {
 
             // State updates
             decision.setDndSetByApp?.let { runtimeStateStore.setDndSetByApp(it) }
+            decision.setRingerSetByApp?.let { runtimeStateStore.setRingerSetByApp(it) }
             decision.setUserSuppressedUntil?.let { runtimeStateStore.setUserSuppressedUntilMs(it) }
             decision.setUserSuppressedFromMs?.let { runtimeStateStore.setUserSuppressedFromMs(it) }
             decision.setActiveWindowEnd?.let { runtimeStateStore.setActiveWindowEndMs(it) }
             decision.setManualDndUntilMs?.let { runtimeStateStore.setManualDndUntilMs(it) }
             decision.setManualEventStartMs?.let { runtimeStateStore.setManualEventStartMs(it) }
             decision.setManualEventEndMs?.let { runtimeStateStore.setManualEventEndMs(it) }
+            decision.setLastKnownDndFilter?.let { runtimeStateStore.setLastKnownDndFilter(it) }
+            decision.setLastKnownRingerMode?.let { runtimeStateStore.setLastKnownRingerMode(it) }
+            decision.setSavedEventRingerMode?.let { runtimeStateStore.setSavedEventRingerMode(it) }
             decision.setSkippedEventId?.let { runtimeStateStore.setSkippedEventId(it) }
             decision.setSkippedEventBeginMs?.let { runtimeStateStore.setSkippedEventBeginMs(it) }
             decision.setSkippedEventEndMs?.let { runtimeStateStore.setSkippedEventEndMs(it) }
@@ -423,7 +467,14 @@ object EngineRunner {
         val decision = output.decision
         trace.incrementMetric("dnd_enable", if (decision.shouldEnableDnd) 1 else 0)
         trace.incrementMetric("dnd_disable", if (decision.shouldDisableDnd) 1 else 0)
-        trace.incrementMetric("no_change", if (!decision.shouldEnableDnd && !decision.shouldDisableDnd) 1 else 0)
+        trace.incrementMetric(
+            "no_change",
+            if (!decision.shouldEnableDnd &&
+                !decision.shouldDisableDnd &&
+                !decision.shouldEnableVibrate &&
+                !decision.shouldDisableVibrate
+            ) 1 else 0
+        )
         trace.incrementMetric(
             "missing_permissions",
             if (decision.notificationNeeded == com.brunoafk.calendardnd.domain.engine.NotificationNeeded.SETUP_REQUIRED) 1 else 0

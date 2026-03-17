@@ -71,6 +71,7 @@ data class StatusUiState(
 
     // Runtime state
     val dndSetByApp: Boolean = false,
+    val ringerSetByApp: Boolean = false,
     val userSuppressedUntilMs: Long = 0L,
     val userSuppressedFromMs: Long = 0L,
     val manualEventStartMs: Long = 0L,
@@ -94,10 +95,10 @@ data class StatusUiState(
     val isRefreshing: Boolean = false
 ) {
     val missingPermissions: Boolean
-        get() = !hasCalendarPermission || !hasPolicyAccess
+        get() = !hasCalendarPermission || (dndMode.usesDndFilter && !hasPolicyAccess)
 
     val isDndActive: Boolean
-        get() = dndSetByApp && activeWindow != null
+        get() = (dndSetByApp || ringerSetByApp) && activeWindow != null
 
     val activeFilterCount: Int
         get() = listOf(
@@ -216,20 +217,29 @@ class StatusViewModel(
     ) { core, filter1, filter2, filter3, debug ->
         AllSettings(core, filter1, filter2, filter3, debug)
     }.combine(
-        // Runtime state part 1 (5 flows)
+        // Runtime state part 1
         combine(
             runtimeStateStore.dndSetByApp,
+            runtimeStateStore.ringerSetByApp,
+        ) { dndSetByApp, ringerSetByApp ->
+            Pair(dndSetByApp, ringerSetByApp)
+        }
+    ) { settings, runtimeFlags ->
+        Pair(settings, runtimeFlags)
+    }.combine(
+        // Runtime state part 2
+        combine(
             runtimeStateStore.userSuppressedUntilMs,
             runtimeStateStore.userSuppressedFromMs,
             runtimeStateStore.manualEventStartMs,
             runtimeStateStore.manualEventEndMs,
-        ) { dndSetByApp, suppressedUntil, suppressedFrom, manualStart, manualEnd ->
-            RuntimeState1(dndSetByApp, suppressedUntil, suppressedFrom, manualStart, manualEnd)
+        ) { suppressedUntil, suppressedFrom, manualStart, manualEnd ->
+            RuntimeState1(suppressedUntil, suppressedFrom, manualStart, manualEnd)
         }
-    ) { settings, runtime1 ->
-        Pair(settings, runtime1)
+    ) { (settings, runtimeFlags), runtime1 ->
+        Triple(settings, runtimeFlags, runtime1)
     }.combine(
-        // Runtime state part 2 (3 flows)
+        // Runtime state part 3
         combine(
             runtimeStateStore.skippedEventId,
             runtimeStateStore.skippedEventBeginMs,
@@ -237,10 +247,10 @@ class StatusViewModel(
         ) { skippedId, skippedBegin, skippedEnd ->
             RuntimeState2(skippedId, skippedBegin, skippedEnd)
         }
-    ) { (settings, runtime1), runtime2 ->
-        Triple(settings, runtime1, runtime2)
-    }.combine(_calendarData) { (settings, runtime1, runtime2), calendar ->
-        CombinedData(settings, runtime1, runtime2, calendar)
+    ) { (settings, runtimeFlags, runtime1), runtime2 ->
+        RuntimeBundle(settings, runtimeFlags.first, runtimeFlags.second, runtime1, runtime2)
+    }.combine(_calendarData) { bundle, calendar ->
+        CombinedData(bundle, calendar)
     }.combine(_permissions) { combined, permissions ->
         Pair(combined, permissions)
     }.combine(_isRefreshing) { (combined, permissions), isRefreshing ->
@@ -429,13 +439,13 @@ class StatusViewModel(
         permissions: PermissionState,
         isRefreshing: Boolean
     ): StatusUiState {
-        val core = combined.settings.core
-        val filter1 = combined.settings.filter1
-        val filter2 = combined.settings.filter2
-        val filter3 = combined.settings.filter3
-        val debug = combined.settings.debug
-        val runtime1 = combined.runtime1
-        val runtime2 = combined.runtime2
+        val core = combined.bundle.settings.core
+        val filter1 = combined.bundle.settings.filter1
+        val filter2 = combined.bundle.settings.filter2
+        val filter3 = combined.bundle.settings.filter3
+        val debug = combined.bundle.settings.debug
+        val runtime1 = combined.bundle.runtime1
+        val runtime2 = combined.bundle.runtime2
         val calendar = combined.calendar
 
         return StatusUiState(
@@ -468,7 +478,8 @@ class StatusViewModel(
             eventHighlightBarHidden = debug.eventHighlightBarHidden,
 
             // Runtime state
-            dndSetByApp = runtime1.dndSetByApp,
+            dndSetByApp = combined.bundle.dndSetByApp,
+            ringerSetByApp = combined.bundle.ringerSetByApp,
             userSuppressedUntilMs = runtime1.userSuppressedUntilMs,
             userSuppressedFromMs = runtime1.userSuppressedFromMs,
             manualEventStartMs = runtime1.manualEventStartMs,
@@ -540,7 +551,6 @@ class StatusViewModel(
     )
 
     private data class RuntimeState1(
-        val dndSetByApp: Boolean,
         val userSuppressedUntilMs: Long,
         val userSuppressedFromMs: Long,
         val manualEventStartMs: Long,
@@ -566,10 +576,16 @@ class StatusViewModel(
         val canScheduleExactAlarms: Boolean = false
     )
 
-    private data class CombinedData(
+    private data class RuntimeBundle(
         val settings: AllSettings,
+        val dndSetByApp: Boolean,
+        val ringerSetByApp: Boolean,
         val runtime1: RuntimeState1,
-        val runtime2: RuntimeState2,
+        val runtime2: RuntimeState2
+    )
+
+    private data class CombinedData(
+        val bundle: RuntimeBundle,
         val calendar: CalendarData
     )
 

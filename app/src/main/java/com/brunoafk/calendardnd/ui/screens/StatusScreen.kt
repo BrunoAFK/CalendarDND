@@ -134,6 +134,7 @@ fun StatusScreen(
     }
     var hasPolicyAccess by remember { mutableStateOf(dndController.hasPolicyAccess()) }
     var dndSetByApp by remember { mutableStateOf(false) }
+    var ringerSetByApp by remember { mutableStateOf(false) }
     var selectedCalendarIds by remember { mutableStateOf(emptySet<String>()) }
     var busyOnly by remember { mutableStateOf(true) }
     var ignoreAllDay by remember { mutableStateOf(true) }
@@ -212,6 +213,7 @@ fun StatusScreen(
                 runtimeStateStore.getSnapshot()
             }
             dndSetByApp = runtimeSnapshot.dndSetByApp
+            ringerSetByApp = runtimeSnapshot.ringerSetByApp
             userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs
             userSuppressedFromMs = runtimeSnapshot.userSuppressedFromMs
             manualEventStartMs = runtimeSnapshot.manualEventStartMs
@@ -526,6 +528,15 @@ fun StatusScreen(
 
     DisposableEffect(Unit) {
         val job = scope.launch {
+            runtimeStateStore.ringerSetByApp.collectLatest { value ->
+                ringerSetByApp = value
+            }
+        }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
             runtimeStateStore.userSuppressedUntilMs.collectLatest { userSuppressedUntilMs = it }
         }
         onDispose { job.cancel() }
@@ -751,12 +762,9 @@ fun StatusScreen(
 
     val statusBannerState = run {
         val currentWindow = activeWindow
-        val missingPermissions = listOf(!hasCalendarPermission, !hasPolicyAccess).count { it }
-        val dndModeLabel = if (dndMode == DndMode.PRIORITY) {
-            stringResource(R.string.priority_mode_title)
-        } else {
-            stringResource(R.string.total_silence_title)
-        }
+        val requiresPolicyAccess = dndMode.usesDndFilter
+        val missingPermissions = listOf(!hasCalendarPermission, requiresPolicyAccess && !hasPolicyAccess).count { it }
+        val dndModeLabel = stringResource(dndMode.titleResId)
         when {
             missingPermissions > 0 -> StatusBannerState(
                 kind = StatusBannerKind.MissingPermissions,
@@ -768,7 +776,7 @@ fun StatusScreen(
                 statusText = stringResource(R.string.status_automation_paused),
                 contextText = stringResource(R.string.status_automation_paused_summary)
             )
-            dndSetByApp && currentWindow != null -> StatusBannerState(
+            (dndSetByApp || ringerSetByApp) && currentWindow != null -> StatusBannerState(
                 kind = StatusBannerKind.DndActive,
                 statusText = stringResource(R.string.status_dnd_active),
                 contextText = stringResource(
@@ -783,15 +791,16 @@ fun StatusScreen(
             )
         }
     }
+    val requiresPolicyAccess = dndMode.usesDndFilter
     val currentError = when {
         !hasCalendarPermission -> AppError.CalendarPermissionDenied
-        !hasPolicyAccess -> AppError.DndPermissionDenied
+        requiresPolicyAccess && !hasPolicyAccess -> AppError.DndPermissionDenied
         else -> null
     }
     // Use activeWindowRaw to find skipped events that should still be visible
     val rawActiveEvents = activeWindowRaw?.events.orEmpty()
     val specialRuleEvent = rawActiveEvents.firstOrNull { determineActiveAction(it) != null }
-    val isDndActive = dndSetByApp && activeWindow != null
+    val isDndActive = (dndSetByApp || ringerSetByApp) && activeWindow != null
 
     val eventOverview = run {
         // Show current event from filtered window, or fall back to skipped event from raw window
@@ -887,7 +896,7 @@ fun StatusScreen(
             stringResource(R.string.action_strip_tap_to_enable)
         }
     }
-    val nextActionEnabled = hasCalendarPermission && hasPolicyAccess
+    val nextActionEnabled = hasCalendarPermission && (!requiresPolicyAccess || hasPolicyAccess)
 
     LaunchedEffect(currentError) {
         permissionErrorDismissed = false
@@ -1149,7 +1158,7 @@ fun StatusScreen(
         }
     ) { padding ->
         val showWarningBanner = !canScheduleExactAlarms && !warningDismissed
-        val showDndBanner = automationEnabled && hasPolicyAccess && !dndBannerDismissed && !showWarningBanner
+        val showDndBanner = automationEnabled && requiresPolicyAccess && hasPolicyAccess && !dndBannerDismissed && !showWarningBanner
         val showRefreshBanner = !showWarningBanner && !showDndBanner && !refreshBannerDismissed
 
         val pullRefreshState = rememberPullRefreshState(
@@ -1284,13 +1293,7 @@ fun StatusScreen(
                         }
                     )
                 } else if (showDndBanner) {
-                    val dndModeLabel = stringResource(
-                        if (dndMode == DndMode.PRIORITY) {
-                            R.string.priority_mode_title
-                        } else {
-                            R.string.total_silence_title
-                        }
-                    )
+                    val dndModeLabel = stringResource(dndMode.titleResId)
                     DndModeBanner(
                         title = stringResource(R.string.dnd_mode_banner_title),
                         message = stringResource(R.string.dnd_mode_banner_message, dndModeLabel),
@@ -1341,7 +1344,7 @@ fun StatusScreen(
                         },
                         onDismiss = { permissionErrorDismissed = true }
                     )
-                } else if (!hasCalendarPermission || !hasPolicyAccess) {
+                } else if (!hasCalendarPermission || (requiresPolicyAccess && !hasPolicyAccess)) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -1392,7 +1395,7 @@ fun StatusScreen(
                         actionStripActive = activeActionType != null,
                         highlightColor = highlightColor,
                         currentActionLabel = currentActionData?.let { currentActionLabel },
-                        currentActionEnabled = hasCalendarPermission && hasPolicyAccess,
+                        currentActionEnabled = hasCalendarPermission && (!requiresPolicyAccess || hasPolicyAccess),
                         onCurrentAction = if (currentDisplayEvent != null) {
                             {
                                 if (currentActionType == null) {

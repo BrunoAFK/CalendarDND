@@ -52,6 +52,9 @@ class DndController(private val context: Context) {
      * Requires hasPolicyAccess() to return true
      */
     fun setFilter(mode: DndMode): Boolean {
+        if (!mode.usesDndFilter) {
+            return false
+        }
         if (!hasPolicyAccess()) {
             return false
         }
@@ -196,5 +199,9 @@ class DndController(private val context: Context) {
             ExceptionHandler.handleDndException(e, "restoreRingerMode")
             false
         }
+    }
+
+    fun isRingerVibrate(): Boolean {
+        return getCurrentRingerMode() == AudioManager.RINGER_MODE_VIBRATE
     }
 }

@@ -17,6 +17,7 @@ class RuntimeStateStore(private val context: Context) {
 
     companion object {
         private val DND_SET_BY_APP = booleanPreferencesKey("dnd_set_by_app")
+        private val RINGER_SET_BY_APP = booleanPreferencesKey("ringer_set_by_app")
         private val ACTIVE_WINDOW_END_MS = longPreferencesKey("active_window_end_ms")
         private val USER_SUPPRESSED_UNTIL_MS = longPreferencesKey("user_suppressed_until_ms")
         private val USER_SUPPRESSED_FROM_MS = longPreferencesKey("user_suppressed_from_ms")
@@ -26,15 +27,18 @@ class RuntimeStateStore(private val context: Context) {
         private val LAST_PLANNED_BOUNDARY_MS = longPreferencesKey("last_planned_boundary_ms")
         private val LAST_ENGINE_RUN_MS = longPreferencesKey("last_engine_run_ms")
         private val LAST_KNOWN_DND_FILTER = intPreferencesKey("last_known_dnd_filter")
+        private val LAST_KNOWN_RINGER_MODE = intPreferencesKey("last_known_ringer_mode")
         private val SKIPPED_EVENT_ID = longPreferencesKey("skipped_event_id")
         private val SKIPPED_EVENT_BEGIN_MS = longPreferencesKey("skipped_event_begin_ms")
         private val SKIPPED_EVENT_END_MS = longPreferencesKey("skipped_event_end_ms")
         private val NOTIFIED_NEW_EVENT_BEFORE_SKIP = booleanPreferencesKey("notified_new_event_before_skip")
         private val SAVED_RINGER_MODE = intPreferencesKey("saved_ringer_mode")
+        private val SAVED_EVENT_RINGER_MODE = intPreferencesKey("saved_event_ringer_mode")
     }
 
     data class RuntimeStateSnapshot(
         val dndSetByApp: Boolean,
+        val ringerSetByApp: Boolean,
         val activeWindowEndMs: Long,
         val userSuppressedUntilMs: Long,
         val userSuppressedFromMs: Long,
@@ -42,15 +46,21 @@ class RuntimeStateStore(private val context: Context) {
         val manualEventStartMs: Long,
         val manualEventEndMs: Long,
         val lastKnownDndFilter: Int,
+        val lastKnownRingerMode: Int,
         val skippedEventId: Long,
         val skippedEventBeginMs: Long,
         val skippedEventEndMs: Long,
         val notifiedNewEventBeforeSkip: Boolean,
-        val savedRingerMode: Int
+        val savedRingerMode: Int,
+        val savedEventRingerMode: Int
     )
 
     val dndSetByApp: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[DND_SET_BY_APP] ?: false
+    }
+
+    val ringerSetByApp: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[RINGER_SET_BY_APP] ?: false
     }
 
     val activeWindowEndMs: Flow<Long> = dataStore.data.map { prefs ->
@@ -89,6 +99,10 @@ class RuntimeStateStore(private val context: Context) {
         prefs[LAST_KNOWN_DND_FILTER] ?: -1
     }
 
+    val lastKnownRingerMode: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[LAST_KNOWN_RINGER_MODE] ?: -1
+    }
+
     val skippedEventBeginMs: Flow<Long> = dataStore.data.map { prefs ->
         prefs[SKIPPED_EVENT_BEGIN_MS] ?: 0L
     }
@@ -109,10 +123,15 @@ class RuntimeStateStore(private val context: Context) {
         prefs[SAVED_RINGER_MODE] ?: -1
     }
 
+    val savedEventRingerMode: Flow<Int> = dataStore.data.map { prefs ->
+        prefs[SAVED_EVENT_RINGER_MODE] ?: -1
+    }
+
     suspend fun getSnapshot(): RuntimeStateSnapshot {
         val prefs = dataStore.data.first()
         return RuntimeStateSnapshot(
             dndSetByApp = prefs[DND_SET_BY_APP] ?: false,
+            ringerSetByApp = prefs[RINGER_SET_BY_APP] ?: false,
             activeWindowEndMs = prefs[ACTIVE_WINDOW_END_MS] ?: 0L,
             userSuppressedUntilMs = prefs[USER_SUPPRESSED_UNTIL_MS] ?: 0L,
             userSuppressedFromMs = prefs[USER_SUPPRESSED_FROM_MS] ?: 0L,
@@ -120,17 +139,25 @@ class RuntimeStateStore(private val context: Context) {
             manualEventStartMs = prefs[MANUAL_EVENT_START_MS] ?: 0L,
             manualEventEndMs = prefs[MANUAL_EVENT_END_MS] ?: 0L,
             lastKnownDndFilter = prefs[LAST_KNOWN_DND_FILTER] ?: -1,
+            lastKnownRingerMode = prefs[LAST_KNOWN_RINGER_MODE] ?: -1,
             skippedEventId = prefs[SKIPPED_EVENT_ID] ?: 0L,
             skippedEventBeginMs = prefs[SKIPPED_EVENT_BEGIN_MS] ?: 0L,
             skippedEventEndMs = prefs[SKIPPED_EVENT_END_MS] ?: 0L,
             notifiedNewEventBeforeSkip = prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] ?: false,
-            savedRingerMode = prefs[SAVED_RINGER_MODE] ?: -1
+            savedRingerMode = prefs[SAVED_RINGER_MODE] ?: -1,
+            savedEventRingerMode = prefs[SAVED_EVENT_RINGER_MODE] ?: -1
         )
     }
 
     suspend fun setDndSetByApp(value: Boolean) {
         dataStore.edit { prefs ->
             prefs[DND_SET_BY_APP] = value
+        }
+    }
+
+    suspend fun setRingerSetByApp(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[RINGER_SET_BY_APP] = value
         }
     }
 
@@ -188,6 +215,12 @@ class RuntimeStateStore(private val context: Context) {
         }
     }
 
+    suspend fun setLastKnownRingerMode(value: Int) {
+        dataStore.edit { prefs ->
+            prefs[LAST_KNOWN_RINGER_MODE] = value
+        }
+    }
+
     suspend fun setSkippedEventBeginMs(value: Long) {
         dataStore.edit { prefs ->
             prefs[SKIPPED_EVENT_BEGIN_MS] = value
@@ -218,9 +251,21 @@ class RuntimeStateStore(private val context: Context) {
         }
     }
 
+    suspend fun setSavedEventRingerMode(value: Int) {
+        dataStore.edit { prefs ->
+            prefs[SAVED_EVENT_RINGER_MODE] = value
+        }
+    }
+
     suspend fun clearSavedRingerMode() {
         dataStore.edit { prefs ->
             prefs[SAVED_RINGER_MODE] = -1
+        }
+    }
+
+    suspend fun clearSavedEventRingerMode() {
+        dataStore.edit { prefs ->
+            prefs[SAVED_EVENT_RINGER_MODE] = -1
         }
     }
 
@@ -318,6 +363,7 @@ class RuntimeStateStore(private val context: Context) {
     suspend fun clearAll() {
         dataStore.edit { prefs ->
             prefs[DND_SET_BY_APP] = false
+            prefs[RINGER_SET_BY_APP] = false
             prefs[ACTIVE_WINDOW_END_MS] = 0L
             prefs[USER_SUPPRESSED_UNTIL_MS] = 0L
             prefs[USER_SUPPRESSED_FROM_MS] = 0L
@@ -326,11 +372,13 @@ class RuntimeStateStore(private val context: Context) {
             prefs[MANUAL_EVENT_END_MS] = 0L
             prefs[LAST_PLANNED_BOUNDARY_MS] = 0L
             prefs[LAST_KNOWN_DND_FILTER] = -1
+            prefs[LAST_KNOWN_RINGER_MODE] = -1
             prefs[SKIPPED_EVENT_ID] = 0L
             prefs[SKIPPED_EVENT_BEGIN_MS] = 0L
             prefs[SKIPPED_EVENT_END_MS] = 0L
             prefs[NOTIFIED_NEW_EVENT_BEFORE_SKIP] = false
             prefs[SAVED_RINGER_MODE] = -1
+            prefs[SAVED_EVENT_RINGER_MODE] = -1
         }
     }
 }

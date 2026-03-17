@@ -87,6 +87,7 @@ fun StatusBannerBlock(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val requiresPolicyAccess = dndMode.usesDndFilter
 
     var warningDismissed by rememberSaveable { mutableStateOf(false) }
     var permissionErrorDismissed by remember { mutableStateOf(false) }
@@ -127,12 +128,11 @@ fun StatusBannerBlock(
     }
 
     val statusBannerState = run {
-        val missingPermissions = listOf(!hasCalendarPermission, !hasPolicyAccess).count { it }
-        val dndModeLabel = if (dndMode == DndMode.PRIORITY) {
-            stringResource(R.string.priority_mode_title)
-        } else {
-            stringResource(R.string.total_silence_title)
-        }
+        val missingPermissions = listOf(
+            !hasCalendarPermission,
+            requiresPolicyAccess && !hasPolicyAccess
+        ).count { it }
+        val dndModeLabel = stringResource(dndMode.titleResId)
         when {
             missingPermissions > 0 -> StatusBannerState(
                 kind = StatusBannerKind.MissingPermissions,
@@ -162,7 +162,7 @@ fun StatusBannerBlock(
 
     val currentError = when {
         !hasCalendarPermission -> AppError.CalendarPermissionDenied
-        !hasPolicyAccess -> AppError.DndPermissionDenied
+        requiresPolicyAccess && !hasPolicyAccess -> AppError.DndPermissionDenied
         else -> null
     }
 
@@ -171,7 +171,7 @@ fun StatusBannerBlock(
     }
 
     val showWarningBanner = !canScheduleExactAlarms && !warningDismissed
-    val showDndBanner = automationEnabled && hasPolicyAccess && !dndBannerDismissed && !showWarningBanner
+    val showDndBanner = automationEnabled && requiresPolicyAccess && hasPolicyAccess && !dndBannerDismissed && !showWarningBanner
     val showRefreshBanner = !showWarningBanner && !showDndBanner && !refreshBannerDismissed
 
     Column(
@@ -249,13 +249,7 @@ fun StatusBannerBlock(
                 )
             }
         } else if (showDndBanner) {
-            val dndModeLabel = stringResource(
-                if (dndMode == DndMode.PRIORITY) {
-                    R.string.priority_mode_title
-                } else {
-                    R.string.total_silence_title
-                }
-            )
+            val dndModeLabel = stringResource(dndMode.titleResId)
             if (useModernDesign) {
                 ModernInfoBanner(
                     title = stringResource(R.string.dnd_mode_banner_title),
@@ -344,7 +338,7 @@ fun StatusBannerBlock(
                 },
                 onDismiss = { permissionErrorDismissed = true }
             )
-        } else if (!hasCalendarPermission || !hasPolicyAccess) {
+        } else if (!hasCalendarPermission || (requiresPolicyAccess && !hasPolicyAccess)) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(

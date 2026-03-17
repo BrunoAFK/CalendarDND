@@ -6,6 +6,7 @@ import android.content.Intent
 import com.brunoafk.calendardnd.data.dnd.DndController
 import com.brunoafk.calendardnd.data.prefs.RuntimeStateStore
 import com.brunoafk.calendardnd.data.prefs.SettingsStore
+import com.brunoafk.calendardnd.domain.model.DndMode
 import com.brunoafk.calendardnd.system.alarms.AlarmScheduler
 import com.brunoafk.calendardnd.system.workers.Workers
 import com.brunoafk.calendardnd.util.AnalyticsTracker
@@ -42,16 +43,37 @@ class EnableDndNowReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                if (!dndController.hasPolicyAccess()) {
+                val mode = settingsStore.dndMode.first()
+
+                if (mode.usesDndFilter && !dndController.hasPolicyAccess()) {
                     return@launch
                 }
 
-                dndController.enableDnd(settingsStore.dndMode.first())
+                when (mode) {
+                    DndMode.VIBRATE -> {
+                        val currentRinger = dndController.getCurrentRingerMode()
+                        if (currentRinger >= 0) {
+                            runtimeStateStore.setSavedEventRingerMode(currentRinger)
+                        }
+                        dndController.setRingerModeVibrate()
+                        runtimeStateStore.setRingerSetByApp(true)
+                        runtimeStateStore.setLastKnownRingerMode(android.media.AudioManager.RINGER_MODE_VIBRATE)
+                        runtimeStateStore.setDndSetByApp(false)
+                        runtimeStateStore.setLastKnownDndFilter(0)
+                    }
+                    else -> {
+                        dndController.enableDnd(mode)
+                        runtimeStateStore.setDndSetByApp(true)
+                        runtimeStateStore.setLastKnownDndFilter(mode.filterValue)
+                        runtimeStateStore.setRingerSetByApp(false)
+                        runtimeStateStore.clearSavedEventRingerMode()
+                    }
+                }
 
-                runtimeStateStore.setDndSetByApp(true)
                 runtimeStateStore.setActiveWindowEndMs(endMs)
                 runtimeStateStore.setManualDndUntilMs(endMs)
                 runtimeStateStore.setUserSuppressedUntilMs(0L)
+                runtimeStateStore.setUserSuppressedFromMs(0L)
 
                 alarmScheduler.scheduleBoundaryAlarm(endMs)
                 Workers.ensureSanityWorker(context)

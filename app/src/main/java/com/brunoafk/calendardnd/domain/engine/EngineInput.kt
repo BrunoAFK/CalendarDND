@@ -36,6 +36,7 @@ data class EngineInput(
 
     // Runtime state
     val dndSetByApp: Boolean,
+    val ringerSetByApp: Boolean,
     val activeWindowEndMs: Long,
     val userSuppressedUntilMs: Long,
     val userSuppressedFromMs: Long,
@@ -43,15 +44,18 @@ data class EngineInput(
     val manualEventStartMs: Long,
     val manualEventEndMs: Long,
     val lastKnownDndFilter: Int,
+    val lastKnownRingerMode: Int,
     val skippedEventId: Long,
     val skippedEventBeginMs: Long,
     val skippedEventEndMs: Long,
     val notifiedNewEventBeforeSkip: Boolean,
+    val savedEventRingerMode: Int,
 
     // System state
     val hasCalendarPermission: Boolean,
     val hasPolicyAccess: Boolean,
     val hasExactAlarms: Boolean,
     val systemDndIsOn: Boolean,
-    val currentSystemFilter: Int
+    val currentSystemFilter: Int,
+    val currentRingerMode: Int
 )

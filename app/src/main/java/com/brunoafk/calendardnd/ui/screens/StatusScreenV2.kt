@@ -76,6 +76,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -782,7 +783,7 @@ private fun HeroStatusCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = if (dndMode == DndMode.PRIORITY) "Priority Only" else "Total Silence",
+                            text = stringResource(dndMode.titleResId),
                             style = MaterialTheme.typography.labelMedium,
                             color = contentColor
                         )

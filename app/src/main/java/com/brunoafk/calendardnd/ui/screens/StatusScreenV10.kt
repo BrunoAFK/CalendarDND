@@ -163,6 +163,7 @@ fun StatusScreenV10(
     }
     var hasPolicyAccess by remember { mutableStateOf(dndController.hasPolicyAccess()) }
     var dndSetByApp by remember { mutableStateOf(false) }
+    var ringerSetByApp by remember { mutableStateOf(false) }
     var selectedCalendarIds by remember { mutableStateOf(emptySet<String>()) }
     var busyOnly by remember { mutableStateOf(true) }
     var ignoreAllDay by remember { mutableStateOf(true) }
@@ -257,6 +258,7 @@ fun StatusScreenV10(
                 runtimeStateStore.getSnapshot()
             }
             dndSetByApp = runtimeSnapshot.dndSetByApp
+            ringerSetByApp = runtimeSnapshot.ringerSetByApp
             userSuppressedUntilMs = runtimeSnapshot.userSuppressedUntilMs
             userSuppressedFromMs = runtimeSnapshot.userSuppressedFromMs
             manualEventStartMs = runtimeSnapshot.manualEventStartMs
@@ -509,6 +511,11 @@ fun StatusScreenV10(
     }
 
     DisposableEffect(Unit) {
+        val job = scope.launch { runtimeStateStore.ringerSetByApp.collectLatest { ringerSetByApp = it } }
+        onDispose { job.cancel() }
+    }
+
+    DisposableEffect(Unit) {
         val job = scope.launch { runtimeStateStore.userSuppressedUntilMs.collectLatest { userSuppressedUntilMs = it } }
         onDispose { job.cancel() }
     }
@@ -620,8 +627,9 @@ fun StatusScreenV10(
         }
     }
 
-    val missingPermissions = !hasCalendarPermission || !hasPolicyAccess
-    val isDndActive = dndSetByApp && activeWindow != null
+    val requiresPolicyAccess = dndMode.usesDndFilter
+    val missingPermissions = !hasCalendarPermission || (requiresPolicyAccess && !hasPolicyAccess)
+    val isDndActive = (dndSetByApp || ringerSetByApp) && activeWindow != null
     val rawActiveEvents = activeWindowRaw?.events.orEmpty()
     val specialRuleEvent = rawActiveEvents.firstOrNull { determineActiveAction(it) != null }
     val hasSpecialRuleActiveEvent = specialRuleEvent != null
@@ -657,7 +665,7 @@ fun StatusScreenV10(
     } else {
         stringResource(R.string.next_event_enable_dnd)
     }
-    val nextActionEnabled = hasCalendarPermission && hasPolicyAccess
+    val nextActionEnabled = hasCalendarPermission && (!requiresPolicyAccess || hasPolicyAccess)
 
     // Progress calculation
     var meetingProgress by remember { mutableFloatStateOf(0f) }
@@ -1046,11 +1054,7 @@ fun StatusScreenV10(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Subtitle - context based on state
-                val dndModeLabel = if (dndMode == DndMode.PRIORITY) {
-                    stringResource(R.string.priority_mode_title)
-                } else {
-                    stringResource(R.string.total_silence_title)
-                }
+                val dndModeLabel = stringResource(dndMode.titleResId)
                 AnimatedContent(
                     targetState = when {
                         missingPermissions -> stringResource(R.string.status_missing_permissions_summary)

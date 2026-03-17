@@ -272,6 +272,81 @@ class AutomationEngineTest {
         assertNull("Should not change ownership", output.decision.setDndSetByApp)
     }
 
+    @Test
+    fun `active meeting in vibrate mode should enable vibrate instead of DND`() = runBlocking {
+        val now = 1000L
+        val meetingStart = 900L
+        val meetingEnd = 1200L
+
+        mockCalendarRepository.activeInstances = listOf(
+            EventInstance(
+                id = 1L,
+                eventId = 1L,
+                calendarId = 1L,
+                title = "Test Meeting",
+                location = "",
+                begin = meetingStart,
+                end = meetingEnd,
+                allDay = false,
+                availability = 0
+            )
+        )
+
+        val output = engine.run(
+            createEngineInput(
+                now = now,
+                dndMode = DndMode.VIBRATE,
+                hasPolicyAccess = false,
+                currentRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL
+            )
+        )
+
+        assertFalse("Should not enable DND", output.decision.shouldEnableDnd)
+        assertTrue("Should enable vibrate", output.decision.shouldEnableVibrate)
+        assertEquals("Should set ringer ownership", true, output.decision.setRingerSetByApp)
+        assertEquals(
+            "Should save current ringer mode",
+            android.media.AudioManager.RINGER_MODE_NORMAL,
+            output.decision.setSavedEventRingerMode
+        )
+    }
+
+    @Test
+    fun `active meeting in vibrate mode should disable app-owned DND`() = runBlocking {
+        val now = 1000L
+        val meetingStart = 900L
+        val meetingEnd = 1200L
+
+        mockCalendarRepository.activeInstances = listOf(
+            EventInstance(
+                id = 1L,
+                eventId = 1L,
+                calendarId = 1L,
+                title = "Test Meeting",
+                location = "",
+                begin = meetingStart,
+                end = meetingEnd,
+                allDay = false,
+                availability = 0
+            )
+        )
+
+        val output = engine.run(
+            createEngineInput(
+                now = now,
+                dndMode = DndMode.VIBRATE,
+                dndSetByApp = true,
+                systemDndIsOn = true,
+                hasPolicyAccess = false,
+                currentRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL
+            )
+        )
+
+        assertTrue("Should disable stale app-owned DND", output.decision.shouldDisableDnd)
+        assertEquals("Should clear DND ownership", false, output.decision.setDndSetByApp)
+        assertTrue("Should enable vibrate for the active meeting", output.decision.shouldEnableVibrate)
+    }
+
     // ============================================
     // RULE 4: Active Meeting, User Suppressed
     // ============================================
@@ -388,6 +463,44 @@ class AutomationEngineTest {
         assertEquals("Should clear ownership", false, output.decision.setDndSetByApp)
     }
 
+    @Test
+    fun `user changes ringer during vibrate meeting should trigger suppression`() = runBlocking {
+        val now = 1000L
+        val meetingStart = 900L
+        val meetingEnd = 1200L
+
+        mockCalendarRepository.activeInstances = listOf(
+            EventInstance(
+                id = 1L,
+                eventId = 1L,
+                calendarId = 1L,
+                title = "Test Meeting",
+                location = "",
+                begin = meetingStart,
+                end = meetingEnd,
+                allDay = false,
+                availability = 0
+            )
+        )
+
+        val output = engine.run(
+            createEngineInput(
+                now = now,
+                dndMode = DndMode.VIBRATE,
+                hasPolicyAccess = false,
+                ringerSetByApp = true,
+                savedEventRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL,
+                lastKnownRingerMode = android.media.AudioManager.RINGER_MODE_VIBRATE,
+                currentRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL
+            )
+        )
+
+        assertFalse("Should not re-enable vibrate", output.decision.shouldEnableVibrate)
+        assertEquals("Should set suppression", meetingEnd + DND_END_BUFFER_MS, output.decision.setUserSuppressedUntil)
+        assertEquals("Should clear ringer ownership", false, output.decision.setRingerSetByApp)
+        assertEquals("Should clear saved ringer", -1, output.decision.setSavedEventRingerMode)
+    }
+
     // ============================================
     // RULE 5: No Active Meeting
     // ============================================
@@ -448,6 +561,45 @@ class AutomationEngineTest {
 
         assertFalse("Should not enable DND", output.decision.shouldEnableDnd)
         assertFalse("Should not disable DND (not owned)", output.decision.shouldDisableDnd)
+    }
+
+    @Test
+    fun `no active meeting with app owning vibrate should restore ringer`() = runBlocking {
+        mockCalendarRepository.activeInstances = emptyList()
+
+        val output = engine.run(
+            createEngineInput(
+                automationEnabled = true,
+                dndMode = DndMode.VIBRATE,
+                hasCalendarPermission = true,
+                hasPolicyAccess = false,
+                ringerSetByApp = true,
+                savedEventRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL,
+                currentRingerMode = android.media.AudioManager.RINGER_MODE_VIBRATE
+            )
+        )
+
+        assertFalse("Should not disable DND", output.decision.shouldDisableDnd)
+        assertTrue("Should restore ringer", output.decision.shouldDisableVibrate)
+        assertEquals("Should clear ringer ownership", false, output.decision.setRingerSetByApp)
+    }
+
+    @Test
+    fun `no active meeting in vibrate mode should still clear app-owned DND`() = runBlocking {
+        mockCalendarRepository.activeInstances = emptyList()
+
+        val output = engine.run(
+            createEngineInput(
+                automationEnabled = true,
+                dndMode = DndMode.VIBRATE,
+                dndSetByApp = true,
+                systemDndIsOn = true,
+                hasPolicyAccess = false
+            )
+        )
+
+        assertTrue("Should disable stale app-owned DND", output.decision.shouldDisableDnd)
+        assertEquals("Should clear DND ownership", false, output.decision.setDndSetByApp)
     }
 
     // ============================================
@@ -583,6 +735,27 @@ class AutomationEngineTest {
 
         assertTrue("Should enable DND for manual mode", output.decision.shouldEnableDnd)
         assertEquals("DND window should end at manual time", manualUntil, output.dndWindowEndMs)
+    }
+
+    @Test
+    fun `active manual vibrate should take precedence over calendar`() = runBlocking {
+        val now = 1000L
+        val manualUntil = 2000L
+
+        mockCalendarRepository.activeInstances = emptyList()
+
+        val output = engine.run(
+            createEngineInput(
+                now = now,
+                dndMode = DndMode.VIBRATE,
+                hasPolicyAccess = false,
+                manualDndUntilMs = manualUntil,
+                currentRingerMode = android.media.AudioManager.RINGER_MODE_NORMAL
+            )
+        )
+
+        assertTrue("Should enable vibrate for manual mode", output.decision.shouldEnableVibrate)
+        assertEquals("Window should end at manual time", manualUntil, output.dndWindowEndMs)
     }
 
     @Test
@@ -797,6 +970,7 @@ class AutomationEngineTest {
         titleKeywordMatchAll: Boolean = false,
         titleKeywordExclude: Boolean = false,
         dndSetByApp: Boolean = false,
+        ringerSetByApp: Boolean = false,
         activeWindowEndMs: Long = 0,
         userSuppressedUntilMs: Long = 0,
         userSuppressedFromMs: Long = 0,
@@ -804,18 +978,21 @@ class AutomationEngineTest {
         manualEventStartMs: Long = 0,
         manualEventEndMs: Long = 0,
         lastKnownDndFilter: Int = -1,
+        lastKnownRingerMode: Int = -1,
         hasCalendarPermission: Boolean = true,
         hasPolicyAccess: Boolean = true,
         hasExactAlarms: Boolean = true,
         systemDndIsOn: Boolean = false,
         currentSystemFilter: Int = 1,
+        currentRingerMode: Int = android.media.AudioManager.RINGER_MODE_NORMAL,
         preDndNotificationLeadMinutes: Int = 5,
         postMeetingNotificationEnabled: Boolean = true,
         postMeetingNotificationOffsetMinutes: Int = 0,
         skippedEventId: Long = 0,
         skippedEventBeginMs: Long = 0,
         skippedEventEndMs: Long = 0,
-        notifiedNewEventBeforeSkip: Boolean = false
+        notifiedNewEventBeforeSkip: Boolean = false,
+        savedEventRingerMode: Int = -1
     ): EngineInput {
         return EngineInput(
             trigger = Trigger.MANUAL,
@@ -842,6 +1019,7 @@ class AutomationEngineTest {
             postMeetingNotificationEnabled = postMeetingNotificationEnabled,
             postMeetingNotificationOffsetMinutes = postMeetingNotificationOffsetMinutes,
             dndSetByApp = dndSetByApp,
+            ringerSetByApp = ringerSetByApp,
             activeWindowEndMs = activeWindowEndMs,
             userSuppressedUntilMs = userSuppressedUntilMs,
             userSuppressedFromMs = userSuppressedFromMs,
@@ -849,15 +1027,18 @@ class AutomationEngineTest {
             manualEventStartMs = manualEventStartMs,
             manualEventEndMs = manualEventEndMs,
             lastKnownDndFilter = lastKnownDndFilter,
+            lastKnownRingerMode = lastKnownRingerMode,
             skippedEventId = skippedEventId,
             hasCalendarPermission = hasCalendarPermission,
             hasPolicyAccess = hasPolicyAccess,
             hasExactAlarms = hasExactAlarms,
             systemDndIsOn = systemDndIsOn,
             currentSystemFilter = currentSystemFilter,
+            currentRingerMode = currentRingerMode,
             skippedEventBeginMs = skippedEventBeginMs,
             skippedEventEndMs = skippedEventEndMs,
-            notifiedNewEventBeforeSkip = notifiedNewEventBeforeSkip
+            notifiedNewEventBeforeSkip = notifiedNewEventBeforeSkip,
+            savedEventRingerMode = savedEventRingerMode
         )
     }
 

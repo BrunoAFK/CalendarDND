@@ -340,9 +340,10 @@ fun SettingsScreen(
         hasPolicyAccess = dndController.hasPolicyAccess()
     }
 
+    val requiresPolicyAccess = dndMode.usesDndFilter
     val currentError = when {
         !hasCalendarPermission -> AppError.CalendarPermissionDenied
-        !hasPolicyAccess -> AppError.DndPermissionDenied
+        requiresPolicyAccess && !hasPolicyAccess -> AppError.DndPermissionDenied
         else -> null
     }
 
@@ -721,11 +722,7 @@ fun SettingsScreen(
                     SettingsNavigationRow(
                         title = stringResource(com.brunoafk.calendardnd.R.string.dnd_mode),
                         subtitle = stringResource(com.brunoafk.calendardnd.R.string.help_item_dnd_mode_summary),
-                        value = if (dndMode == DndMode.PRIORITY) {
-                            stringResource(com.brunoafk.calendardnd.R.string.priority_mode_title)
-                        } else {
-                            stringResource(com.brunoafk.calendardnd.R.string.total_silence_title)
-                        },
+                        value = stringResource(dndMode.titleResId),
                         onClick = onNavigateToDndMode
                     )
                     SettingsDivider()

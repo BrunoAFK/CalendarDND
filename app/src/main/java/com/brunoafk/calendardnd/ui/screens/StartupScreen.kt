@@ -35,7 +35,8 @@ fun StartupScreen(
 
         val hasCalendarPermission = PermissionUtils.hasCalendarPermission(context)
         val hasPolicyAccess = dndController.hasPolicyAccess()
-        if (!hasCalendarPermission || !hasPolicyAccess) {
+        val requiresPolicyAccess = settingsStore.dndMode.first().usesDndFilter
+        if (!hasCalendarPermission || (requiresPolicyAccess && !hasPolicyAccess)) {
             onGoPermissions()
         } else {
             onGoStatus()

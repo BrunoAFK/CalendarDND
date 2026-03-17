@@ -144,9 +144,12 @@
     <string name="min_duration_description">Events shorter than %d minutes are ignored</string>
     <string name="min_duration_value">%d minutes</string>
     <string name="dnd_mode">DND Mode</string>
-    <string name="dnd_mode_screen_subtitle">Choose how strict Do Not Disturb should be during meetings.</string>
-    <string name="dnd_mode_summary">Choose Priority Only or Total Silence.</string>
-    <string name="dnd_mode_description">Control how Do Not Disturb behaves during meetings.</string>
+    <string name="dnd_mode_screen_subtitle">Choose what your phone should do during meetings.</string>
+    <string name="dnd_mode_summary">Choose Vibrate, Priority Only, or Total Silence.</string>
+    <string name="dnd_mode_description">Control how your phone behaves during meetings.</string>
+    <string name="vibrate_mode_title">Vibrate</string>
+    <string name="vibrate_mode_description">Switch the phone to vibrate</string>
+    <string name="vibrate_mode_details">Do Not Disturb stays off. Calls and notifications can still come through, but the phone should vibrate instead of ringing.</string>
     <string name="priority_mode_title">Priority Only</string>
     <string name="priority_mode_description">Allow priority notifications</string>
     <string name="priority_mode_details">Calls from favorites and repeat callers may ring. Notifications marked as priority can still alert you.</string>
@@ -190,14 +193,14 @@
     <string name="status_missing_permissions_summary">Finish setup to enable automatic DND.</string>
     <string name="status_automation_paused_summary">Automation is off. DND will not change automatically.</string>
     <string name="status_dnd_active_summary">DND is active. Ends in %1$s.</string>
-    <string name="status_automation_ready_summary">DND will activate automatically in %1$s mode.</string>
+    <string name="status_automation_ready_summary">%1$s will activate automatically during meetings.</string>
     <string name="automation_summary_calendars_all">Calendars: All</string>
     <string name="automation_summary_calendars_selected">Calendars: %d</string>
     <string name="automation_summary_filters_none">Filters: None</string>
     <string name="automation_summary_filters_count">Filters: %d</string>
     <string name="automation_summary_format">%1$s \u2022 %2$s</string>
 
-    <string name="dnd_mode_banner_message">DND selected mode: %1$s. Tap to change.</string>
+    <string name="dnd_mode_banner_message">Selected meeting mode: %1$s. Tap to change.</string>
     <string name="dnd_mode_banner_title">DND mode</string>
     <string name="refresh_banner_title">Refresh status</string>
     <string name="refresh_banner_message">Pull down to refresh. Manual checks are also available in Settings.</string>
@@ -302,8 +305,8 @@
     <string name="help_item_title_filters_details">Filter by keywords, whole words, starts/ends with, exact match, or regex. You can also require all keywords, exclude matches, or toggle case sensitivity. Example: keywords “standup, review”.</string>
 
     <string name="help_item_dnd_mode_title">DND Mode</string>
-    <string name="help_item_dnd_mode_summary">Choose Priority Only or Total Silence.</string>
-    <string name="help_item_dnd_mode_details">Priority Only allows starred contacts and priority notifications. Total Silence blocks all sounds, including alarms.</string>
+    <string name="help_item_dnd_mode_summary">Choose Vibrate, Priority Only, or Total Silence.</string>
+    <string name="help_item_dnd_mode_details">Vibrate switches the phone to vibrate without enabling Do Not Disturb. Priority Only allows starred contacts and priority notifications. Total Silence blocks all sounds, including alarms.</string>
 
     <string name="help_item_dnd_timing_title">DND Timing</string>
     <string name="help_item_dnd_timing_summary">Start DND before or after the meeting begins.</string>
@@ -662,6 +665,7 @@
     <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
     <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
     <string name="dnd_mode_manage_hint">Use system DND settings to choose who can break through.</string>
+    <string name="vibrate_mode_manage_hint">Vibrate mode uses your phone ringer setting instead of system Do Not Disturb rules.</string>
     <string name="dnd_total_silence_manage_button">Open DND settings</string>
     <string name="dnd_total_silence_confirm_title">Enable Total Silence?</string>
     <string name="dnd_total_silence_confirm_body">This will block all sounds, including alarms, until the meeting ends.</string>

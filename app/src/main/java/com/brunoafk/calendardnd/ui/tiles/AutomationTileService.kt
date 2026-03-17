@@ -41,6 +41,7 @@ class AutomationTileService : TileService() {
             val dndController = DndController(applicationContext)
 
             val currentlyEnabled = settingsStore.automationEnabled.first()
+            val requiresPolicyAccess = settingsStore.dndMode.first().usesDndFilter
             val hasCalendarPermission = PermissionUtils.hasCalendarPermission(applicationContext)
             val hasPolicyAccess = dndController.hasPolicyAccess()
 
@@ -51,7 +52,7 @@ class AutomationTileService : TileService() {
                 AnalyticsTracker.logAutomationToggle(applicationContext, false, "tile")
             } else {
                 // Try to turn ON
-                if (hasCalendarPermission && hasPolicyAccess) {
+                if (hasCalendarPermission && (!requiresPolicyAccess || hasPolicyAccess)) {
                     settingsStore.setAutomationEnabled(true)
                     EngineRunner.runEngine(applicationContext, Trigger.TILE_TOGGLE)
                     AnalyticsTracker.logAutomationToggle(applicationContext, true, "tile")

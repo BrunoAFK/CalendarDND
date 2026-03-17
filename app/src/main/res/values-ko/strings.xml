@@ -140,6 +140,9 @@
     <string name="min_duration_description">%d분보다 짧은 이벤트는 무시됩니다</string>
     <string name="min_duration_value">%d분</string>
     <string name="dnd_mode">DND 모드</string>
+    <string name="vibrate_mode_title">진동</string>
+    <string name="vibrate_mode_description">휴대전화를 진동으로 전환</string>
+    <string name="vibrate_mode_details">방해 금지는 꺼진 상태로 유지됩니다. 전화와 알림은 계속 올 수 있지만, 벨소리 대신 진동으로 동작합니다.</string>
     <string name="priority_mode_title">우선순위만</string>
     <string name="priority_mode_description">우선순위 알림 허용</string>
     <string name="priority_mode_details">즐겨찾기 및 반복 발신자의 전화는 울릴 수 있습니다. 우선순위 알림도 계속 표시됩니다.</string>
@@ -648,6 +651,7 @@
     <string name="dnd_priority_summary_none">Allowed: None</string>
     <string name="dnd_priority_summary_title">Priority interruptions</string>
     <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
+    <string name="vibrate_mode_manage_hint">진동 모드는 시스템 방해 금지 규칙 대신 휴대전화 벨소리 설정을 사용합니다.</string>
     <string name="dnd_total_silence_manage_button">Open DND settings</string>
     <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
     <string name="dnd_total_silence_warning_title">Total Silence warning</string>

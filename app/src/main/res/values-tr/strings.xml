@@ -147,6 +147,9 @@
     <string name="dnd_mode_screen_subtitle">Toplantılarda Rahatsız Etmeyin’in ne kadar katı olacağını seçin.</string>
     <string name="dnd_mode_summary">Yalnızca Öncelikli veya Tam Sessizlik seçin.</string>
     <string name="dnd_mode_description">Toplantılarda Rahatsız Etmeyin davranışını kontrol edin.</string>
+    <string name="vibrate_mode_title">Titreşim</string>
+    <string name="vibrate_mode_description">Telefonu titreşime al</string>
+    <string name="vibrate_mode_details">Rahatsız Etmeyin kapalı kalır. Aramalar ve bildirimler yine gelebilir, ancak telefon zil yerine titreşir.</string>
     <string name="priority_mode_title">Yalnızca Öncelikli</string>
     <string name="priority_mode_description">Öncelikli bildirimlere izin ver</string>
     <string name="priority_mode_details">Favorilerden gelen aramalar ve tekrar arayanlar çalabilir. Öncelikli işaretlenen bildirimler yine uyarabilir.</string>
@@ -567,6 +570,7 @@
     <string name="dnd_total_silence_warning_body">Tam Sessizlik, alarmlar dahil tüm sesleri engeller.</string>
     <string name="dnd_total_silence_description">Sistem DND ayarlarından kontrol edin.</string>
     <string name="dnd_mode_manage_hint">Kimin geçebileceğini seçmek için sistem DND ayarlarını kullanın.</string>
+    <string name="vibrate_mode_manage_hint">Titreşim modu, sistem Rahatsız Etmeyin kuralları yerine telefon zil ayarını kullanır.</string>
     <string name="dnd_total_silence_manage_button">DND ayarlarını aç</string>
     <string name="dnd_total_silence_confirm_title">Tam Sessizlik etkinleştirilsin mi?</string>
     <string name="dnd_total_silence_confirm_body">Bu, toplantı bitene kadar alarmlar dahil tüm sesleri engeller.</string>

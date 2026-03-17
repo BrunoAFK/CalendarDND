@@ -185,6 +185,9 @@
     <string name="refresh_banner_message">下拉刷新。你也可以在设置中进行手动检查。</string>
 
     <!-- DND modes -->
+    <string name="vibrate_mode_title">振动</string>
+    <string name="vibrate_mode_description">将手机切换为振动</string>
+    <string name="vibrate_mode_details">勿扰模式保持关闭。来电和通知仍可到达，但手机应振动而不是响铃。</string>
     <string name="priority_mode_title">仅优先级</string>
     <string name="priority_mode_description">允许优先通知</string>
     <string name="priority_mode_details">允许星标联系人和优先通知。</string>
@@ -214,6 +217,7 @@
     <string name="dnd_total_silence_warning_body">完全静音会阻止所有声音，包括闹钟。</string>
     <string name="dnd_total_silence_description">在系统设置中控制免打扰行为。</string>
     <string name="dnd_mode_manage_hint">使用系统免打扰设置来选择谁可以打扰你。</string>
+    <string name="vibrate_mode_manage_hint">振动模式使用手机铃声设置，而不是系统“勿扰”规则。</string>
     <string name="dnd_total_silence_manage_button">打开免打扰设置</string>
     <string name="dnd_total_silence_confirm_title">启用完全静音？</string>
     <string name="dnd_total_silence_confirm_body">这将阻止所有声音，包括闹钟，直到会议结束。</string>

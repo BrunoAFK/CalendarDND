@@ -140,6 +140,9 @@
     <string name="min_duration_description">Termine kürzer als %d Minuten werden ignoriert</string>
     <string name="min_duration_value">%d Minuten</string>
     <string name="dnd_mode">DND-Modus</string>
+    <string name="vibrate_mode_title">Vibrieren</string>
+    <string name="vibrate_mode_description">Telefon auf Vibration stellen</string>
+    <string name="vibrate_mode_details">„Nicht stören“ bleibt aus. Anrufe und Benachrichtigungen können weiterhin ankommen, aber das Telefon sollte vibrieren statt klingeln.</string>
     <string name="priority_mode_title">Nur Priorität</string>
     <string name="priority_mode_description">Prioritätsbenachrichtigungen zulassen</string>
     <string name="priority_mode_details">Anrufe von Favoriten und wiederholten Anrufern können durchkommen. Als Priorität markierte Benachrichtigungen bleiben hörbar.</string>
@@ -648,6 +651,7 @@
     <string name="dnd_priority_summary_none">Allowed: None</string>
     <string name="dnd_priority_summary_title">Priority interruptions</string>
     <string name="dnd_total_silence_description">Control DND behavior in system settings.</string>
+    <string name="vibrate_mode_manage_hint">Der Vibrationsmodus verwendet die Klingelton-Einstellung deines Telefons statt der systemweiten „Nicht stören“-Regeln.</string>
     <string name="dnd_total_silence_manage_button">Open DND settings</string>
     <string name="dnd_total_silence_warning_body">Total Silence blocks all sounds, including alarms.</string>
     <string name="dnd_total_silence_warning_title">Total Silence warning</string>
